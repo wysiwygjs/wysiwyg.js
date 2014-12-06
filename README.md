@@ -5,7 +5,7 @@ http://wysiwygjs.github.io/
 wysiwyg.js
 ==========
 
-'wysiwyg-js' is a (minified) 12k contenteditable-editor with no dependencies.
+'wysiwyg-js' is a (minified) 10k contenteditable-editor with no dependencies.
 It does only:
 * Transforms any HTML-element into contenteditable
 * onselection-event: e.g. to open a toolbar

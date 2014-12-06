@@ -191,52 +191,6 @@
         }
     };
 
-    // http://stackoverflow.com/questions/11191136/set-a-selection-range-from-a-to-b-in-absolute-position
-    // https://developer.mozilla.org/en-US/docs/Web/API/document.caretPositionFromPoint
-    var createSelectionFromPoint = function( startX, startY, endX, endY )
-    {
-        var range;
-        // Standard
-        if( document.caretPositionFromPoint )
-        {
-            var start = document.caretPositionFromPoint(startX, startY);
-            var end = document.caretPositionFromPoint(endX, endY);
-            if( ! start || ! end )
-                return ;
-            range = document.createRange();
-            range.setStart(start.offsetNode, start.offset);
-            range.setEnd(end.offsetNode, end.offset);
-        }
-        // WebKit
-        else if( document.caretRangeFromPoint )
-        {
-            var start = document.caretRangeFromPoint(startX, startY);
-            var end = document.caretRangeFromPoint(endX, endY);
-            if( ! start || ! end )
-                return ;
-            range = document.createRange();
-            range.setStart(start.startContainer, start.startOffset);
-            range.setEnd(end.startContainer, end.startOffset);
-        }
-        if( range && window.getSelection )
-        {
-            var sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-            return range.startContainer;
-        }
-        else if( document.body.createTextRange )
-        {
-            range = document.body.createTextRange();
-            range.moveToPoint(startX, startY);
-            var endRange = range.duplicate();
-            endRange.moveToPoint(endX, endY);
-            range.setEndPoint('EndToEnd', endRange);
-            focusNodeInRange( range );
-            range.select();
-        }
-    };
-
     // http://stackoverflow.com/questions/12603397/calculate-width-height-of-the-selected-text-javascript
     // http://stackoverflow.com/questions/6846230/coordinates-of-selected-text-in-browser-page
     var getSelectionRect = function()
