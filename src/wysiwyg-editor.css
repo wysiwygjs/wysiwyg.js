@@ -1,0 +1,183 @@
+@font-face {
+    font-family: 'FontAwesome';
+    src: url('fonts/fontawesome-webfont.eot?v=4.2.0');
+    src: url('fonts/fontawesome-webfont.eot?#iefix&v=4.2.0') format('embedded-opentype'), url('fonts/fontawesome-webfont.woff?v=4.2.0') format('woff'), url('fonts/fontawesome-webfont.ttf?v=4.2.0') format('truetype'), url('fonts/fontawesome-webfont.svg?v=4.2.0#fontawesomeregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+.wysiwyg-container {
+    overflow: visible;
+    border: 1px solid #aaaaaa;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+}
+.wysiwyg-textarea {
+    display: block;
+    width: 100%;
+    height: 10em;
+    padding: 0;
+}
+.wysiwyg-wrapper {
+    position: relative;
+}
+.wysiwyg-editor {
+    position: relative;
+    min-height: 5em;
+    /*max-height: 25em;*/
+    padding: 10px;
+    overflow: auto;
+    outline: none;
+    -ms-word-wrap: break-word;
+    word-wrap: break-word;
+}
+.wysiwyg-placeholder {
+    position: absolute;
+    top: 10px;  /* same as padding in .wysiwyg-editor */
+    left: 10px;
+    color: #cccccc;
+    background: transparent;
+}
+.wysiwyg-toolbar-top {
+    border-bottom: 1px solid #aaaaaa;
+    padding: 0 5px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.wysiwyg-toolbar-bottom {
+    border-top: 1px solid #aaaaaa;
+    padding: 0 5px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.wysiwyg-toolbar-top a,
+.wysiwyg-toolbar-bottom a {
+    vertical-align: top;
+}
+.wysiwyg-popup {
+    position: absolute;
+    z-index: 9999;
+    color: black;
+    background: white;
+    background: rgba(255,255,255,0.9);
+    left: -50%;
+    border: 1px solid #aaaaaa;
+    border-top: 4px solid #aaaaaa;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+    -moz-box-shadow: 0 0 5px #333333;
+    -webkit-box-shadow: 0 0 5px #333333;
+    box-shadow: 0 0 5px #333333;
+}
+.wysiwyg-popup.wysiwyg-arrowtop:after {
+    position: absolute;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    width: 0;
+    height: 0;
+    margin-left: -14px;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+}
+.wysiwyg-popup.wysiwyg-arrowtop {
+    margin-top: 7px;
+}
+.wysiwyg-popup.wysiwyg-arrowtop:after {
+    bottom: 100%;
+    border-bottom: 10px solid #aaaaaa;
+}
+.wysiwyg-toolbar-feature {
+    padding: 10px;
+}
+.wysiwyg-toolbar-feature.wysiwyg-toolbar-smilies {
+    text-align: center;
+}
+.wysiwyg-toolbar-feature .wysiwyg-color {
+    display: -moz-inline-stack;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 1px solid white;
+    *zoom: 1;
+    vertical-align: top;
+    cursor: pointer;
+}
+.wysiwyg-toolbar-feature img {
+    display: -moz-inline-stack; /* inline-block: http://blog.mozilla.org/webdev/2009/02/20/cross-browser-inline-block/ */
+    display: inline-block;
+    *display: inline;
+}
+.wysiwyg-toolbar-icon {
+    display: -moz-inline-stack;
+    display: inline-block;
+    *display: inline;
+    margin: 0;
+    padding: 0;
+    -webkit-opacity: 0.7;
+    opacity: 0.7;
+    color: black;
+    text-decoration: none;
+    *zoom: 1;
+    vertical-align: top;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    width: 16px;
+    height: 16px;
+    padding: 8px 12px;
+    font: 14px FontAwesome;
+}
+.wysiwyg-toolbar-icon:hover {
+    background-color: #3366cc;
+    -webkit-opacity: 1;
+    opacity: 1;
+}
+.wysiwyg-input {
+    display: -moz-inline-stack;
+    display: inline-block;
+    *display: inline;
+    color: black;
+    background: none white;
+    border: 1px solid #aaaaaa;
+    width: 20em;
+    height: 16px;
+    padding: 7px 4px;  /* 8 - border(1) = 7 */
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+    outline: none;
+}
+.wysiwyg-input:hover,
+.wysiwyg-input:active,
+.wysiwyg-input:focus {
+    border-color: #777777;
+}
+.wysiwyg-browse {
+    position: relative;
+    left: 0;
+    top: 0;
+    height: 3em;
+    line-height: 3em;
+    border: 2px dashed #aaaaaa;
+    padding: 10px;
+    color: #aaaaaa;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+.wysiwyg-browse:hover,
+.wysiwyg-browse:active,
+.wysiwyg-browse:focus {
+    color: black;
+    border-color: #777777;
+}

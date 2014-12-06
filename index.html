@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>WYSIWYG</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="src/wysiwyg.js"></script>
+<script type="text/javascript" src="src/wysiwyg-editor.js"></script>
+<link rel="stylesheet" type="text/css" href="src/wysiwyg-editor.css" />
+<script type="text/javascript">
+$(document).ready(function(){
+    // Full featured editor
+    $('#editor1,#editor2,#editor3').each( function(index, element)
+    {
+        $(element).wysiwyg({
+            position: index == 0 ? 'top' : (index == 1 ? 'bottom' : 'none'),
+            buttons: {
+                submit: index == 1 ? $('<input id="submit" type="submit" value="submit" />') : false,
+                smilies: {
+                    title: 'Smilies',
+                    image: '\uf118' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                insertimage: {
+                    title: 'Insert image',
+                    image: '\uf030' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                insertlink: {
+                    title: 'Insert link',
+                    image: '\uf08e' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                bold: {
+                    title: 'Bold',
+                    image: '\uf032' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                italic: {
+                    title: 'Italic',
+                    image: '\uf033' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                underline: {
+                    title: 'Underline',
+                    image: '\uf0cd' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                strikethrough: {
+                    title: 'Strikethrough',
+                    image: '\uf0cc' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                forecolor: {
+                    title: 'Text color',
+                    image: '\uf1fc' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                highlight: {
+                    title: 'Background color',
+                    image: '\uf043' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                orderedList: {
+                    title: 'Ordered list',
+                    image: '\uf0cb' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                unorderedList: {
+                    title: 'Unordered list',
+                    image: '\uf03a' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                removeformat: {
+                    title: 'Remove format',
+                    image: '\uf12d' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                }
+            },
+            submit: {
+                title: 'Submit',
+                image: '\uf00c' // <img src="path/to/image.png" width="16" height="16" alt="" />
+            },
+            smilies: [
+                    '<img src="smiley/afraid.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/amorous.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/angel.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/angry.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/bathing.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/beer.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/bored.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/boy.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/camera.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/chilli.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/cigarette.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/cinema.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/coffee.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/cold.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/confused.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/console.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/cross.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/crying.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/devil.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/disappointed.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/dont-know.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/drool.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/embarrassed.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/excited.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/excruciating.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/eyeroll.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/girl.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/grumpy.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/happy.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/hot.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/hug-left.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/hug-right.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/hungry.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/in_love.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/internet.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/invincible.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/kiss.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/lamp.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/lying.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/meeting.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/mobile.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/mrgreen.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/musical-note.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/music.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/nerdy.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/neutral.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/party.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/phone.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/pirate.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/pissed-off.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/plate.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/question.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/restroom.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/rose.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/sad.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/search.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/shame.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/shocked.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/shopping.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/shut-mouth.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/sick.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/silent.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/sleeping.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/sleepy.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/star.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/stressed.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/studying.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/suit.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/surfing.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/thinking.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/thunder.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/tongue.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/tv.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/typing.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/uhm-yeah.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/wink.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/working.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/writing.png" width="16" height="16" alt="" />',
+                    '<img src="smiley/" width="16" height="16" alt="" />'
+            ],
+            dropfileclick: 'Drop image or click',
+            styleWithCSS: true,
+            insertBrOnReturn: true,
+            onEnterSubit: function() {
+                                return true; // don't swallow enter...
+                            }
+        })
+        .change(function(){
+            if( typeof console != 'undefined' )
+                console.log( 'change' );
+        })
+        .focus(function(){
+            if( typeof console != 'undefined' )
+                console.log( 'focus' );
+        })
+        .blur(function(){
+            if( typeof console != 'undefined' )
+                console.log( 'blur' );
+        });
+    });
+
+    // Raw editor
+    var option = {
+        element: $('#editor0').get(0),
+        onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) {
+                        if( typeof console != 'undefined' )
+                            console.log( 'RAW: '+character+' key pressed' );
+                    },
+        onselection: function( collapsed, rect, nodes, rightclick ) {
+                        if( typeof console != 'undefined' )
+                            console.log( 'RAW: selection rect('+selectionRect.left+','+selectionRect.top+','+selectionRect.width+','+selectionRect.height+'), '+nodes.length+' nodes' );
+                    },
+        onplaceholder: function( visible ) {
+                        if( typeof console != 'undefined' )
+                            console.log( 'RAW: placeholder ' + (visible ? 'visible' : 'hidden') );
+                    }
+    };
+    var wysiwygeditor = wysiwyg( option );
+    wysiwygeditor.markup( true, true ); // styleWithCSS, insertBrOnReturn
+});
+</script>
+<style>
+body {
+    font-family: Arial,Verdana;
+}
+p {
+    margin: 0;
+    padding: 0;
+}
+</style>
+</head>
+<body>
+
+<a href="https://github.com/wysiwygjs/wysiwyg.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+
+<h1><center>wysiwyg.js</center></h1>
+
+<pre style="width:800px; margin: 30px auto;">
+    'wysiwyg-js' is a (minified) 12k contenteditable-editor with no dependencies.
+    It does only:
+        * Transforms any HTML-element into contenteditable
+        * onselection-event: e.g. to open a toolbar
+        * onkeypress-event: e.g. to handle hotkeys
+        * onplaceholder-event: show/hide a placeholder
+
+    It works with:
+        * Internet Explorer 6+
+        * Firefox 3.5+
+        * Chrome 4+
+        * Safari 3.1+
+
+    There is also a 9k jQuery-wrapper '$.wysiwyg()' to create
+    a full-featured editor, which depends on:
+        * jQuery
+        * FontAwesome (or PNG images)
+
+    If a &lt;textarea&gt; was used as 'element', the library:
+        * keeps the &lt;textarea&gt; in sync
+        * nicely falls back to the &lt;textarea&gt; if the browser does not support 'contenteditable'
+</pre>
+
+<h1><center>Examples:</center></h1>
+
+<div style="width:800px; margin: 30px auto;">
+  <div style="color:#aa0000;font-weight:bold">Complete: Toolbar on top:</div>
+  <textarea id="editor1" name="editor" placeholder="Type your text here...">
+    Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+    Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </textarea>
+</div>
+
+<div style="width:800px; margin: 30px auto;">
+  <div style="color:#aa0000;font-weight:bold">Complete: Toolbar on bottom + submit-button:</div>
+  <textarea id="editor1" name="editor" placeholder="Type your text here...">
+    Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+    Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </textarea>
+</div>
+
+<div style="width:800px; margin: 30px auto;">
+  <div style="color:#aa0000;font-weight:bold">Complete: Toolbar on selection:</div>
+  <textarea id="editor3" name="editor" placeholder="Type your text here...">
+    Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+    Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </textarea>
+</div>
+
+<div style="width:800px; margin: 30px auto;">
+  <div style="color:#aa0000;font-weight:bold">Raw editor (no CSS, no jQuery):</div>
+  <div id="editor0" style="padding:5px;border:1px dashed black">
+    Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+    Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </div>
+</div>
+
+<h1><center>API:</center></h1>
+
+<pre style="width:800px; margin: 30px auto;">
+// create wysiwyg:
+var wysiwygeditor = wysiwyg({
+    element: document.getElmentById('editor-id'),
+    onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) {
+        },
+    onselection: function( collapsed, rect, nodes, rightclick ) {
+        },
+    onplaceholder: function( visible ) {
+        }
+});
+
+// properties:
+wysiwygeditor.getElement();
+wysiwygeditor.getHTML();
+wysiwygeditor.setHTML( html ); -> html
+
+// selection and popup:
+wysiwygeditor.collapseSelection();
+wysiwygeditor.openPopup(); -> popup-handle
+wysiwygeditor.closePopup();
+
+// exec commands:
+wysiwygeditor.markup( styleWithCSS, insertBrOnReturn );
+wysiwygeditor.removeFormat();
+wysiwygeditor.bold();
+wysiwygeditor.italic();
+wysiwygeditor.underline();
+wysiwygeditor.strikethrough();
+wysiwygeditor.forecolor( color );
+wysiwygeditor.highlight: function( color );
+wysiwygeditor.font( name, size );
+wysiwygeditor.align( 'justifyLeft'|'justifyCenter'|'justifyRight'|'justifyFull' );
+wysiwygeditor.insertLink( url );
+wysiwygeditor.insertImage( url );
+wysiwygeditor.insertHTML( html );
+wysiwygeditor.insertOrderedList();
+wysiwygeditor.insertUnorderedList();
+</pre>
+
+</body>
+</html>
