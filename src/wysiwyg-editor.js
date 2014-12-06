@@ -219,17 +219,18 @@
                             .attr('unselectable','on')
                             .append(button.image);
         };
-        var add_buttons_to_toolbar = function( $toolbar, popup_callback, simplified )
+        var add_buttons_to_toolbar = function( $toolbar, popup_callback, secondary )
         {
             $.each( toolbar_buttons, function(key, value) {
                 if( ! value )
+                    return ;
+                // Skip some buttons in the hover-toolbar
+                if( value.secondary && secondary )
                     return ;
                 var $html, onclick;
                 switch( key )
                 {
                     case 'smilies':
-                        if( simplified )
-                            return ;
                         onclick = function(event){
                                         popup_callback.call( event.currentTarget, content_smilies(wysiwygeditor) )
                                         event.stopPropagation();
@@ -238,8 +239,6 @@
                                     };
                         break;
                     case 'insertimage':
-                        if( simplified )
-                            return ;
                         onclick = function(event){
                                         popup_callback.call( event.currentTarget, content_insertimage(wysiwygeditor) );
                                         event.stopPropagation();
@@ -304,8 +303,6 @@
                                     };
                         break;
                     case 'orderedList':
-                        if( simplified )
-                            return ;
                         onclick = function(event){
                                         wysiwygeditor.insertOrderedList().closePopup().collapseSelection();
                                         event.stopPropagation();
@@ -314,8 +311,6 @@
                                     };
                         break;
                     case 'unorderedList':
-                        if( simplified )
-                            return ;
                         onclick = function(event){
                                         wysiwygeditor.insertUnorderedList().closePopup().collapseSelection();
                                         event.stopPropagation();
@@ -332,9 +327,7 @@
                                     };
                         break;
                     default:
-                        if( simplified )
-                            return ;
-                        $html = value;
+                        $html = $(value.html);
                         break;
                 }
                 var $button = $html || toolbar_button( value );
@@ -457,8 +450,9 @@
         if( wysiwygeditor.legacy )
         {
             var $textarea = $(wysiwygeditor.getElement());
-            $textarea.addClass( 'wysiwyg-textarea' )
-                     .width( $container.width() - ($textarea.outerWidth() - $textarea.width()) );
+            $textarea.addClass( 'wysiwyg-textarea' );
+            if( $textarea.is(':visible') ) // inside the DOM
+                $textarea.width( $container.width() - ($textarea.outerWidth() - $textarea.width()) );
         }
         else
             $(wysiwygeditor.getElement()).addClass( 'wysiwyg-editor' );

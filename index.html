@@ -15,14 +15,19 @@ $(document).ready(function(){
         $(element).wysiwyg({
             position: index == 0 ? 'top' : (index == 1 ? 'bottom' : 'none'),
             buttons: {
-                submit: index == 1 ? $('<input id="submit" type="submit" value="submit" />') : false,
+                submit: index == 1 ? {
+                    html: '<input id="submit" type="submit" value="submit" />',
+                    secondary: true
+                } : false,
                 smilies: {
                     title: 'Smilies',
-                    image: '\uf118' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    image: '\uf118', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    secondary: true
                 },
                 insertimage: {
                     title: 'Insert image',
-                    image: '\uf030' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    image: '\uf030', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    secondary: true
                 },
                 insertlink: {
                     title: 'Insert link',
@@ -54,11 +59,13 @@ $(document).ready(function(){
                 },
                 orderedList: {
                     title: 'Ordered list',
-                    image: '\uf0cb' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    image: '\uf0cb', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    secondary: true
                 },
                 unorderedList: {
                     title: 'Unordered list',
-                    image: '\uf03a' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    image: '\uf03a', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    secondary: true
                 },
                 removeformat: {
                     title: 'Remove format',
