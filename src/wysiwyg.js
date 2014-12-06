@@ -428,36 +428,6 @@
         }
     };
 
-    // http://stackoverflow.com/questions/1064089/inserting-a-text-where-cursor-is-using-javascript-jquery
-    // http://stackoverflow.com/questions/4456545/how-to-insert-text-at-the-current-caret-position-in-a-textarea
-    var textareaInsertAtCaret = function( textarea, text )
-    {
-        // Firefox, Webkit
-        if( textarea.selectionStart || textarea.selectionStart === 0 )
-        {
-            var startPos = textarea.selectionStart;
-            var endPos = textarea.selectionEnd;
-            var scrollTop = textarea.scrollTop;
-            textarea.value = textarea.value.substring(0, startPos) + text + textarea.value.substring(endPos, textarea.value.length);
-            textarea.focus();
-            textarea.selectionStart = startPos + text.length;
-            textarea.selectionEnd = startPos + text.length;
-            textarea.scrollTop = scrollTop;
-            return true;
-        }
-        // IE
-        else if( document.selection )
-        {
-            textarea.focus();
-            var sel = document.selection.createRange();
-            sel.text = text;
-            textarea.focus();
-            return true;
-        }
-        // Other browsers
-        return false;
-    };
-
     // Interface: Create wysiwyg
     window.wysiwyg = function( option )
     {
@@ -490,37 +460,6 @@
                     return html.replace(/<br[ \/]*>\n?/gi,'<br>\n');
                 };
                 node_textarea.value = newlineAfterBR( node_textarea.value );
-                // http://stackoverflow.com/questions/6637341/use-tab-to-indent-in-textarea
-                addEvent( node_textarea, 'keydown', function(e) {
-                    // http://www.quirksmode.org/js/events_properties.html
-                    if( !e )
-                        var e = window.event;
-                    var code;
-                    if( e.keyCode )
-                        code = e.keyCode;
-                    else if( e.which )
-                        code = e.which;
-                    // Handle some keys
-                    var token = false;
-                    switch( code )
-                    {
-                        case 10:
-                        case 13: token = '<br>\n';
-                                break;
-                    }
-                    if( !token )
-                        return ;
-                    if( ! textareaInsertAtCaret(this, token) )
-                        return ;
-                    // prevent default
-                    if( e.preventDefault )
-                        e.preventDefault();
-                    if( e.stopPropagation )
-                        e.stopPropagation();
-                    else
-                        e.cancelBubble = true;
-                    return false;
-                });
                 // Command structure
                 var dummy = function() {
                     return this;
