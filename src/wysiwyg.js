@@ -433,7 +433,7 @@
     var textareaInsertAtCaret = function( textarea, text )
     {
         // Firefox, Webkit
-        if( textarea.selectionStart || textarea.selectionStart == '0' )
+        if( textarea.selectionStart || textarea.selectionStart === 0 )
         {
             var startPos = textarea.selectionStart;
             var endPos = textarea.selectionEnd;
