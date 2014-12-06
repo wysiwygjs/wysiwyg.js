@@ -25,7 +25,7 @@ a full-featured editor, which depends on:
 
 If a &lt;textarea&gt; was used as 'element', the library:
 * keeps the &lt;textarea&gt; in sync
-* nicely falls back to the &lt;textarea&gt; if the browser does not support 'contenteditable'
+* falls back to the &lt;textarea&gt; if the browser does not support 'contenteditable'
 * Old iOS and Android 2.3- degrade to &lt;textarea&gt;
 
 wysiwyg.js-API:
