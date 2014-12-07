@@ -296,8 +296,15 @@
                 return true;
             return false;
         }
-        var sel = saveSelection( containerNode );
-        return (! sel || sel.start == sel.end);
+        else if( document.selection )
+        {
+            var range = document.selection.createRange();
+            var textrange = document.body.createTextRange();
+            textrange.moveToElementText(containerNode);
+            textrange.setEndPoint('EndToStart', range);
+            return range.htmlText.length == 0;
+        }
+        return true;
     };
 
     // http://stackoverflow.com/questions/7781963/js-get-array-of-all-selected-nodes-in-contenteditable-div
@@ -518,9 +525,6 @@
         // http://tanalin.com/en/articles/ie-version-js/
         var window_legacy = (document.all && !document.addEventListener) ? document : window;
 
-        // Gespeicherte Selection
-        var saved_selection = null;
-
         // Sync Editor with Textarea
         var syncTextarea = null;
         if( is_textarea )
@@ -592,6 +596,7 @@
         }
 
         // Handle selection
+        var saved_selection = null; // preserve selection
         var handleSelection = null,
             debounced_handleSelection = null;
         if( option_onselection )
@@ -620,15 +625,19 @@
                 };
                 // Detect collapsed selection
                 var collapsed = getSelectionCollapsed( node_wysiwyg );
-                // Rectangle of the selection
-                if( ! collapsed )
+                if( collapsed )
                 {
+                    saved_selection = null;
+                    if( rect.x === false || rect.y === false )
+                        return ;
+                }
+                else
+                {
+                    // Rectangle of the selection
                     var selectionRect = getSelectionRect();
                     if( selectionRect )
                         rect = selectionRect;
                 }
-                else if( rect.x === false || rect.y === false )
-                    return ;
                 // Trim rectangle to the editor
                 if( rect.left < wysiwygLeft )
                 {
