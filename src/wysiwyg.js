@@ -72,22 +72,52 @@
         return false;
     };
 
-    // http://stackoverflow.com/questions/7781963/js-get-array-of-all-selected-nodes-in-contenteditable-div
+    // http://stackoverflow.com/questions/667951/how-to-get-nodes-lying-inside-a-range-with-javascript
     var nextNode = function( node )
     {
-        if( node.hasChildNodes() ) {
+        if (node.firstChild)
             return node.firstChild;
-        }
-        while( node && !node.nextSibling ) {
+        while( node )
+        {
+            if( node.nextSibling )
+                return node.nextSibling;
             node = node.parentNode;
         }
-        if( !node ) {
-            return null;
-        }
-        return node.nextSibling;
+        return null;
     };
 
     // save/restore selection
+    var saveSelection = function( containerNode )
+    {
+        if( window.getSelection )
+        {
+            var sel = window.getSelection();
+            if( sel.rangeCount > 0 )
+                return sel.getRangeAt(0);
+        }
+        else if( document.selection )
+        {
+            var sel = document.selection;
+            return sel.createRange();
+        }
+        return null;
+    };
+    var restoreSelection = function( containerNode, savedSel )
+    {
+        if( ! savedSel )
+            return;
+        if( window.getSelection && document.createRange )
+        {
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(savedSel);
+        }
+        else if( document.selection )
+        {
+            savedSel.select();
+        }
+    };
+    /*
     // http://stackoverflow.com/questions/13949059/persisting-the-changes-of-range-objects-after-selection-in-html/13950376#13950376
     var saveSelection = function( containerNode )
     {
@@ -131,15 +161,17 @@
                 var node = savedSel.range.startContainer;
                 var endNode = savedSel.range.endContainer;
                 // Iterate nodes until we hit the end container
-                do {
+                while( node )
+                {
                     if( isOrContainsNode(containerNode,node) )
                     {
                         range = savedSel.range;
                         break;
                     }
+                    if( node == endNode )
+                        break;
                     node = nextNode(node);
                 }
-                while( node && node != endNode );
             }
             // Restore from char-based index
             if( ! range )
@@ -190,6 +222,7 @@
             textRange.select();
         }
     };
+    */
 
     // http://stackoverflow.com/questions/12603397/calculate-width-height-of-the-selected-text-javascript
     // http://stackoverflow.com/questions/6846230/coordinates-of-selected-text-in-browser-page
@@ -279,12 +312,17 @@
                 var range = sel.getRangeAt(i);
                 var node = range.startContainer;
                 var endNode = range.endContainer;
-                do {
-                    if( node != containerNode && sel.containsNode(node,true) )
-                        nodes.push( node );
+                while( node )
+                {
+                    if( node != containerNode )
+                    {
+                        if( ! sel.containsNode || sel.containsNode(node,true) )
+                            nodes.push( node );
+                    }
+                    if( node == endNode )
+                        break;
                     node = nextNode(node);
                 }
-                while( node && node != endNode );
             }
             if( nodes.length == 0 && range.focusNode )
                 nodes.push( range.focusNode );
@@ -916,7 +954,14 @@
                 showPlaceholder();
             if( syncTextarea )
                 syncTextarea();
-            saved_selection = selectionPreserved ? saveSelection( node_wysiwyg ) : null;
+            // handle saved selection
+            if( selectionPreserved )
+                saved_selection = getSelectionCollapsed( node_wysiwyg ) ? null : saveSelection( node_wysiwyg );
+            else 
+            {
+                collapseSelectionEnd();
+                saved_selection = null;
+            }
         };
         return {
             // properties
