@@ -1057,6 +1057,8 @@
             },
             insertLink: function( url )
             {
+                // If no selection use link as link-text
+                restoreSelection( node_wysiwyg, popup_saved_selection );
                 if( getSelectionCollapsed() )
                     return this.insertHTML( '<a href="'+url.replace(/"/,'&quot;')+'">'+url+'</a>' );
                 execCommand( 'createLink', url );
