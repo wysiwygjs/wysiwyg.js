@@ -92,7 +92,7 @@
             // Add image to editor
             var insert_image_wysiwyg = function( url, filename )
             {
-                var html = '<img id="wysiwyg-insert-image" src="" alt=""' + (filename ? ' title="'+filename.replace(/"/,'')+'"' : '') + ' />';
+                var html = '<img id="wysiwyg-insert-image" src="" alt=""' + (filename ? ' title="'+filename.replace(/"/,'&quot;')+'"' : '') + ' />';
                 wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
                 $('#wysiwyg-insert-image')
                         .removeAttr('id')
@@ -134,10 +134,9 @@
                     if( ! file.type.match('image.*') )
                         return;
                     var reader = new FileReader();
-                    var filename = file.name.replace(/'/,"\\'");
                     reader.onload = function(event) {
                         var dataurl = event.target.result;
-                        insert_image_wysiwyg( dataurl, filename );
+                        insert_image_wysiwyg( dataurl, file.name );
                     };
                     // Read in the image file as a data URL
                     reader.readAsDataURL( file );

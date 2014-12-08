@@ -1057,7 +1057,8 @@
             },
             insertLink: function( url )
             {
-                // http://stackoverflow.com/questions/5605401/insert-link-in-contenteditable-element
+                if( getSelectionCollapsed() )
+                    return this.insertHTML( '<a href="'+url.replace(/"/,'&quot;')+'">'+url+'</a>' );
                 execCommand( 'createLink', url );
                 callUpdates();
                 return this;
