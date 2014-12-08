@@ -385,40 +385,27 @@
                             case 's': wysiwygeditor.strikethrough(); // .closePopup().collapseSelection()
                                       return false;
                         }
-                    }
-            };
-            if( placeholder )
-            {
-                var $placeholder = $('<div/>').addClass( 'wysiwyg-placeholder' )
-                                              .html( placeholder )
-                                              .hide();
-                $container.prepend( $placeholder );
-                option.onplaceholder = function( visible ) {
-                    if( visible )
-                        $placeholder.show();
-                    else
-                        $placeholder.hide();
-                };
-            }
-            if( toolbar_position == 'top-selection' || toolbar_position == 'bottom-selection' || toolbar_position == 'selection' )
-            {
-                option.onselection = function( collapsed, rect, nodes, rightclick )
+                    },
+                onselection: function( collapsed, rect, nodes, rightclick )
                     {
+                        var want_toolbar = true;
+                        // No selection-toolbar wanted?
+                        if( ! rightclick && toolbar_position != 'top-selection' && toolbar_position != 'bottom-selection' && toolbar_position != 'selection' )
+                            want_toolbar = false;
                         // Selection properties
-                        if( rect === undefined || ! rightclick )
+                        else if( rect === undefined || ! rightclick )
                         {
                             // Nothing selected?
                             if( collapsed || rect === undefined )
-                            {
-                                wysiwygeditor.closePopup().collapseSelection();
-                                return ;
-                            }
+                                want_toolbar = false;
                             // Only one image?
-                            if( nodes.length == 1 && nodes.shift().nodeName == 'IMG' )
-                            {
-                                wysiwygeditor.closePopup();
-                                return ;
-                            }
+                            else if( nodes.length == 1 && nodes.shift().nodeName == 'IMG' )
+                                want_toolbar = false;
+                        }
+                        if( ! want_toolbar )
+                        {
+                            wysiwygeditor.closePopup();
+                            return ;
                         }
                         // Apply position
                         var $toolbar;
@@ -443,7 +430,7 @@
                             // add Classes
                             $toolbar.addClass( 'wysiwyg-popup wysiwyg-arrowtop' );
                             // add Buttons
-                            var simplify_selection_toolbar = toolbar_position == 'top-selection' || toolbar_position == 'bottom-selection';
+                            var simplify_selection_toolbar = toolbar_position != 'selection';
                             add_buttons_to_toolbar( $toolbar, function( $content )
                             {
                                 $toolbar.empty().append( $content );
@@ -453,7 +440,20 @@
                         }
                         // Toolbar position
                         apply_toolbar_position();
-                    };
+                    }
+            };
+            if( placeholder )
+            {
+                var $placeholder = $('<div/>').addClass( 'wysiwyg-placeholder' )
+                                              .html( placeholder )
+                                              .hide();
+                $container.prepend( $placeholder );
+                option.onplaceholder = function( visible ) {
+                    if( visible )
+                        $placeholder.show();
+                    else
+                        $placeholder.hide();
+                };
             }
 
             var wysiwygeditor = wysiwyg( option );
