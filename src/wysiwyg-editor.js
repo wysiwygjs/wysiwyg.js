@@ -439,7 +439,8 @@
                         }
                         // Toolbar position
                         apply_toolbar_position();
-                    }
+                    },
+                hijackcontextmenu: (toolbar_position == 'selection')
             };
             if( placeholder )
             {

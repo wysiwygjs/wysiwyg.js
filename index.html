@@ -270,7 +270,7 @@ p {
 </div>
 
 <div style="width:800px; margin: 30px auto;">
-  <div style="color:#aa0000;font-weight:bold">Complete: Toolbar only on selection:</div>
+  <div style="color:#aa0000;font-weight:bold">Complete: Toolbar only on selection, hijack right-click:</div>
   <textarea id="editor3" name="editor" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
@@ -298,7 +298,8 @@ var wysiwygeditor = wysiwyg({
     onselection: function( collapsed, rect, nodes, rightclick ) {
         },
     onplaceholder: function( visible ) {
-        }
+        },
+    hijackcontextmenu: false
 });
 
 // properties:

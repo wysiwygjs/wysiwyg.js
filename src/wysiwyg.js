@@ -397,6 +397,7 @@
         var option_onkeypress = option.onkeypress || null;
         var option_onselection = option.onselection || null;
         var option_onplaceholder = option.onplaceholder || null;
+        var option_hijackcontextmenu = option.hijackcontextmenu || false;
 
         // Keep textarea if browser can't handle content-editable
         var is_textarea = option_element.nodeName == 'TEXTAREA' || option_element.nodeName == 'INPUT';
@@ -835,6 +836,8 @@
             removeEvent( window_ie8, 'mouseup', mouseHandler );
             // Callback selection
             popup_saved_selection = null;
+            if( ! option_hijackcontextmenu && rightclick )
+                return ;
             if( debounced_handleSelection )
                 debounced_handleSelection( posx, posy, rightclick );
         };
@@ -859,18 +862,21 @@
         {
             mouseHandler( e );
         });
-        addEvent( node_wysiwyg, 'contextmenu', function(e)
+        if( option_hijackcontextmenu )
         {
-            mouseHandler( e, true );
-            // prevent default
-            if( e.preventDefault )
-                e.preventDefault();
-            if( e.stopPropagation )
-                e.stopPropagation();
-            else
-                e.cancelBubble = true;
-            return false;
-        });
+            addEvent( node_wysiwyg, 'contextmenu', function(e)
+            {
+                mouseHandler( e, true );
+                // prevent default
+                if( e.preventDefault )
+                    e.preventDefault();
+                if( e.stopPropagation )
+                    e.stopPropagation();
+                else
+                    e.cancelBubble = true;
+                return false;
+            });
+        }
 
 
         // exec command

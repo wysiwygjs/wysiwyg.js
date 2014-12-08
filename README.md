@@ -39,7 +39,8 @@ var wysiwygeditor = wysiwyg({
     onselection: function( collapsed, rect, nodes, rightclick ) {
         },
     onplaceholder: function( visible ) {
-        }
+        },
+    hijackcontextmenu: false
 });
 
 // properties:
