@@ -41,7 +41,7 @@
 }
 .wysiwyg-toolbar-top {
     border-bottom: 1px solid #aaaaaa;
-    padding: 0 5px;
+    padding: 0;
     overflow: hidden;
     white-space: nowrap;
 }
@@ -129,10 +129,10 @@
     -khtml-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    width: 16px;
-    height: 16px;
+    /*width: 16px;
+    height: 16px;*/
     padding: 8px 12px;
-    font: 14px FontAwesome;
+    font: 16px FontAwesome;
 }
 .wysiwyg-toolbar-icon:hover {
     background-color: #3366cc;
