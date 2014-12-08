@@ -1,3 +1,4 @@
+/*
 @font-face {
     font-family: 'FontAwesome';
     src: url('fonts/fontawesome-webfont.eot?v=4.2.0');
@@ -5,6 +6,7 @@
     font-weight: normal;
     font-style: normal;
 }
+*/
 .wysiwyg-container {
     overflow: visible;
     border: 1px solid #aaaaaa;
