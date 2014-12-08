@@ -64,8 +64,9 @@
     var isOrContainsNode = function( ancestor, descendant )
     {
         var node = descendant;
-        while (node) {
-            if (node === ancestor)
+        while( node )
+        {
+            if( node === ancestor )
                 return true;
             node = node.parentNode;
         }
@@ -73,12 +74,14 @@
     };
 
     // http://stackoverflow.com/questions/667951/how-to-get-nodes-lying-inside-a-range-with-javascript
-    var nextNode = function( node )
+    var nextNode = function( node, container )
     {
-        if (node.firstChild)
+        if( node.firstChild )
             return node.firstChild;
         while( node )
         {
+            if( node == container ) // do not walk out of the container
+                return null;
             if( node.nextSibling )
                 return node.nextSibling;
             node = node.parentNode;
@@ -87,6 +90,7 @@
     };
 
     // save/restore selection
+    // http://stackoverflow.com/questions/13949059/persisting-the-changes-of-range-objects-after-selection-in-html/13950376#13950376
     var saveSelection = function( containerNode )
     {
         if( window.getSelection )
@@ -117,112 +121,6 @@
             savedSel.select();
         }
     };
-    /*
-    // http://stackoverflow.com/questions/13949059/persisting-the-changes-of-range-objects-after-selection-in-html/13950376#13950376
-    var saveSelection = function( containerNode )
-    {
-        if( window.getSelection && document.createRange )
-        {
-            var range = window.getSelection().getRangeAt(0);
-            var preSelectionRange = range.cloneRange();
-            preSelectionRange.selectNodeContents(containerNode);
-            preSelectionRange.setEnd(range.startContainer, range.startOffset);
-            var start = preSelectionRange.toString().length;
-            return {
-                range: range,
-                start: start,
-                end: start + range.toString().length
-            };
-        }
-        else if( document.selection )
-        {
-            var selectedTextRange = document.selection.createRange();
-            var preSelectionTextRange = document.body.createTextRange();
-            preSelectionTextRange.moveToElementText(containerNode);
-            preSelectionTextRange.setEndPoint('EndToStart', selectedTextRange);
-            var start = preSelectionTextRange.text.length;
-            return {
-                start: start,
-                end: start + selectedTextRange.text.length
-            }
-        }
-        return null;
-    };
-    var restoreSelection = function( containerNode, savedSel )
-    {
-        if( ! savedSel )
-            return;
-        if( window.getSelection && document.createRange )
-        {
-            var range;
-            // Range inside container?
-            if( savedSel.range )
-            {
-                var node = savedSel.range.startContainer;
-                var endNode = savedSel.range.endContainer;
-                // Iterate nodes until we hit the end container
-                while( node )
-                {
-                    if( isOrContainsNode(containerNode,node) )
-                    {
-                        range = savedSel.range;
-                        break;
-                    }
-                    if( node == endNode )
-                        break;
-                    node = nextNode(node);
-                }
-            }
-            // Restore from char-based index
-            if( ! range )
-            {
-                range = document.createRange();
-                range.setStart(containerNode, 0);
-                range.collapse(true);
-                var nodeStack = [containerNode],
-                    node,
-                    foundStart = false,
-                    stop = false,
-                    charIndex = 0;
-                while( !stop && (node = nodeStack.pop()) )
-                {
-                    if( node.nodeType == Node.TEXT_NODE )
-                    {
-                        var nextCharIndex = charIndex + node.length;
-                        if (!foundStart && savedSel.start >= charIndex && savedSel.start <= nextCharIndex) {
-                            range.setStart(node, savedSel.start - charIndex);
-                            foundStart = true;
-                        }
-                        if (foundStart && savedSel.end >= charIndex && savedSel.end <= nextCharIndex) {
-                            range.setEnd(node, savedSel.end - charIndex);
-                            stop = true;
-                        }
-                        charIndex = nextCharIndex;
-                    }
-                    else
-                    {
-                        var i = node.childNodes.length;
-                        while (i--) {
-                            nodeStack.push(node.childNodes[i]);
-                        }
-                    }
-                }
-            }
-            var sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-        }
-        else if( document.selection )
-        {
-            var textRange = document.body.createTextRange();
-            textRange.moveToElementText(containerNode);
-            textRange.collapse(true);
-            textRange.moveEnd('character', savedSel.end);
-            textRange.moveStart('character', savedSel.start);
-            textRange.select();
-        }
-    };
-    */
 
     // http://stackoverflow.com/questions/12603397/calculate-width-height-of-the-selected-text-javascript
     // http://stackoverflow.com/questions/6846230/coordinates-of-selected-text-in-browser-page
@@ -237,6 +135,9 @@
             if( range.getBoundingClientRect ) // Missing for Firefox 3.5+3.6
             {
                 var rect = range.getBoundingClientRect();
+                // IE9 returns 0/0/0/0 if image selected
+                if( rect.left == 0 && rect.top == 0 && rect.right == 0 && rect.bottom == 0 )
+                    return false;
                 return {
                     left: rect.left + window.pageXOffset,
                     top: rect.top + window.pageYOffset,
@@ -298,11 +199,17 @@
         }
         else if( document.selection )
         {
-            var range = document.selection.createRange();
-            var textrange = document.body.createTextRange();
-            textrange.moveToElementText(containerNode);
-            textrange.setEndPoint('EndToStart', range);
-            return range.htmlText.length == 0;
+            var sel = document.selection;
+            if( sel.type == 'Text' )
+            {
+                var range = document.selection.createRange();
+                var textrange = document.body.createTextRange();
+                textrange.moveToElementText(containerNode);
+                textrange.setEndPoint('EndToStart', range);
+                return range.htmlText.length == 0;
+            }
+            if( sel.type == 'Control' ) // e.g. an image selected
+                return false;
         }
         return true;
     };
@@ -316,24 +223,78 @@
             var nodes = [];
             for( var i=0; i < sel.rangeCount; ++i )
             {
-                var range = sel.getRangeAt(i);
-                var node = range.startContainer;
-                var endNode = range.endContainer;
+                var range = sel.getRangeAt(i),
+                    node = range.startContainer,
+                    endNode = range.endContainer;
                 while( node )
                 {
+                    // add this node?
                     if( node != containerNode )
                     {
-                        if( ! sel.containsNode || sel.containsNode(node,true) )
+                        var node_inside_selection = false;
+                        if( sel.containsNode )
+                            node_inside_selection = sel.containsNode( node, true );
+                        else // IE11
+                        {
+                            // http://stackoverflow.com/questions/5884210/how-to-find-if-a-htmlelement-is-enclosed-in-selected-text
+                            var noderange = document.createRange();
+                            noderange.selectNodeContents( node );
+                            for( var i=0; i < sel.rangeCount; ++i )
+                            {
+                                var range = sel.getRangeAt(i);
+                                if( range.compareBoundaryPoints(range.START_TO_START, noderange) <= 0 &&
+                                    range.compareBoundaryPoints(range.END_TO_END, noderange) >= 0 )
+                                {
+                                    node_inside_selection = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if( node_inside_selection )
                             nodes.push( node );
                     }
-                    if( node == endNode )
-                        break;
-                    node = nextNode(node);
+                    node = nextNode( node, node == endNode ? endNode : containerNode );
                 }
             }
-            if( nodes.length == 0 && range.focusNode )
-                nodes.push( range.focusNode );
+            if( nodes.length == 0 && isOrContainsNode(containerNode,sel.focusNode) && sel.focusNode != containerNode )
+                nodes.push( sel.focusNode );
             return nodes;
+        }
+        else if( document.selection )
+        {
+            var sel = document.selection;
+            if( sel.type == 'Text' )
+            {
+                var nodes = [];
+                var range = document.selection.createRange(),
+                    node = containerNode;
+                while( node )
+                {
+                    // add this node?
+                    if( node != containerNode && node.nodeType == Node.ELEMENT_NODE )
+                    {
+                        // http://stackoverflow.com/questions/5884210/how-to-find-if-a-htmlelement-is-enclosed-in-selected-text
+                        var noderange = range.duplicate();
+                        noderange.moveToElementText( node );
+                        if( range.inRange(noderange) )
+                            nodes.push( node );
+                    }
+                    node = nextNode( node, containerNode );
+                }
+                // http://stackoverflow.com/questions/5100640/how-to-get-focus-node-for-ie
+                if( nodes.length == 0 && isOrContainsNode(containerNode,document.activeElement) && document.activeElement != containerNode )
+                    nodes.push( document.activeElement );
+                return nodes;
+            }
+            if( sel.type == 'Control' ) // e.g. an image selected
+            {
+                var nodes = [];
+                // http://msdn.microsoft.com/en-us/library/ie/hh826021%28v=vs.85%29.aspx
+                var range = document.selection.createRange();
+                for( var i=0; i < range.length; ++i )
+                    nodes.push( range(i) );
+                return nodes;
+            }
         }
         return [];
     };
@@ -523,7 +484,7 @@
 
         // IE8 uses 'document' instead of 'window'
         // http://tanalin.com/en/articles/ie-version-js/
-        var window_legacy = (document.all && !document.addEventListener) ? document : window;
+        var window_ie8 = (document.all && !document.addEventListener) ? document : window;
 
         // Sync Editor with Textarea
         var syncTextarea = null;
@@ -555,16 +516,7 @@
                 var node = node_wysiwyg;
                 while( node )
                 {
-                    // node = nextNode(node)
-                    if( node.hasChildNodes() )
-                        node = node.firstChild;
-                    else
-                    {
-                        while( node && node != node_wysiwyg && !node.nextSibling )
-                            node = node.parentNode;
-                        if( node )
-                            node = (node == node_wysiwyg) ? null : node.nextSibling;
-                    }
+                    node = nextNode( node, node_wysiwyg );
                     // Test if node contains something visible
                     if( ! node )
                         ;
@@ -596,84 +548,94 @@
         }
 
         // Handle selection
-        var saved_selection = null; // preserve selection
-        var handleSelection = null,
+        var popup_saved_selection = null, // preserve selection during popup
+            handleSelection = null,
             debounced_handleSelection = null;
         if( option_onselection )
         {
             handleSelection = function( x, y, rightclick )
             {
-                // getBoundingClientRect() is viewport, so we better walk the tree
-                var wysiwygLeft = 0,
-                    wysiwygTop = 0,
-                    wysiwygWidth = node_wysiwyg.offsetWidth,
-                    wysiwygHeight = node_wysiwyg.offsetHeight;
-                var iterator = node_wysiwyg;
-                do {
-                    if( !isNaN(iterator.offsetLeft) )
-                        wysiwygLeft += iterator.offsetLeft;
-                    if( !isNaN(iterator.offsetTop) )
-                        wysiwygTop += iterator.offsetTop;
-                }
-                while( iterator = iterator.offsetParent );
-                // Rectangle of the selection
-                var rect = {
-                    left: x,
-                    top: y,
-                    width: 0,
-                    height: 0
-                };
                 // Detect collapsed selection
                 var collapsed = getSelectionCollapsed( node_wysiwyg );
-                if( collapsed )
-                {
-                    saved_selection = null;
-                    if( rect.x === false || rect.y === false )
-                        return ;
-                }
-                else
-                {
-                    // Rectangle of the selection
-                    var selectionRect = getSelectionRect();
-                    if( selectionRect )
-                        rect = selectionRect;
-                }
-                // Trim rectangle to the editor
-                if( rect.left < wysiwygLeft )
-                {
-                    rect.width -= (wysiwygLeft - rect.left);
-                    rect.left = wysiwygLeft;
-                }
-                if( (rect.left + rect.width) > (wysiwygLeft + wysiwygWidth) )
-                {
-                    if( rect.left > (wysiwygLeft + wysiwygWidth) )
-                    {
-                        rect.left = wysiwygLeft;
-                        rect.width = 0;
-                    }
-                    else
-                        rect.width = (wysiwygLeft + wysiwygWidth) - rect.left;
-                }
-                if( rect.top < wysiwygTop )
-                {
-                    rect.height -= (wysiwygTop - rect.top);
-                    rect.top = wysiwygTop;
-                }
-                if( (rect.top + rect.height) > (wysiwygTop + wysiwygHeight) )
-                {
-                    if( rect.top > (wysiwygTop + wysiwygHeight) )
-                    {
-                        rect.top = wysiwygTop;
-                        rect.height = 0;
-                    }
-                    else
-                        rect.height = (wysiwygTop + wysiwygHeight) - rect.top;
-                }
                 // List of all selected nodes
                 var nodes = getSelectedNodes( node_wysiwyg );
+                // Rectangle of the selection
+                var rect = (x === null || y === null) ? null :
+                            {
+                                left: x,
+                                top: y,
+                                width: 0,
+                                height: 0
+                            };
+                var selectionRect = getSelectionRect();
+                if( selectionRect )
+                    rect = {
+                        left: Math.round( selectionRect.left ),
+                        top: Math.round( selectionRect.top ),
+                        width: Math.round( selectionRect.width ),
+                        height: Math.round( selectionRect.height )
+                    };
+                if( rect )
+                {
+                    // getBoundingClientRect() is viewport, so we better walk the tree
+                    var wysiwygLeft = 0,
+                        wysiwygTop = 0,
+                        wysiwygWidth = node_wysiwyg.offsetWidth,
+                        wysiwygHeight = node_wysiwyg.offsetHeight;
+                    var iterator = node_wysiwyg;
+                    do {
+                        if( !isNaN(iterator.offsetLeft) )
+                            wysiwygLeft += iterator.offsetLeft;
+                        if( !isNaN(iterator.offsetTop) )
+                            wysiwygTop += iterator.offsetTop;
+                    }
+                    while( iterator = iterator.offsetParent );
+                    // Trim rectangle to the editor
+                    if( rect.left < wysiwygLeft )
+                        rect.left = wysiwygLeft;
+                    if( rect.top < wysiwygTop )
+                        rect.top = wysiwygTop;
+                    if( (rect.left + rect.width) > (wysiwygLeft + wysiwygWidth) )
+                    {
+                        if( rect.left > (wysiwygLeft + wysiwygWidth) )
+                        {
+                            rect.left = wysiwygLeft + wysiwygWidth;
+                            rect.width = 0;
+                        }
+                        else
+                            rect.width = (wysiwygLeft + wysiwygWidth) - rect.left;
+                    }
+                    if( (rect.top + rect.height) > (wysiwygTop + wysiwygHeight) )
+                    {
+                        if( rect.top > (wysiwygTop + wysiwygHeight) )
+                        {
+                            rect.top = wysiwygTop + wysiwygHeight;
+                            rect.height = 0;
+                        }
+                        else
+                            rect.height = (wysiwygTop + wysiwygHeight) - rect.top;
+                    }
+                    rect.left -= wysiwygLeft;
+                    rect.top -= wysiwygTop;
+                }
+                else if( nodes.length )
+                {
+                    // What else could we do? Offset of first element...
+                    for( var i=0; i < nodes.length; ++i )
+                    {
+                        var node = nodes[i];
+                        if( node.nodeType != Node.ELEMENT_NODE )
+                            continue;
+                        rect = {
+                                left: node.offsetLeft,
+                                top: node.offsetTop,
+                                width: node.offsetWidth,
+                                height: node.offsetHeight
+                            };
+                        break;
+                    }
+                }
                 // Callback
-                rect.left -= wysiwygLeft;
-                rect.top -= wysiwygTop;
                 option_onselection( collapsed, rect, nodes, rightclick );
             };
             debounced_handleSelection = debounce( handleSelection, 1 );
@@ -695,19 +657,17 @@
             // Click within popup?
             if( isOrContainsNode(node_popup,target) )
                 return ;
+            // close popup
             popupClose();
         };
         var popupOpen = function()
         {
-            // Save selection
-            saved_selection = saveSelection( node_wysiwyg );
-
             // Already open?
             if( node_popup )
                 return node_popup;
 
             // Global click closes popup
-            addEvent( window_legacy, 'mousedown', popupClickClose );
+            addEvent( window_ie8, 'mousedown', popupClickClose );
 
             // Create popup element
             node_popup = document.createElement( 'DIV' );
@@ -721,7 +681,7 @@
                 return ;
             node_popup.parentNode.removeChild( node_popup );
             node_popup = null;
-            removeEvent( window_legacy, 'mousedown', popupClickClose );
+            removeEvent( window_ie8, 'mousedown', popupClickClose );
         };
 
         // Focus/Blur events
@@ -806,7 +766,11 @@
             }
             // Keys can change the selection
             if( phase == 2 || phase == 3 )
-                debounced_handleSelection( false, false, false );
+            {
+                popup_saved_selection = null;
+                if( debounced_handleSelection )
+                    debounced_handleSelection( null, null, false );
+            }
             // Most keys can cause changes
             if( phase == 2 && debounced_changeHandler )
             {
@@ -868,15 +832,17 @@
                 rightclick = true;
 
             // remove event handler
-            removeEvent( window_legacy, 'mouseup', mouseHandler );
+            removeEvent( window_ie8, 'mouseup', mouseHandler );
             // Callback selection
-            debounced_handleSelection( posx, posy, rightclick );
+            popup_saved_selection = null;
+            if( debounced_handleSelection )
+                debounced_handleSelection( posx, posy, rightclick );
         };
         addEvent( node_wysiwyg, 'mousedown', function(e)
         {
             // catch event if 'mouseup' outside 'node_wysiwyg'
-            removeEvent( window_legacy, 'mouseup', mouseHandler );
-            addEvent( window_legacy, 'mouseup', mouseHandler );
+            removeEvent( window_ie8, 'mouseup', mouseHandler );
+            addEvent( window_ie8, 'mouseup', mouseHandler );
         });
         addEvent( node_wysiwyg, 'mouseup', function(e)
         {
@@ -910,11 +876,19 @@
         // exec command
         // https://developer.mozilla.org/en-US/docs/Web/API/document.execCommand
         // http://www.quirksmode.org/dom/execCommand.html
-        var execCommand = function( command, param, focus )
+        var execCommand = function( command, param, skip_focus_restore_selection )
         {
-            // give focus to editor
-            if( focus !== false )
+            // give focus and selection to contenteditable element
+            if( ! skip_focus_restore_selection )
+            {
+                // Safari 5 selects the whole element on focus
+                var saved_sel = popup_saved_selection;
+                if( ! saved_sel )
+                    saved_sel = saveSelection( node_wysiwyg );
                 node_wysiwyg.focus();
+                if( saved_sel )
+                    restoreSelection( node_wysiwyg, saved_sel );
+            }
             // for webkit, mozilla, opera
             if( window.getSelection )
             {
@@ -957,20 +931,20 @@
         };
 
         // Command structure
-        var callUpdates = function( selectionPreserved )
+        var callUpdates = function( selection_destroyed )
         {
             if( showPlaceholder )
                 showPlaceholder();
             if( syncTextarea )
                 syncTextarea();
             // handle saved selection
-            if( selectionPreserved )
-                saved_selection = getSelectionCollapsed( node_wysiwyg ) ? null : saveSelection( node_wysiwyg );
-            else 
+            if( selection_destroyed )
             {
                 collapseSelectionEnd();
-                saved_selection = null;
+                popup_saved_selection = null; // selection destroyed
             }
+            else if( popup_saved_selection )
+                popup_saved_selection = saveSelection( node_wysiwyg );
         };
         return {
             // properties
@@ -985,18 +959,20 @@
             setHTML: function( html )
             {
                 node_wysiwyg.innerHTML = html;
-                callUpdates( false ); // selection destroyed
+                callUpdates( true ); // selection destroyed
                 return this;
             },
             // selection and popup
             collapseSelection: function()
             {
                 collapseSelectionEnd();
-                saved_selection = null; // selection destroyed
+                popup_saved_selection = null; // selection destroyed
                 return this;
             },
             openPopup: function()
             {
+                if( ! popup_saved_selection )
+                    popup_saved_selection = saveSelection( node_wysiwyg ); // save current selection
                 return popupOpen();
             },
             closePopup: function()
@@ -1007,75 +983,67 @@
             // exec commands
             markup: function( styleWithCSS, insertBrOnReturn )
             {
-                execCommand( 'styleWithCSS', styleWithCSS, false ); // ignore 'useCSS'
-                execCommand( 'insertBrOnReturn', insertBrOnReturn, false );
-                //execCommand( 'enableInlineTableEditing', enableInlineTableEditing, false );
-                //execCommand( 'enableObjectResizing', enableObjectResizing, false );
+                // This should be document-wide, so we don't need to set the focus
+                execCommand( 'styleWithCSS', styleWithCSS, true ); // ignore 'useCSS'
+                execCommand( 'insertBrOnReturn', insertBrOnReturn, true );
+                //execCommand( 'enableInlineTableEditing', enableInlineTableEditing, true );
+                //execCommand( 'enableObjectResizing', enableObjectResizing, true );
                 return this;
             },
             removeFormat: function()
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 execCommand( 'removeFormat' );
-                execCommand( 'unlink' );
-                callUpdates( true );
+                execCommand( 'unlink', true );
+                callUpdates();
                 return this;
             },
             bold: function()
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 execCommand( 'bold' );
-                callUpdates( true );
+                callUpdates();
                 return this;
             },
             italic: function()
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 execCommand( 'italic' );
-                callUpdates( true );
+                callUpdates();
                 return this;
             },
             underline: function()
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 execCommand( 'underline' );
-                callUpdates( true );
+                callUpdates();
                 return this;
             },
             strikethrough: function()
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 execCommand( 'strikeThrough' );
-                callUpdates( true );
+                callUpdates();
                 return this;
             },
             forecolor: function( color )
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 execCommand( 'foreColor', color );
-                callUpdates( true );
+                callUpdates();
                 return this;
             },
             highlight: function( color )
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 // http://stackoverflow.com/questions/2756931/highlight-the-text-of-the-dom-range-element
                 if( ! execCommand('hiliteColor',color) ) // some browsers apply 'backColor' to the whole block
-                    execCommand( 'backColor', color );
-                callUpdates( true );
+                    execCommand( 'backColor', color, true );
+                callUpdates();
                 return this;
             },
             font: function( name, size )
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 execCommand( 'fontName', name );
                 execCommand( 'fontSize', size );
-                callUpdates( true );
+                callUpdates();
                 return this;
             },
             align: function( align )
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 if( align == 'left' )
                     execCommand( 'justifyLeft' );
                 else if( align == 'center' )
@@ -1084,48 +1052,43 @@
                     execCommand( 'justifyRight' );
                 else if( align == 'justify' )
                     execCommand( 'justifyFull' );
-                callUpdates( true );
+                callUpdates();
                 return this;
             },
             insertLink: function( url )
             {
                 // http://stackoverflow.com/questions/5605401/insert-link-in-contenteditable-element
-                restoreSelection( node_wysiwyg, saved_selection );
                 execCommand( 'createLink', url );
-                callUpdates( true );
+                callUpdates();
                 return this;
             },
             insertImage: function( url )
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 execCommand( 'insertImage', url );
-                callUpdates( false ); // selection destroyed
+                callUpdates( true ); // selection destroyed
                 return this;
             },
             insertHTML: function( html )
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 if( ! execCommand('insertHTML', html) )
                 {
                     // IE 11 still does not support 'insertHTML'
-                    restoreSelection( node_wysiwyg, saved_selection );
+                    restoreSelection( node_wysiwyg, popup_saved_selection );
                     pasteHtmlAtCaret( node_wysiwyg, html );
                 }
-                callUpdates( false ); // selection destroyed
+                callUpdates( true ); // selection destroyed
                 return this;
             },
             insertOrderedList: function()
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 execCommand( 'insertOrderedList' );
-                callUpdates( false ); // selection destroyed
+                callUpdates( true ); // selection destroyed
                 return this;
             },
             insertUnorderedList: function()
             {
-                restoreSelection( node_wysiwyg, saved_selection );
                 execCommand( 'insertUnorderedList' );
-                callUpdates( false ); // selection destroyed
+                callUpdates( true ); // selection destroyed
                 return this;
             }
         };

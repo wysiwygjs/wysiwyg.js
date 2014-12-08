@@ -19,12 +19,13 @@
 
     // Create the Editor
     var create_editor = function( $textarea, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_smilies, label_dropfileclick,
-                                  content_styleWithCSS, content_insertBrOnReturn, onEnterSubmit )
+                                  content_styleWithCSS, content_insertBrOnReturn, onImageUpload, onEnterSubmit )
     {
         // Content: Smilies
         var content_smilies = function(wysiwygeditor)
         {
-            var $content = $('<div/>').addClass('wysiwyg-toolbar-feature wysiwyg-toolbar-smilies');
+            var $content = $('<div/>').addClass('wysiwyg-toolbar-feature wysiwyg-toolbar-smilies')
+                                      .attr('unselectable','on');
             var smiley_sum_width = 0;
             $.each( toolbar_smilies, function(index,smiley){
                 if( index != 0 )
@@ -46,7 +47,8 @@
                         image_height = smiley_max_height;
                     }
                     $image.attr('width',image_width)
-                          .attr('height',image_height);
+                          .attr('height',image_height)
+                          .attr('unselectable','on');
                 }
                 // Append smiley
                 var imagehtml = ' '+$('<div/>').append($image.clone()).html()+' ';
@@ -68,7 +70,7 @@
         {
             var $button = toolbar_button( toolbar_submit );
             var $inputurl = $('<input type="text" value="" placeholder="'+placeholder_url+'" />').addClass('wysiwyg-input')
-                                .keyup(function(event){
+                                .keypress(function(event){
                                     if( event.which == 10 || event.which == 13 )
                                         wysiwygeditor.insertLink( $inputurl.val() ).closePopup().collapseSelection();
                                 });
@@ -78,7 +80,8 @@
                                     event.preventDefault();
                                     return false;
                                 });
-            var $content = $('<div/>').addClass('wysiwyg-toolbar-feature');
+            var $content = $('<div/>').addClass('wysiwyg-toolbar-feature')
+                                      .attr('unselectable','on');
             $content.append($inputurl).append($okaybutton);
             return $content;
         };
@@ -89,7 +92,7 @@
             // Add image to editor
             var insert_image_wysiwyg = function( url, filename )
             {
-                var html = '<img id="wysiwyg-insert-image" src="" alt="" title="'+filename+'" />';
+                var html = '<img id="wysiwyg-insert-image" src="" alt=""' + (filename ? ' title="'+filename.replace(/"/,'')+'"' : '') + ' />';
                 wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
                 $('#wysiwyg-insert-image')
                         .removeAttr('id')
@@ -118,9 +121,13 @@
                         .attr('src', url);
             };
             // Create popup
-            var $content = $('<div/>').addClass('wysiwyg-toolbar-feature');
+            var $content = $('<div/>').addClass('wysiwyg-toolbar-feature')
+                                      .attr('unselectable','on');
+            // Add image via 'Browse...'
+            var $fileuploader = null;
             if( window.File && window.FileReader && window.FileList )
             {
+                // File-API
                 var loadImageFromFile = function( file )
                 {
                     // Only process image files
@@ -135,8 +142,39 @@
                     // Read in the image file as a data URL
                     reader.readAsDataURL( file );
                 };
-                var $fileuploader = $('<input type="file" />')
-                                        .attr('draggable','true')
+                $fileuploader = $('<input type="file" />')
+                                    .attr('draggable','true')
+                                    .css({position: 'absolute',
+                                            left: 0,
+                                            top: 0,
+                                            width: '100%',
+                                            height: '100%',
+                                            opacity: 0,
+                                            cursor: 'pointer'})
+                                    .change(function(event){
+                                        var files = event.target.files; // FileList object
+                                        for(var i=0; i < files.length; ++i)
+                                            loadImageFromFile( files[i] );
+                                    })
+                                    .on('dragover',function(event){
+                                        event.originalEvent.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+                                        event.stopPropagation();
+                                        event.preventDefault();
+                                        return false;
+                                    })
+                                    .on('drop', function(event){
+                                        var files = event.originalEvent.dataTransfer.files; // FileList object.
+                                        for(var i=0; i < files.length; ++i)
+                                            loadImageFromFile( files[i] );
+                                        event.stopPropagation();
+                                        event.preventDefault();
+                                        return false;
+                                    });
+            }
+            else if( onImageUpload )
+            {
+                // Upload image to a server
+                var $input = $('<input type="file" />')
                                         .css({position: 'absolute',
                                               left: 0,
                                               top: 0,
@@ -145,33 +183,19 @@
                                               opacity: 0,
                                               cursor: 'pointer'})
                                         .change(function(event){
-                                            var files = event.target.files; // FileList object
-                                            for(var i=0; i < files.length; ++i)
-                                                loadImageFromFile( files[i] );
-                                        })
-                                        .on('dragover',function(event){
-                                            event.originalEvent.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-                                            event.stopPropagation();
-                                            event.preventDefault();
-                                            return false;
-                                        })
-                                        .on('drop', function(event){
-                                            var files = event.originalEvent.dataTransfer.files; // FileList object.
-                                            for(var i=0; i < files.length; ++i)
-                                                loadImageFromFile( files[i] );
-                                            event.stopPropagation();
-                                            event.preventDefault();
-                                            return false;
+                                            onImageUpload.call( this, insert_image_wysiwyg );
                                         });
-                var filelabel = $('<div/>').addClass( 'wysiwyg-browse' )
-                                           .html( label_dropfileclick )
-                                           .append( $fileuploader )
-                                           .appendTo( $content );
+                $fileuploader = $('<form/>').append($input);
             }
-            // Image via URL
+            if( $fileuploader )
+                $('<div/>').addClass( 'wysiwyg-browse' )
+                           .html( label_dropfileclick )
+                           .append( $fileuploader )
+                           .appendTo( $content );
+            // Add image via 'URL'
             var $button = toolbar_button( toolbar_submit );
             var $inputurl = $('<input type="text" value="" placeholder="'+placeholder_url+'" />').addClass('wysiwyg-input')
-                                .keyup(function(event){
+                                .keypress(function(event){
                                     if( event.which == 10 || event.which == 13 )
                                         insert_image_wysiwyg( $inputurl.val() );
                                 });
@@ -188,7 +212,8 @@
         // Content: Color palette
         var content_colorpalette = function( wysiwygeditor, forecolor )
         {
-            var $content = $('<div/>').addClass('wysiwyg-toolbar-feature');
+            var $content = $('<div/>').addClass('wysiwyg-toolbar-feature')
+                                      .attr('unselectable','on');
             $.each( colors, function(index,color){
                 if(!color)
                 {
@@ -198,6 +223,7 @@
                 $('<a/>').addClass('wysiwyg-color')
                         .attr('href','#')
                         .attr('title', color)
+                        .attr('unselectable','on')
                         .css({backgroundColor: color})
                         .click(function(){
                             if( forecolor )
@@ -359,17 +385,35 @@
                             case 's': wysiwygeditor.strikethrough(); // .closePopup().collapseSelection()
                                       return false;
                         }
-                    },
-                onselection: function( collapsed, rect, nodes, rightclick )
+                    }
+            };
+            if( placeholder )
+            {
+                var $placeholder = $('<div/>').addClass( 'wysiwyg-placeholder' )
+                                              .html( placeholder )
+                                              .hide();
+                $container.prepend( $placeholder );
+                option.onplaceholder = function( visible ) {
+                    if( visible )
+                        $placeholder.show();
+                    else
+                        $placeholder.hide();
+                };
+            }
+            if( toolbar_position == 'top-selection' || toolbar_position == 'bottom-selection' || toolbar_position == 'selection' )
+            {
+                option.onselection = function( collapsed, rect, nodes, rightclick )
                     {
                         // Selection properties
-                        if( ! rightclick )
+                        if( rect === undefined || ! rightclick )
                         {
-                            if( collapsed )
+                            // Nothing selected?
+                            if( collapsed || rect === undefined )
                             {
                                 wysiwygeditor.closePopup().collapseSelection();
                                 return ;
                             }
+                            // Only one image?
                             if( nodes.length == 1 && nodes.shift().nodeName == 'IMG' )
                             {
                                 wysiwygeditor.closePopup();
@@ -399,30 +443,19 @@
                             // add Classes
                             $toolbar.addClass( 'wysiwyg-popup wysiwyg-arrowtop' );
                             // add Buttons
+                            var simplify_selection_toolbar = toolbar_position == 'top-selection' || toolbar_position == 'bottom-selection';
                             add_buttons_to_toolbar( $toolbar, function( $content )
                             {
                                 $toolbar.empty().append( $content );
                                 $toolbar.find('input[type=text]:first').focus();
                                 apply_toolbar_position();
-                            }, toolbar_position != 'none' ); // simplify if a toolbar
+                            }, simplify_selection_toolbar );
                         }
                         // Toolbar position
                         apply_toolbar_position();
-                    }
-            };
-            if( placeholder )
-            {
-                var $placeholder = $('<div/>').addClass( 'wysiwyg-placeholder' )
-                                              .html( placeholder )
-                                              .hide();
-                $container.prepend( $placeholder );
-                option.onplaceholder = function( visible ) {
-                    if( visible )
-                        $placeholder.show();
-                    else
-                        $placeholder.hide();
-                };
+                    };
             }
+
             var wysiwygeditor = wysiwyg( option );
             if( wysiwygeditor && (content_styleWithCSS !== undefined || content_insertBrOnReturn !== undefined) )
                 wysiwygeditor.markup( content_styleWithCSS || false, content_insertBrOnReturn || false );
@@ -458,9 +491,10 @@
             $(wysiwygeditor.getElement()).addClass( 'wysiwyg-editor' );
 
         // Toolbar top or bottom
-        if( toolbar_position != 'none' )
+        if( toolbar_position != 'selection' )
         {
-            var $toolbar = $('<div/>').addClass( toolbar_position == 'top' ? 'wysiwyg-toolbar-top' : 'wysiwyg-toolbar-bottom' );
+            var toolbar_top = toolbar_position == 'top' || toolbar_position == 'top-selection';
+            var $toolbar = $('<div/>').addClass( toolbar_top ? 'wysiwyg-toolbar-top' : 'wysiwyg-toolbar-bottom' );
             add_buttons_to_toolbar( $toolbar, function( $content ){
                 // Open a popup from the toolbar
                 var handle = wysiwygeditor.openPopup();
@@ -471,7 +505,7 @@
                 var offset = $button.offset();
                 var left = Math.max( offset.left - ($toolbar.width() / 2), 0 ) + ($button.width() / 2);
                 var top = offset.top;
-                if( toolbar_position == 'top' )
+                if( toolbar_top )
                     top += $button.height();
                 else
                     top -= $toolbar.height();
@@ -481,7 +515,7 @@
                              });
                 $toolbar.find('input[type=text]:first').focus();
             });
-            if( toolbar_position == 'top' )
+            if( toolbar_top )
                 $container.prepend( $toolbar );
             else
                 $container.append( $toolbar );
@@ -502,18 +536,19 @@
 
                 // Two modes: toolbar on top and on bottom
                 var placeholder = option.placeholder || $that.attr('placeholder');
-                var toolbar_position = (option.position && (option.position == 'none' || option.position == 'bottom')) ? option.position : 'top';
+                var toolbar_position = (option.position && (option.position == 'top' || option.position == 'top-selection' || option.position == 'bottom' || option.position == 'bottom-selection' || option.position == 'selection')) ? option.position : 'top-selection';
                 var toolbar_buttons = option.buttons;
                 var toolbar_submit = option.submit;
                 var toolbar_smilies = option.smilies;
                 var label_dropfileclick = option.dropfileclick;
                 var content_styleWithCSS = option.styleWithCSS;
                 var content_insertBrOnReturn = option.insertBrOnReturn;
+                var onImageUpload = option.onImageUpload;
                 var onEnterSubmit = option.onEnterSubmit;
 
                 // Create the WYSIWYG Editor
                 create_editor( $that, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_smilies, label_dropfileclick,
-                               content_styleWithCSS, content_insertBrOnReturn, onEnterSubmit );
+                               content_styleWithCSS, content_insertBrOnReturn, onImageUpload, onEnterSubmit );
             });
         }
         else if( this.length == 1 )

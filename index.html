@@ -13,7 +13,7 @@ $(document).ready(function(){
     $('#editor1,#editor2,#editor3').each( function(index, element)
     {
         $(element).wysiwyg({
-            position: index == 0 ? 'top' : (index == 1 ? 'bottom' : 'none'),
+            position: index == 0 ? 'top-selection' : (index == 1 ? 'bottom' : 'selection'),
             buttons: {
                 submit: index == 1 ? {
                     html: '<input id="submit" type="submit" value="submit" />',
@@ -154,12 +154,22 @@ $(document).ready(function(){
                     '<img src="smiley/uhm-yeah.png" width="16" height="16" alt="" />',
                     '<img src="smiley/wink.png" width="16" height="16" alt="" />',
                     '<img src="smiley/working.png" width="16" height="16" alt="" />',
-                    '<img src="smiley/writing.png" width="16" height="16" alt="" />',
-                    '<img src="smiley/" width="16" height="16" alt="" />'
+                    '<img src="smiley/writing.png" width="16" height="16" alt="" />'
             ],
             dropfileclick: 'Drop image or click',
             styleWithCSS: true,
             insertBrOnReturn: true,
+            /*
+            onImageUpload: function( insert_image ) {
+                                // A bit tricky, because we can't easily upload a file
+                                // via '$.ajax()' on a legacy browser.
+                                // You have to submit the form into to a '<iframe/>' element.
+                                // Best way to do: http://malsup.com/jquery/form/
+                                // Call 'insert_image(url)' as soon as the file is online.
+                                // Not many people need this, so this is not part of
+                                // this demo.
+                            },
+            */
             onEnterSubit: function() {
                                 return true; // don't swallow enter...
                             }
@@ -186,8 +196,8 @@ $(document).ready(function(){
                             console.log( 'RAW: '+character+' key pressed' );
                     },
         onselection: function( collapsed, rect, nodes, rightclick ) {
-                        if( typeof console != 'undefined' )
-                            console.log( 'RAW: selection rect('+selectionRect.left+','+selectionRect.top+','+selectionRect.width+','+selectionRect.height+'), '+nodes.length+' nodes' );
+                        if( typeof console != 'undefined' && rect )
+                            console.log( 'RAW: selection rect('+rect.left+','+rect.top+','+rect.width+','+rect.height+'), '+nodes.length+' nodes' );
                     },
         onplaceholder: function( visible ) {
                         if( typeof console != 'undefined' )
@@ -242,7 +252,7 @@ p {
 <h1><center>Examples:</center></h1>
 
 <div style="width:800px; margin: 30px auto;">
-  <div style="color:#aa0000;font-weight:bold">Complete: Toolbar on top:</div>
+  <div style="color:#aa0000;font-weight:bold">Complete: Toolbar on top + on toolbar selection:</div>
   <textarea id="editor1" name="editor" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
@@ -251,7 +261,7 @@ p {
 </div>
 
 <div style="width:800px; margin: 30px auto;">
-  <div style="color:#aa0000;font-weight:bold">Complete: Toolbar on bottom + submit-button:</div>
+  <div style="color:#aa0000;font-weight:bold">Complete: Toolbar on bottom + submit-button, no selection-toolbar:</div>
   <textarea id="editor1" name="editor" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
@@ -260,7 +270,7 @@ p {
 </div>
 
 <div style="width:800px; margin: 30px auto;">
-  <div style="color:#aa0000;font-weight:bold">Complete: Toolbar on selection:</div>
+  <div style="color:#aa0000;font-weight:bold">Complete: Toolbar only on selection:</div>
   <textarea id="editor3" name="editor" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.

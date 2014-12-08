@@ -75,14 +75,15 @@ $.wysiwyg()-API:
 ````
 var $editor = $('#editor').wysiwyg({
     placeholder: 'Type your text here...',
-    position: 'none'|'top'|'bottom',
+    position: 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection',
     buttons = { ... },
     submit = { ... },
     smilies = { ... },
     dropfileclick: 'Click or drop image',
     styleWithCSS: false,
     insertBrOnReturn: false,
-    onEnterSubmit = function()
+    onImageUpload: function( insert_image ),
+    onEnterSubmit: function()
 })
 .focus(function(){})
 .blur(function(){})
