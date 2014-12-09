@@ -54,12 +54,6 @@
         }
     };
 
-    // http://stackoverflow.com/questions/13377887/javascript-node-undefined-in-ie8-and-under
-    var Node = Node || {
-        ELEMENT_NODE: 1,
-        TEXT_NODE: 3
-    };
-
     // http://stackoverflow.com/questions/2234979/how-to-check-in-javascript-if-one-element-is-a-child-of-another
     var isOrContainsNode = function( ancestor, descendant )
     {
@@ -271,7 +265,7 @@
                 while( node )
                 {
                     // add this node?
-                    if( node != containerNode && node.nodeType == Node.ELEMENT_NODE )
+                    if( node != containerNode && node.nodeType == 1 ) // Node.ELEMENT_NODE
                     {
                         // http://stackoverflow.com/questions/5884210/how-to-find-if-a-htmlelement-is-enclosed-in-selected-text
                         var noderange = range.duplicate();
@@ -319,6 +313,111 @@
                 range.select();
             }
         }
+    };
+
+    // http://stackoverflow.com/questions/4652734/return-html-from-a-user-selected-text/4652824#4652824
+    var getSelectionHtml = function( containerNode )
+    {
+        if( getSelectionCollapsed( containerNode ) )
+            return false;
+        if( window.getSelection )
+        {
+            var sel = window.getSelection();
+            if( sel.rangeCount )
+            {
+                var container = document.createElement('div'),
+                    len = sel.rangeCount;
+                for( var i=0; i < len; ++i )
+                {
+                    var contents = sel.getRangeAt(i).cloneContents();
+                    container.appendChild(contents);
+                }
+                return container.innerHTML;
+            }
+        }
+        else if( document.selection )
+        {
+            var sel = document.selection;
+            if( sel.type == 'Text' )
+            {
+                var range = sel.createRange();
+                return range.htmlText;
+            }
+        }
+        return false;
+    };
+
+    var clipSelectionTo = function( containerNode )
+    {
+        if( window.getSelection )
+        {
+            var sel = window.getSelection();
+            var left_node = sel.anchorNode,
+                left_offset = sel.anchorOffset,
+                right_node = sel.focusNode,
+                right_offset = sel.focusOffset;
+            // http://stackoverflow.com/questions/10710733/dom-determine-if-the-anchornode-or-focusnode-is-on-the-left-side
+            if( (left_node == right_node && left_offset > right_offset) ||
+                (left_node.compareDocumentPosition(right_node) & Node.DOCUMENT_POSITION_PRECEDING) )
+            {
+                // Right-to-left selection
+                left_node = sel.focusNode;
+                left_offset = sel.focusOffset;
+                right_node = sel.anchorNode,
+                right_offset = sel.anchorOffset;
+            }
+            // Speed up: selection inside editor
+            var left_inside = isOrContainsNode(containerNode,left_node),
+                right_inside = isOrContainsNode(containerNode,right_node);
+            if( left_inside && right_inside )
+                return true;
+            // Selection before/after container?
+            if( ! left_inside && containerNode.compareDocumentPosition(left_node) & Node.DOCUMENT_POSITION_FOLLOWING )
+                return false; // selection after
+            if( ! right_inside && containerNode.compareDocumentPosition(right_node) & Node.DOCUMENT_POSITION_PRECEDING )
+                return false; // selection before
+            // Selection partly before/after container
+            // http://stackoverflow.com/questions/12243898/how-to-select-all-text-in-contenteditable-div
+            var range = document.createRange();
+            range.selectNodeContents( containerNode );
+            if( left_inside )
+                range.setStart( left_node, left_offset );
+            if( right_inside )
+                range.setEnd( right_node, right_offset );
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+            return true;
+        }
+        else if( document.selection )
+        {
+            var sel = document.selection;
+            if( sel.type == 'Text' )
+            {
+                // Range of container
+                // http://stackoverflow.com/questions/12243898/how-to-select-all-text-in-contenteditable-div
+                var rangeContainer = document.body.createTextRange();
+                rangeContainer.moveToElementText(containerNode);
+                // Compare with selection range
+                var range = sel.createRange();
+                if( rangeContainer.inRange(range) )
+                    return true;
+                // Selection before/after container?
+                if( rangeContainer.compareEndPoints('StartToEnd',range) > 0 )
+                    return false;
+                if( rangeContainer.compareEndPoints('EndToStart',range) < 0 )
+                    return false;
+                // Selection partly before/after container
+                if( rangeContainer.compareEndPoints('StartToStart',range) > 0 )
+                    range.setEndPoint('StartToStart',rangeContainer);
+                if( rangeContainer.compareEndPoints('EndToEnd',range) < 0 )
+                    range.setEndPoint('EndToEnd',rangeContainer);
+                // select range
+                range.select();
+                return true;
+            }
+        }
+        return true;
     };
 
     // http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div/6691294#6691294
@@ -441,6 +540,7 @@
                         node_textarea.value = newlineAfterBR( html );
                         return this;
                     },
+                    getSelectedHTML: dummy,
                     // selection and popup
                     collapseSelection: dummy,
                     openPopup: dummy,
@@ -521,7 +621,7 @@
                     // Test if node contains something visible
                     if( ! node )
                         ;
-                    else if( node.nodeType == Node.ELEMENT_NODE )
+                    else if( node.nodeType == (Node ? Node.ELEMENT_NODE : 1) )
                     {
                         if( node.nodeName == 'IMG' )
                         {
@@ -529,7 +629,7 @@
                             break;
                         }
                     }
-                    else if( node.nodeType == Node.TEXT_NODE )
+                    else if( node.nodeType == (Node ? Node.TEXT_NODE : 3) )
                     {
                         var text = node.nodeValue;
                         if( text && text.search(/[^\s]/) != -1 )
@@ -625,7 +725,7 @@
                     for( var i=0; i < nodes.length; ++i )
                     {
                         var node = nodes[i];
-                        if( node.nodeType != Node.ELEMENT_NODE )
+                        if( node.nodeType != (Node ? Node.ELEMENT_NODE : 1) )
                             continue;
                         rect = {
                                 left: node.offsetLeft,
@@ -653,7 +753,7 @@
                 target = e.target;
             else if( e.srcElement )
                 target = e.srcElement;
-            if( target.nodeType == Node.TEXT_NODE ) // defeat Safari bug
+            if( target.nodeType == (Node ? Node.TEXT_NODE : 3) ) // defeat Safari bug
                 target = target.parentNode;
             // Click within popup?
             if( isOrContainsNode(node_popup,target) )
@@ -887,13 +987,18 @@
             // give focus and selection to contenteditable element
             if( ! skip_focus_restore_selection )
             {
-                // Safari 5 selects the whole element on focus
+                /*
                 var saved_sel = popup_saved_selection;
                 if( ! saved_sel )
                     saved_sel = saveSelection( node_wysiwyg );
-                node_wysiwyg.focus();
+                node_wysiwyg.focus(); // Safari 5 selects the whole element on focus
                 if( saved_sel )
                     restoreSelection( node_wysiwyg, saved_sel );
+                */
+                restoreSelection( node_wysiwyg, popup_saved_selection );
+                var selection_inside = clipSelectionTo( node_wysiwyg );
+                if( ! selection_inside )
+                    return false;
             }
             // for webkit, mozilla, opera
             if( window.getSelection )
@@ -967,6 +1072,11 @@
                 node_wysiwyg.innerHTML = html;
                 callUpdates( true ); // selection destroyed
                 return this;
+            },
+            getSelectedHTML: function()
+            {
+                restoreSelection( node_wysiwyg, popup_saved_selection );
+                return getSelectionHtml( node_wysiwyg );
             },
             // selection and popup
             collapseSelection: function()
@@ -1063,10 +1173,6 @@
             },
             insertLink: function( url )
             {
-                // If no selection use link as link-text
-                restoreSelection( node_wysiwyg, popup_saved_selection );
-                if( getSelectionCollapsed() )
-                    return this.insertHTML( '<a href="'+url.replace(/"/,'&quot;')+'">'+url+'</a>' );
                 execCommand( 'createLink', url );
                 callUpdates();
                 return this;

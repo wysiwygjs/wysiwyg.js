@@ -66,16 +66,26 @@
         };
 
         // Content: Insert link
+        var wysiwygeditor_insertLink = function( wysiwygeditor, url )
+        {
+            if( ! url )
+                return wysiwygeditor;
+            var selectedhtml = wysiwygeditor.getSelectedHTML();
+            if( selectedhtml )
+                return wysiwygeditor.insertLink( url );
+            var html = '<a href="' + url.replace(/"/,'&quot;') + '">' + url + '</a>';
+            return wysiwygeditor.insertHTML( html );
+        };
         var content_insertlink = function(wysiwygeditor)
         {
             var $button = toolbar_button( toolbar_submit );
             var $inputurl = $('<input type="text" value="" placeholder="'+placeholder_url+'" />').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which == 10 || event.which == 13 )
-                                        wysiwygeditor.insertLink( $inputurl.val() ).closePopup().collapseSelection();
+                                        wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();
                                 });
             var $okaybutton = $button.click(function(event){
-                                    wysiwygeditor.insertLink( $inputurl.val() ).closePopup().collapseSelection();
+                                    wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();
                                     event.stopPropagation();
                                     event.preventDefault();
                                     return false;
@@ -372,7 +382,7 @@
                     {
                         if( onEnterSubmit && (code == 10 || code == 13) && !altKey && !ctrlKey && !metaKey )
                             return onEnterSubmit();
-                        if( character && ctrlKey )
+                        if( character && !shiftKey && !altKey && ctrlKey && !metaKey )
                         switch( character.toLowerCase() )
                         {
                             case 'b': wysiwygeditor.bold(); // .closePopup().collapseSelection()
@@ -586,7 +596,7 @@
                 wysiwygeditor.highlight( param ).closePopup().collapseSelection();
             }
             else if( option == 'insertLink' ) {
-                wysiwygeditor.insertLink( param ).closePopup().collapseSelection();
+                wysiwygeditor_insertLink(wysiwygeditor,param).closePopup().collapseSelection();
             }
             else if( option == 'insertImage' ) {
                 wysiwygeditor.insertImage( param ).closePopup().collapseSelection();
