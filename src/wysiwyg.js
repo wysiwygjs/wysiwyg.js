@@ -1172,19 +1172,19 @@
                     execCommand( 'justifyRight' );
                 else if( align == 'justify' )
                     execCommand( 'justifyFull' );
-                callUpdates();
+                callUpdates( true ); // selection destroyed
                 return this;
             },
             indent: function( outdent )
             {
                 execCommand( outdent ? 'outdent' : 'indent' );
-                callUpdates();
+                callUpdates( true ); // selection destroyed
                 return this;
             },
             insertLink: function( url )
             {
                 execCommand( 'createLink', url );
-                callUpdates();
+                callUpdates( true ); // selection destroyed
                 return this;
             },
             insertImage: function( url )
