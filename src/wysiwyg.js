@@ -1207,7 +1207,7 @@
             insertList: function( ordered )
             {
                 execCommand( ordered ? 'insertOrderedList' : 'insertUnorderedList' );
-                callUpdates( true ); // selection destroyed
+                callUpdates();
                 return this;
             }
         };

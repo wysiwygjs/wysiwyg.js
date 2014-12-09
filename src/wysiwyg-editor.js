@@ -298,35 +298,35 @@
                     };
                 case 'alignleft':
                     return function() {
-                        wysiwygeditor.align('left').closePopup().collapseSelection()
+                        wysiwygeditor.align('left'); // .closePopup().collapseSelection()
                     };
                 case 'aligncenter':
                     return function() {
-                        wysiwygeditor.align('center').closePopup().collapseSelection()
+                        wysiwygeditor.align('center'); // .closePopup().collapseSelection()
                     };
                 case 'alignright':
                     return function() {
-                        wysiwygeditor.align('right').closePopup().collapseSelection()
+                        wysiwygeditor.align('right'); // .closePopup().collapseSelection()
                     };
                 case 'alignjustify':
                     return function() {
-                        wysiwygeditor.align('justify').closePopup().collapseSelection()
+                        wysiwygeditor.align('justify'); // .closePopup().collapseSelection()
                     };
                 case 'indent':
                     return function() {
-                        wysiwygeditor.indent().closePopup().collapseSelection()
+                        wysiwygeditor.indent(); // .closePopup().collapseSelection()
                     };
                 case 'outdent':
                     return function() {
-                        wysiwygeditor.indent(true).closePopup().collapseSelection()
+                        wysiwygeditor.indent(true); // .closePopup().collapseSelection()
                     };
                 case 'orderedList':
                     return function() {
-                        wysiwygeditor.insertOrderedList().closePopup().collapseSelection();
+                        wysiwygeditor.insertList(true); // .closePopup().collapseSelection()
                     };
                 case 'unorderedList':
                     return function() {
-                        wysiwygeditor.insertUnorderedList().closePopup().collapseSelection();
+                        wysiwygeditor.insertList(); // .closePopup().collapseSelection()
                     };
                 case 'removeformat':
                     return function() {
@@ -599,10 +599,10 @@
                 wysiwygeditor.highlight( param ).closePopup().collapseSelection();
             }
             else if( option == 'align' ) {
-                wysiwygeditor.align( param ).closePopup().collapseSelection();
+                wysiwygeditor.align( param ); // .closePopup().collapseSelection()
             }
             else if( option == 'indent' ) {
-                wysiwygeditor.indent( param ).closePopup().collapseSelection();
+                wysiwygeditor.indent( param ); // .closePopup().collapseSelection()
             }
             else if( option == 'insertLink' ) {
                 wysiwygeditor_insertLink(wysiwygeditor,param).closePopup().collapseSelection();
@@ -614,7 +614,7 @@
                 wysiwygeditor.insertHTML( param ).closePopup().collapseSelection();
             }
             else if( option == 'insertList' ) {
-                wysiwygeditor.insertList( param ).closePopup().collapseSelection();
+                wysiwygeditor.insertList( param ); // .closePopup().collapseSelection()
             }
             else
                 return false;
