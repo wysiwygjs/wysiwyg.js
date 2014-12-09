@@ -5,28 +5,29 @@ http://wysiwygjs.github.io/
 wysiwyg.js
 ==========
 
-'wysiwyg-js' is a (minified) 12k contenteditable-editor with no dependencies.
+'wysiwyg.js' is a (minified) 12k contenteditable-editor with no dependencies.
 It does only:
-* Transforms any HTML-element into contenteditable
-* onselection-event: e.g. to open a toolbar
-* onkeypress-event: e.g. to handle hotkeys
-* onplaceholder-event: show/hide a placeholder
+    * Transforms any HTML-element into contenteditable
+    * onselection-event: e.g. to open a toolbar
+    * onkeypress-event: e.g. to handle hotkeys
+    * onplaceholder-event: show/hide a placeholder
 
 It works with:
-* Internet Explorer 6+
-* Firefox 3.5+
-* Chrome 4+
-* Safari 3.1+
-
-There is also a 10k jquery-wrapper '$.wysiwyg()' to create
-a full-featured editor, which depends on:
-* jQuery
-* FontAwesome (or PNG images)
+    * Internet Explorer 6+
+    * Firefox 3.5+
+    * Chrome 4+
+    * Safari 3.1+
 
 If a &lt;textarea&gt; was used as 'element', the library:
-* keeps the &lt;textarea&gt; in sync
-* falls back to the &lt;textarea&gt; if the browser does not support 'contenteditable'
-* Old iOS and Android 2.3- degrade to &lt;textarea&gt;
+    * keeps the &lt;textarea&gt; in sync
+    * falls back to the &lt;textarea&gt; if the browser does not support 'contenteditable'
+    * Old iOS and Android 2.3- degrade to &lt;textarea&gt;
+
+There is also a (minified) 9k jQuery-plugin '$.wysiwyg()' to create
+a full-featured editor which depends on:
+    * wysiwyg.js
+    * jQuery
+    * FontAwesome (or PNG images)
 
 wysiwyg.js-API:
 ==========
