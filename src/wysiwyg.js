@@ -1172,13 +1172,13 @@
                     execCommand( 'justifyRight' );
                 else if( align == 'justify' )
                     execCommand( 'justifyFull' );
-                callUpdates( true ); // selection destroyed
+                callUpdates();
                 return this;
             },
             indent: function( outdent )
             {
                 execCommand( outdent ? 'outdent' : 'indent' );
-                callUpdates( true ); // selection destroyed
+                callUpdates();
                 return this;
             },
             insertLink: function( url )
