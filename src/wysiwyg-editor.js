@@ -312,6 +312,14 @@
                     return function() {
                         wysiwygeditor.align('justify').closePopup().collapseSelection()
                     };
+                case 'indent':
+                    return function() {
+                        wysiwygeditor.indent().closePopup().collapseSelection()
+                    };
+                case 'outdent':
+                    return function() {
+                        wysiwygeditor.indent(true).closePopup().collapseSelection()
+                    };
                 case 'orderedList':
                     return function() {
                         wysiwygeditor.insertOrderedList().closePopup().collapseSelection();
@@ -593,6 +601,9 @@
             else if( option == 'align' ) {
                 wysiwygeditor.align( param ).closePopup().collapseSelection();
             }
+            else if( option == 'indent' ) {
+                wysiwygeditor.indent( param ).closePopup().collapseSelection();
+            }
             else if( option == 'insertLink' ) {
                 wysiwygeditor_insertLink(wysiwygeditor,param).closePopup().collapseSelection();
             }
@@ -602,11 +613,8 @@
             else if( option == 'insertHTML' ) {
                 wysiwygeditor.insertHTML( param ).closePopup().collapseSelection();
             }
-            else if( option == 'insertOrderedList' ) {
-                wysiwygeditor.insertOrderedList().closePopup().collapseSelection();
-            }
-            else if( option == 'insertUnorderedList' ) {
-                wysiwygeditor.insertUnorderedList().closePopup().collapseSelection();
+            else if( option == 'insertList' ) {
+                wysiwygeditor.insertList( param ).closePopup().collapseSelection();
             }
             else
                 return false;

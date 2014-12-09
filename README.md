@@ -69,8 +69,7 @@ wysiwygeditor.align( 'left'|'center'|'right'|'justify' );
 wysiwygeditor.insertLink( url );
 wysiwygeditor.insertImage( url );
 wysiwygeditor.insertHTML( html );
-wysiwygeditor.insertOrderedList();
-wysiwygeditor.insertUnorderedList();
+wysiwygeditor.insertList( ordered );
 ````
 
 $.wysiwyg()-API:
@@ -101,9 +100,9 @@ $editor.wysiwyg('strikethrough');
 $editor.wysiwyg('forecolor','#color');
 $editor.wysiwyg('highlight','#color');
 $editor.wysiwyg('align','left'|'center'|'right'|'justify');
+$editor.wysiwyg('indent', outdent );
 $editor.wysiwyg('insertLink','http://url.com/');
 $editor.wysiwyg('insertImage','http://url.com/');
 $editor.wysiwyg('insertHTML','new html');
-$editor.wysiwyg('insertOrderedList');
-$editor.wysiwyg('insertUnorderedList');
+$editor.wysiwyg('insertList', ordered );
 ````

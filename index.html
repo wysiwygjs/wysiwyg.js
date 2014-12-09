@@ -63,28 +63,42 @@ $(document).ready(function(){
                     title: 'Background color',
                     image: '\uf043' // <img src="path/to/image.png" width="16" height="16" alt="" />
                 },
-                alignleft: {
+                alignleft: index == 2 ? false : {
                     title: 'Left',
-                    image: '\uf036' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    image: '\uf036', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    secondary: true
                 },
-                aligncenter: {
+                aligncenter: index == 2 ? false : {
                     title: 'Center',
-                    image: '\uf037' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    image: '\uf037', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    secondary: true
                 },
-                alignright: {
+                alignright: index == 2 ? false : {
                     title: 'Right',
-                    image: '\uf038' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    image: '\uf038', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    secondary: true
                 },
-                alignjustify: {
+                alignjustify: index == 2 ? false : {
                     title: 'Justify',
-                    image: '\uf039' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    image: '\uf039', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    secondary: true
                 },
-                orderedList: {
+                indent: index == 2 ? false : {
+                    title: 'Indent',
+                    image: '\uf03c', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    secondary: true
+                },
+                outdent: index == 2 ? false : {
+                    title: 'Outdent',
+                    image: '\uf03b', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    secondary: true
+                },
+                orderedList: index == 2 ? false : {
                     title: 'Ordered list',
                     image: '\uf0cb', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
                 },
-                unorderedList: {
+                unorderedList: index == 2 ? false : {
                     title: 'Unordered list',
                     image: '\uf0ca', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
@@ -347,11 +361,11 @@ wysiwygeditor.forecolor( color );
 wysiwygeditor.highlight( color );
 wysiwygeditor.font( name, size );
 wysiwygeditor.align( 'left'|'center'|'right'|'justify' );
+wysiwygeditor.indent( outdent );
 wysiwygeditor.insertLink( url );
 wysiwygeditor.insertImage( url );
 wysiwygeditor.insertHTML( html );
-wysiwygeditor.insertOrderedList();
-wysiwygeditor.insertUnorderedList();
+wysiwygeditor.insertList( ordered );
 </pre>
 
 </body>

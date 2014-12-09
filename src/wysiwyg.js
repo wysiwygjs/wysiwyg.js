@@ -560,11 +560,11 @@
                     highlight: dummy,
                     font: dummy,
                     align: dummy,
+                    indent: dummy,
                     insertLink: dummy,
                     insertImage: dummy,
                     insertHTML: dummy,
-                    insertOrderedList: dummy,
-                    insertUnorderedList: dummy
+                    insertList: dummy
                 };
             }
         }
@@ -1175,6 +1175,12 @@
                 callUpdates();
                 return this;
             },
+            indent: function( outdent )
+            {
+                execCommand( outdent ? 'outdent' : 'indent' );
+                callUpdates();
+                return this;
+            },
             insertLink: function( url )
             {
                 execCommand( 'createLink', url );
@@ -1198,15 +1204,9 @@
                 callUpdates( true ); // selection destroyed
                 return this;
             },
-            insertOrderedList: function()
+            insertList: function( ordered )
             {
-                execCommand( 'insertOrderedList' );
-                callUpdates( true ); // selection destroyed
-                return this;
-            },
-            insertUnorderedList: function()
-            {
-                execCommand( 'insertUnorderedList' );
+                execCommand( ordered ? 'insertOrderedList' : 'insertUnorderedList' );
                 callUpdates( true ); // selection destroyed
                 return this;
             }
