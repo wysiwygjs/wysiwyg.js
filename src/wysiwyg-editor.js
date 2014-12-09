@@ -1,4 +1,3 @@
-// Wrap the Editor into a jQuery Module
 (function(window, document, $, undefined){
     'use strict';
 
