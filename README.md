@@ -45,8 +45,9 @@ var wysiwygeditor = wysiwyg({
 
 // properties:
 wysiwygeditor.getElement();
-wysiwygeditor.getHTML(); -> html
+wysiwygeditor.getHTML(); -> 'html'
 wysiwygeditor.setHTML( html );
+wysiwygeditor.getSelectedHTML(); -> 'html'|false
 
 // selection and popup:
 wysiwygeditor.collapseSelection();
