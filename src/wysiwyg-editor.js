@@ -312,6 +312,14 @@
                     return function() {
                         wysiwygeditor.align('justify'); // .closePopup().collapseSelection()
                     };
+                case 'subscript':
+                    return function() {
+                        wysiwygeditor.subscript(); // .closePopup().collapseSelection()
+                    };
+                case 'superscript':
+                    return function() {
+                        wysiwygeditor.superscript(); // .closePopup().collapseSelection()
+                    };
                 case 'indent':
                     return function() {
                         wysiwygeditor.indent(); // .closePopup().collapseSelection()
@@ -482,7 +490,6 @@
 
         // Create the WYSIWYG Editor
         var wysiwygeditor = create_wysiwyg( $textarea, placeholder ? $wrapper : $container, placeholder );
-        $textarea.data( 'wysiwyg', wysiwygeditor );
         if( wysiwygeditor.legacy )
         {
             var $textarea = $(wysiwygeditor.getElement());
@@ -493,7 +500,8 @@
         else
             $(wysiwygeditor.getElement()).addClass( 'wysiwyg-editor' );
 
-        // Hotkey-List
+        // Hotkey+Commands-List
+        var commands = {};
         $.each( toolbar_buttons, function(key, value) {
             if( ! value || ! value.hotkey )
                 return ;
@@ -501,6 +509,7 @@
             if( ! toolbar_handler )
                 return ;
             hotkeys[value.hotkey.toLowerCase()] = toolbar_handler;
+            commands[key] = toolbar_handler;
         });
 
         // Toolbar top or bottom
@@ -533,9 +542,15 @@
             else
                 $container.append( $toolbar );
         }
+
+        // Export userdata
+        return {
+            wysiwygeditor: wysiwygeditor,
+            commands: commands
+        };
     };
 
-    // JQuery Interface
+    // jQuery Interface
     $.fn.wysiwyg = function( option, param )
     {
         if( ! option || typeof(option) === 'object' )
@@ -560,64 +575,44 @@
                 var onEnterSubmit = option.onEnterSubmit;
 
                 // Create the WYSIWYG Editor
-                create_editor( $that, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_smilies, label_dropfileclick,
-                               content_styleWithCSS, content_insertBrOnReturn, onImageUpload, onEnterSubmit );
+                var data = create_editor( $that, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_smilies, label_dropfileclick,
+                                          content_styleWithCSS, content_insertBrOnReturn, onImageUpload, onEnterSubmit );
+                $that.data( 'wysiwyg', data );
             });
         }
         else if( this.length == 1 )
         {
-            var $textarea = $(this);
-            var wysiwygeditor = $textarea.data('wysiwyg');
-            if( ! wysiwygeditor )
+            var $that = $(this);
+            var data = $that.data('wysiwyg');
+            if( ! data )
                 return false;
             if( option == 'html' )
             {
                 if( typeof(param) != 'undefined' )
-                    wysiwygeditor.setHTML( param );
+                    data.wysiwygeditor.setHTML( param );
                 else
-                    return wysiwygeditor.getHTML();
-            }
-            else if( option == 'removeFormat' ) {
-                wysiwygeditor.removeFormat().closePopup().collapseSelection();
-            }
-            else if( option == 'bold' ) {
-                wysiwygeditor.bold(); // .closePopup().collapseSelection()
-            }
-            else if( option == 'italic' ) {
-                wysiwygeditor.italic(); // .closePopup().collapseSelection()
-            }
-            else if( option == 'underline' ) {
-                wysiwygeditor.underline(); // .closePopup().collapseSelection()
-            }
-            else if( option == 'strikethrough' ) {
-                wysiwygeditor.strikethrough(); // .closePopup().collapseSelection()
+                    return data.wysiwygeditor.getHTML();
             }
             else if( option == 'forecolor' ) {
-                wysiwygeditor.forecolor( param ).closePopup().collapseSelection();
+                data.wysiwygeditor.forecolor( param ).closePopup().collapseSelection();
             }
             else if( option == 'highlight' ) {
-                wysiwygeditor.highlight( param ).closePopup().collapseSelection();
+                data.wysiwygeditor.highlight( param ).closePopup().collapseSelection();
             }
-            else if( option == 'align' ) {
-                wysiwygeditor.align( param ); // .closePopup().collapseSelection()
+            else if( option == 'format' ) {
+                data.wysiwygeditor.format( param ).closePopup().collapseSelection()
             }
-            else if( option == 'indent' ) {
-                wysiwygeditor.indent( param ); // .closePopup().collapseSelection()
+            else if( option == 'insertlink' ) {
+                wysiwygeditor_insertLink(data.wysiwygeditor,param).closePopup().collapseSelection();
             }
-            else if( option == 'insertLink' ) {
-                wysiwygeditor_insertLink(wysiwygeditor,param).closePopup().collapseSelection();
+            else if( option == 'insertimage' ) {
+                data.wysiwygeditor.insertImage( param ).closePopup().collapseSelection();
             }
-            else if( option == 'insertImage' ) {
-                wysiwygeditor.insertImage( param ).closePopup().collapseSelection();
+            else if( option == 'inserthtml' ) {
+                data.wysiwygeditor.insertHTML( param ).closePopup().collapseSelection();
             }
-            else if( option == 'insertHTML' ) {
-                wysiwygeditor.insertHTML( param ).closePopup().collapseSelection();
-            }
-            else if( option == 'insertList' ) {
-                wysiwygeditor.insertList( param ); // .closePopup().collapseSelection()
-            }
-            else
-                return false;
+            else if( data.commands[option] )
+                data.commands[option]( param );
             return this;
         }
         return false;

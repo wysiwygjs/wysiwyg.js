@@ -53,7 +53,7 @@
             obj.fireEvent( 'on' + evt, event );
         }
     };
-    
+
     // http://stackoverflow.com/questions/13377887/javascript-node-undefined-in-ie8-and-under
     var Node_ELEMENT_NODE = typeof(Node) != 'undefined' ? Node.ELEMENT_NODE : 1;
     var Node_TEXT_NODE = typeof(Node) != 'undefined' ? Node.TEXT_NODE : 3;
@@ -558,8 +558,12 @@
                     strikethrough: dummy,
                     forecolor: dummy,
                     highlight: dummy,
-                    font: dummy,
+                    fontName: dummy,
+                    fontSize: dummy,
+                    subscript: dummy,
+                    superscript: dummy,
                     align: dummy,
+                    format: dummy,
                     indent: dummy,
                     insertLink: dummy,
                     insertImage: dummy,
@@ -1155,10 +1159,27 @@
                 callUpdates();
                 return this;
             },
-            font: function( name, size )
+            fontName: function( name )
             {
                 execCommand( 'fontName', name );
+                callUpdates();
+                return this;
+            },
+            fontSize: function( size )
+            {
                 execCommand( 'fontSize', size );
+                callUpdates();
+                return this;
+            },
+            subscript: function()
+            {
+                execCommand( 'subscript' );
+                callUpdates();
+                return this;
+            },
+            superscript: function()
+            {
+                execCommand( 'superscript' );
                 callUpdates();
                 return this;
             },
@@ -1172,6 +1193,12 @@
                     execCommand( 'justifyRight' );
                 else if( align == 'justify' )
                     execCommand( 'justifyFull' );
+                callUpdates();
+                return this;
+            },
+            format: function( tagname )
+            {
+                execCommand( 'formatBlock', tagname );
                 callUpdates();
                 return this;
             },

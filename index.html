@@ -78,27 +78,37 @@ $(document).ready(function(){
                     image: '\uf038', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
                 },
-                alignjustify: index == 2 ? false : {
+                alignjustify: index != 0 ? false : {
                     title: 'Justify',
                     image: '\uf039', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
                 },
-                indent: index == 2 ? false : {
+                subscript: index != 0 ? false : {
+                    title: 'Subscript',
+                    image: '\uf12c', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    secondary: true
+                },
+                superscript: index != 0 ? false : {
+                    title: 'Superscript',
+                    image: '\uf12b', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    secondary: true
+                },
+                indent: index != 0 ? false : {
                     title: 'Indent',
                     image: '\uf03c', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
                 },
-                outdent: index == 2 ? false : {
+                outdent: index != 0 ? false : {
                     title: 'Outdent',
                     image: '\uf03b', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
                 },
-                orderedList: index == 2 ? false : {
+                orderedList: index != 0 ? false : {
                     title: 'Ordered list',
                     image: '\uf0cb', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
                 },
-                unorderedList: index == 2 ? false : {
+                unorderedList: index != 0 ? false : {
                     title: 'Unordered list',
                     image: '\uf0ca', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
@@ -224,6 +234,24 @@ $(document).ready(function(){
         });
     });
 
+    // Demo-Buttons
+    $('#editor3-bold').click(function(){
+        $('#editor3').wysiwyg('bold');
+        return false;
+    });
+    $('#editor3-red').click(function(){
+        $('#editor3').wysiwyg('highlight','#ff0000');
+        return false;
+    });
+    $('#editor3-sethtml').click(function(){
+        $('#editor3').wysiwyg('html', 'This is a the html text');
+        return false;
+    });
+    $('#editor3-inserthtml').click(function(){
+        $('#editor3').wysiwyg('inserthtml', 'This is some text');
+        return false;
+    });
+
     // Raw editor
     var option = {
         element: $('#editor0').get(0),
@@ -313,6 +341,10 @@ a full-featured editor which depends on:
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
     Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
   </textarea>
+  <a id="editor3-bold" class="wysiwyg-toolbar-icon" href="#">Bold</a>
+  <a id="editor3-red" class="wysiwyg-toolbar-icon" href="#">Red background</a>
+  <a id="editor3-sethtml" class="wysiwyg-toolbar-icon" href="#">Set html</a>
+  <a id="editor3-inserthtml" class="wysiwyg-toolbar-icon" href="#">Insert html</a>
 </div>
 
 <div style="width:800px; margin: 30px auto;">
@@ -359,8 +391,12 @@ wysiwygeditor.underline();
 wysiwygeditor.strikethrough();
 wysiwygeditor.forecolor( color );
 wysiwygeditor.highlight( color );
-wysiwygeditor.font( name, size );
+wysiwygeditor.fontName( fontname );
+wysiwygeditor.fontSize( fontsize );
+wysiwygeditor.subscript();
+wysiwygeditor.superscript();
 wysiwygeditor.align( 'left'|'center'|'right'|'justify' );
+wysiwygeditor.format( tagname );
 wysiwygeditor.indent( outdent );
 wysiwygeditor.insertLink( url );
 wysiwygeditor.insertImage( url );
