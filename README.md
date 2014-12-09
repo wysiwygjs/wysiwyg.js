@@ -5,7 +5,7 @@ http://wysiwygjs.github.io/
 wysiwyg.js
 ==========
 
-'wysiwyg-js' is a (minified) 10k contenteditable-editor with no dependencies.
+'wysiwyg-js' is a (minified) 12k contenteditable-editor with no dependencies.
 It does only:
 * Transforms any HTML-element into contenteditable
 * onselection-event: e.g. to open a toolbar
@@ -18,7 +18,7 @@ It works with:
 * Chrome 4+
 * Safari 3.1+
 
-There is also a 9k jquery-wrapper '$.wysiwyg()' to create
+There is also a 10k jquery-wrapper '$.wysiwyg()' to create
 a full-featured editor, which depends on:
 * jQuery
 * FontAwesome (or PNG images)

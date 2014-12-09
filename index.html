@@ -35,19 +35,23 @@ $(document).ready(function(){
                 },
                 bold: {
                     title: 'Bold',
-                    image: '\uf032' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    image: '\uf032', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    hotkey: 'b'
                 },
                 italic: {
                     title: 'Italic',
-                    image: '\uf033' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    image: '\uf033', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    hotkey: 'i'
                 },
                 underline: {
                     title: 'Underline',
-                    image: '\uf0cd' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    image: '\uf0cd', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    hotkey: 'u'
                 },
                 strikethrough: {
                     title: 'Strikethrough',
-                    image: '\uf0cc' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    image: '\uf0cc', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    hotkey: 's'
                 },
                 forecolor: {
                     title: 'Text color',
@@ -225,7 +229,7 @@ p {
 <h1><center>wysiwyg.js</center></h1>
 
 <pre style="width:800px; margin: 30px auto;">
-    'wysiwyg-js' is a (minified) 10k contenteditable-editor with no dependencies.
+    'wysiwyg-js' is a (minified) 12k contenteditable-editor with no dependencies.
     It does only:
         * Transforms any HTML-element into contenteditable
         * onselection-event: e.g. to open a toolbar
@@ -238,7 +242,7 @@ p {
         * Chrome 4+
         * Safari 3.1+
 
-    There is also a 9k jQuery-wrapper '$.wysiwyg()' to create
+    There is also a 10k jQuery-wrapper '$.wysiwyg()' to create
     a full-featured editor, which depends on:
         * jQuery
         * FontAwesome (or PNG images)

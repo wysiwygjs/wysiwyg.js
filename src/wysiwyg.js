@@ -53,6 +53,10 @@
             obj.fireEvent( 'on' + evt, event );
         }
     };
+    
+    // http://stackoverflow.com/questions/13377887/javascript-node-undefined-in-ie8-and-under
+    var Node_ELEMENT_NODE = typeof(Node) != 'undefined' ? Node.ELEMENT_NODE : 1;
+    var Node_TEXT_NODE = typeof(Node) != 'undefined' ? Node.TEXT_NODE : 3;
 
     // http://stackoverflow.com/questions/2234979/how-to-check-in-javascript-if-one-element-is-a-child-of-another
     var isOrContainsNode = function( ancestor, descendant )
@@ -265,7 +269,7 @@
                 while( node )
                 {
                     // add this node?
-                    if( node != containerNode && node.nodeType == 1 ) // Node.ELEMENT_NODE
+                    if( node != containerNode && node.nodeType == Node_ELEMENT_NODE )
                     {
                         // http://stackoverflow.com/questions/5884210/how-to-find-if-a-htmlelement-is-enclosed-in-selected-text
                         var noderange = range.duplicate();
@@ -621,7 +625,7 @@
                     // Test if node contains something visible
                     if( ! node )
                         ;
-                    else if( node.nodeType == (Node ? Node.ELEMENT_NODE : 1) )
+                    else if( node.nodeType == Node_ELEMENT_NODE )
                     {
                         if( node.nodeName == 'IMG' )
                         {
@@ -629,7 +633,7 @@
                             break;
                         }
                     }
-                    else if( node.nodeType == (Node ? Node.TEXT_NODE : 3) )
+                    else if( node.nodeType == Node_TEXT_NODE )
                     {
                         var text = node.nodeValue;
                         if( text && text.search(/[^\s]/) != -1 )
@@ -725,7 +729,7 @@
                     for( var i=0; i < nodes.length; ++i )
                     {
                         var node = nodes[i];
-                        if( node.nodeType != (Node ? Node.ELEMENT_NODE : 1) )
+                        if( node.nodeType != Node_ELEMENT_NODE )
                             continue;
                         rect = {
                                 left: node.offsetLeft,
@@ -753,7 +757,7 @@
                 target = e.target;
             else if( e.srcElement )
                 target = e.srcElement;
-            if( target.nodeType == (Node ? Node.TEXT_NODE : 3) ) // defeat Safari bug
+            if( target.nodeType == Node_TEXT_NODE ) // defeat Safari bug
                 target = target.parentNode;
             // Click within popup?
             if( isOrContainsNode(node_popup,target) )
