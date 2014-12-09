@@ -63,6 +63,22 @@ $(document).ready(function(){
                     title: 'Background color',
                     image: '\uf043' // <img src="path/to/image.png" width="16" height="16" alt="" />
                 },
+                alignleft: {
+                    title: 'Left',
+                    image: '\uf036' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                aligncenter: {
+                    title: 'Center',
+                    image: '\uf037' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                alignright: {
+                    title: 'Right',
+                    image: '\uf038' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                alignjustify: {
+                    title: 'Justify',
+                    image: '\uf039' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
                 orderedList: {
                     title: 'Ordered list',
                     image: '\uf0cb', // <img src="path/to/image.png" width="16" height="16" alt="" />
@@ -330,7 +346,7 @@ wysiwygeditor.strikethrough();
 wysiwygeditor.forecolor( color );
 wysiwygeditor.highlight( color );
 wysiwygeditor.font( name, size );
-wysiwygeditor.align( 'justifyLeft'|'justifyCenter'|'justifyRight'|'justifyFull' );
+wysiwygeditor.align( 'left'|'center'|'right'|'justify' );
 wysiwygeditor.insertLink( url );
 wysiwygeditor.insertImage( url );
 wysiwygeditor.insertHTML( html );
