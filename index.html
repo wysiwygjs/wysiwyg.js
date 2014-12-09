@@ -280,6 +280,14 @@ p {
     margin: 0;
     padding: 0;
 }
+.button {
+    -moz-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 </style>
 </head>
 <body>
@@ -341,10 +349,10 @@ a full-featured editor which depends on:
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
     Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
   </textarea>
-  <a id="editor3-bold" class="wysiwyg-toolbar-icon" href="#">Bold</a>
-  <a id="editor3-red" class="wysiwyg-toolbar-icon" href="#">Red background</a>
-  <a id="editor3-sethtml" class="wysiwyg-toolbar-icon" href="#">Set html</a>
-  <a id="editor3-inserthtml" class="wysiwyg-toolbar-icon" href="#">Insert html</a>
+  <a id="editor3-bold" class="button" href="#" unselectable="on">Bold</a>
+  <a id="editor3-red" class="button" href="# unselectable="on"">Red background</a>
+  <a id="editor3-sethtml" class="button" href="#" unselectable="on">Set html</a>
+  <a id="editor3-inserthtml" class="button" href="#" unselectable="on">Insert html</a>
 </div>
 
 <div style="width:800px; margin: 30px auto;">
