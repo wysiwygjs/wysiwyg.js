@@ -1,6 +1,6 @@
 Example:
 ==========
-http://wysiwygjs.github.io/
+<a href="http://wysiwygjs.github.io/" style="background-color:red;font-weight:bold;">http://wysiwygjs.github.io/</a>
 
 wysiwyg.js
 ==========
