@@ -63,7 +63,7 @@ wysiwygeditor.italic();
 wysiwygeditor.underline();
 wysiwygeditor.strikethrough();
 wysiwygeditor.forecolor( color );
-wysiwygeditor.highlight: function( color );
+wysiwygeditor.highlight( color );
 wysiwygeditor.font( name, size );
 wysiwygeditor.align( 'justifyLeft'|'justifyCenter'|'justifyRight'|'justifyFull' );
 wysiwygeditor.insertLink( url );
