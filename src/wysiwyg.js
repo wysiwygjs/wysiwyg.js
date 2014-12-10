@@ -323,7 +323,7 @@
     var getSelectionHtml = function( containerNode )
     {
         if( getSelectionCollapsed( containerNode ) )
-            return false;
+            return null;
         if( window.getSelection )
         {
             var sel = window.getSelection();
@@ -348,7 +348,7 @@
                 return range.htmlText;
             }
         }
-        return false;
+        return null;
     };
 
     var clipSelectionTo = function( containerNode )
@@ -1084,6 +1084,9 @@
             getSelectedHTML: function()
             {
                 restoreSelection( node_wysiwyg, popup_saved_selection );
+                var selection_inside = clipSelectionTo( node_wysiwyg );
+                if( ! selection_inside )
+                    return null;
                 return getSelectionHtml( node_wysiwyg );
             },
             // selection and popup
@@ -1226,6 +1229,9 @@
                 {
                     // IE 11 still does not support 'insertHTML'
                     restoreSelection( node_wysiwyg, popup_saved_selection );
+                    var selection_inside = clipSelectionTo( node_wysiwyg );
+                    if( ! selection_inside )
+                        return this;
                     pasteHtmlAtCaret( node_wysiwyg, html );
                 }
                 callUpdates( true ); // selection destroyed
