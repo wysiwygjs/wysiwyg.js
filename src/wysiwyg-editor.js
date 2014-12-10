@@ -114,7 +114,7 @@
                                 $image.css({maxWidth: '',
                                             maxHeight: ''});
                                 resize_image( $image, clip_image[0], clip_image[1] );
-                            })
+                            });
                 $image.attr('src', url);
             };
             // Create popup
