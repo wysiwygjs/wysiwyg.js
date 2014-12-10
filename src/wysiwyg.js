@@ -133,8 +133,8 @@
             if( range.getBoundingClientRect ) // Missing for Firefox 3.5+3.6
             {
                 var rect = range.getBoundingClientRect();
-                // IE9 returns 0/0/0/0 if image selected
-                if( rect.left == 0 && rect.top == 0 && rect.right == 0 && rect.bottom == 0 )
+                // Safari 5.1 returns null, IE9 returns 0/0/0/0 if image selected
+                if( ! rect || (rect.left == 0 && rect.top == 0 && rect.right == 0 && rect.bottom == 0) )
                     return false;
                 return {
                     left: rect.left + window.pageXOffset,
@@ -353,7 +353,7 @@
 
     var clipSelectionTo = function( containerNode )
     {
-        if( window.getSelection )
+        if( window.getSelection && containerNode.compareDocumentPosition )
         {
             var sel = window.getSelection();
             var left_node = sel.anchorNode,
@@ -995,14 +995,6 @@
             // give focus and selection to contenteditable element
             if( ! skip_focus_restore_selection )
             {
-                /*
-                var saved_sel = popup_saved_selection;
-                if( ! saved_sel )
-                    saved_sel = saveSelection( node_wysiwyg );
-                node_wysiwyg.focus(); // Safari 5 selects the whole element on focus
-                if( saved_sel )
-                    restoreSelection( node_wysiwyg, saved_sel );
-                */
                 restoreSelection( node_wysiwyg, popup_saved_selection );
                 var selection_inside = clipSelectionTo( node_wysiwyg );
                 if( ! selection_inside )

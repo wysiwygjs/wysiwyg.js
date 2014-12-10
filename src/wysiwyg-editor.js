@@ -12,13 +12,33 @@
         '#990000', '#B45F06', '#BF9000', '#38771D', '#134F5C', '#0B5394', '#351C75', '#741B47', null,
         '#660000', '#783F04', '#7F6000', '#274E13', '#0C343D', '#073763', '#201211', '#4C1130'
     ];
-    var smiley_max_width = 64,
-        smiley_max_height = 24;
-    var placeholder_url = 'http://example.com/';
+
+    // Resize image
+    var resize_image = function( $image, max_width, max_height )
+    {
+        var image_width = $image.width(),
+            image_height = $image.height();
+        if( image_width > max_width || image_height > max_height )
+        {
+            if( (image_width/image_height) > (max_width/max_height) )
+            {
+                image_height = parseInt(image_height / image_width * max_width);
+                image_width = max_width;
+            }
+            else
+            {
+                image_width = parseInt(image_width / image_height * max_height);
+                image_height = max_height;
+            }
+            $image.attr('width',image_width)
+                  .attr('height',image_height);
+        }
+    };
 
     // Create the Editor
     var create_editor = function( $textarea, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_smilies, label_dropfileclick,
-                                  content_styleWithCSS, content_insertBrOnReturn, onImageUpload, onEnterSubmit )
+                                  content_styleWithCSS, content_insertBrOnReturn, placeholder_url, clip_image, clip_smiley,
+                                  onImageUpload, onEnterSubmit )
     {
         // Content: Smilies
         var content_smilies = function(wysiwygeditor)
@@ -29,26 +49,9 @@
             $.each( toolbar_smilies, function(index,smiley){
                 if( index != 0 )
                     $content.append(' ');
-                var $image = $(smiley);
-                var image_width = parseInt($image.attr('width')),
-                    image_height = parseInt($image.attr('height'));
-                // Shrink smiley
-                if( image_width > smiley_max_width || image_height > smiley_max_height )
-                {
-                    if( (image_width/image_height) > (smiley_max_width/smiley_max_height) )
-                    {
-                        image_height = parseInt(image_height / image_width * smiley_max_width);
-                        image_width = smiley_max_width;
-                    }
-                    else
-                    {
-                        image_width = parseInt(image_width / image_height * smiley_max_height);
-                        image_height = smiley_max_height;
-                    }
-                    $image.attr('width',image_width)
-                          .attr('height',image_height)
-                          .attr('unselectable','on');
-                }
+                var $image = $(smiley).attr('unselectable','on');
+                if( clip_smiley )
+                    resize_image( $image, clip_smiley[0], clip_smiley[1] );
                 // Append smiley
                 var imagehtml = ' '+$('<div/>').append($image.clone()).html()+' ';
                 $image
@@ -78,7 +81,7 @@
         var content_insertlink = function(wysiwygeditor)
         {
             var $button = toolbar_button( toolbar_submit );
-            var $inputurl = $('<input type="text" value="" placeholder="'+placeholder_url+'" />').addClass('wysiwyg-input')
+            var $inputurl = $('<input type="text" value=""' + (placeholder_url ? ' placeholder="'+placeholder_url+'"' : '') + ' />').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which == 10 || event.which == 13 )
                                         wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();
@@ -103,31 +106,16 @@
             {
                 var html = '<img id="wysiwyg-insert-image" src="" alt=""' + (filename ? ' title="'+filename.replace(/"/,'&quot;')+'"' : '') + ' />';
                 wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
-                $('#wysiwyg-insert-image')
-                        .removeAttr('id')
-                        .css({maxWidth: '200px',
-                              maxHeight: '200px'})
-                        .load( function() {
-                            var $image = $(this);
-                            $image.css({maxWidth: '',
-                                        maxHeight: ''});
-                            var width = $image.width();
-                            var height = $image.height();
-                            if( width > 200 || height > 200 )
-                            {
-                                if( width > height ) {
-                                    height = parseInt(200 / width * height);
-                                    width = 200;
-                                }
-                                else {
-                                    width = parseInt(200 / height * width);
-                                    height = 200;
-                                }
-                                $image.attr( 'width', width )
-                                      .attr( 'height', height );
-                            }
-                        })
-                        .attr('src', url);
+                var $image = $('#wysiwyg-insert-image').removeAttr('id');
+                if( clip_image )
+                    $image.css({maxWidth: clip_image[0]+'px',
+                                maxHeight: clip_image[1]+'px'})
+                          .load( function() {
+                                $image.css({maxWidth: '',
+                                            maxHeight: ''});
+                                resize_image( $image, clip_image[0], clip_image[1] );
+                            })
+                $image.attr('src', url);
             };
             // Create popup
             var $content = $('<div/>').addClass('wysiwyg-toolbar-feature')
@@ -202,7 +190,7 @@
                            .appendTo( $content );
             // Add image via 'URL'
             var $button = toolbar_button( toolbar_submit );
-            var $inputurl = $('<input type="text" value="" placeholder="'+placeholder_url+'" />').addClass('wysiwyg-input')
+            var $inputurl = $('<input type="text" value=""' + (placeholder_url ? ' placeholder="'+placeholder_url+'"' : '') + ' />').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which == 10 || event.which == 13 )
                                         insert_image_wysiwyg( $inputurl.val() );
@@ -365,6 +353,9 @@
                 if( toolbar_handler )
                     $button = toolbar_button( value ).click( function(event) {
                         toolbar_handler( event.currentTarget );
+                        // Give the focus back to the editor. Technically not necessary
+                        if( get_toolbar_handler(key) ) // only if not a popup-handler
+                            wysiwygeditor.getElement().focus()
                         event.stopPropagation();
                         event.preventDefault();
                         return false;
@@ -421,6 +412,7 @@
                         var $toolbar;
                         var apply_toolbar_position = function()
                         {
+                            // Bug in Safari 3.1: $.offset() returns {left:0,top:0}
                             var offset = $(wysiwygeditor.getElement()).offset();
                             // Point is the center of the selection
                             var x = rect.left + parseInt(rect.width / 2);
@@ -571,12 +563,16 @@
                 var label_dropfileclick = option.dropfileclick;
                 var content_styleWithCSS = option.styleWithCSS;
                 var content_insertBrOnReturn = option.insertBrOnReturn;
+                var placeholder_url = option.placeholderUrl || null;
+                var clip_image = option.clipImage || null;
+                var clip_smiley = option.clipSmiley || null;
                 var onImageUpload = option.onImageUpload;
                 var onEnterSubmit = option.onEnterSubmit;
 
                 // Create the WYSIWYG Editor
                 var data = create_editor( $that, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_smilies, label_dropfileclick,
-                                          content_styleWithCSS, content_insertBrOnReturn, onImageUpload, onEnterSubmit );
+                                          content_styleWithCSS, content_insertBrOnReturn, placeholder_url, clip_image, clip_smiley,
+                                          onImageUpload, onEnterSubmit );
                 $that.data( 'wysiwyg', data );
             });
         }

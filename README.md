@@ -88,6 +88,9 @@ var $editor = $('#editor').wysiwyg({
     dropfileclick: 'Click or drop image',
     styleWithCSS: false,
     insertBrOnReturn: false,
+    placeholderUrl: 'www.example.com',
+    clipImage: [width,height] | false,
+    clipSmiley: [width,height] | false,
     onImageUpload: function( insert_image ),
     onEnterSubmit: function()
 })
