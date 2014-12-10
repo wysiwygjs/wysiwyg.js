@@ -144,7 +144,8 @@
     font: 16px FontAwesome;
 }
 .wysiwyg-toolbar-icon:hover {
-    background-color: #3366cc;
+    color: HighlightText;
+    background-color: Highlight;
     -webkit-opacity: 1;
     opacity: 1;
 }
