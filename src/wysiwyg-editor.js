@@ -14,10 +14,8 @@
     ];
 
     // Resize image
-    var resize_image = function( $image, max_width, max_height )
+    var resize_image = function( $image, image_width, image_height, max_width, max_height )
     {
-        var image_width = $image.width(),
-            image_height = $image.height();
         if( image_width > max_width || image_height > max_height )
         {
             if( (image_width/image_height) > (max_width/max_height) )
@@ -50,8 +48,10 @@
                 if( index != 0 )
                     $content.append(' ');
                 var $image = $(smiley).attr('unselectable','on');
-                if( clip_smiley )
-                    resize_image( $image, clip_smiley[0], clip_smiley[1] );
+                var image_width = $image.attr('width'),
+                    image_height = $image.attr('height');
+                if( clip_smiley && image_width && image_height )
+                    resize_image( $image, parseInt(image_width), parseInt(image_height), clip_smiley[0], clip_smiley[1] );
                 // Append smiley
                 var imagehtml = ' '+$('<div/>').append($image.clone()).html()+' ';
                 $image
@@ -61,7 +61,8 @@
                         wysiwygeditor.insertHTML( imagehtml );
                     })
                     .appendTo( $content );
-                smiley_sum_width += image_width;
+                if( image_width )
+                    smiley_sum_width += parseInt(image_width);
             });
             $content.css({ maxWidth: parseInt(smiley_sum_width*1.35/4)+'px' })
             return $content;
@@ -108,13 +109,17 @@
                 wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
                 var $image = $('#wysiwyg-insert-image').removeAttr('id');
                 if( clip_image )
+                {
                     $image.css({maxWidth: clip_image[0]+'px',
                                 maxHeight: clip_image[1]+'px'})
                           .load( function() {
                                 $image.css({maxWidth: '',
                                             maxHeight: ''});
-                                resize_image( $image, clip_image[0], clip_image[1] );
+                                var image_width = $image.width();
+                                var image_height = $image.height();
+                                resize_image( $image, image_width, image_height, clip_image[0], clip_image[1] );
                             });
+                }
                 $image.attr('src', url);
             };
             // Create popup
