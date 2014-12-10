@@ -125,9 +125,7 @@
     *display: inline;
     margin: 0;
     padding: 0;
-    -webkit-opacity: 0.7;
-    opacity: 0.7;
-    color: black;
+    color: #333333;
     text-decoration: none;
     *zoom: 1;
     vertical-align: top;
@@ -146,8 +144,6 @@
 .wysiwyg-toolbar-icon:hover {
     color: HighlightText;
     background-color: Highlight;
-    -webkit-opacity: 1;
-    opacity: 1;
 }
 .wysiwyg-input {
     display: -moz-inline-stack;
