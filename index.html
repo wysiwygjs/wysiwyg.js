@@ -63,17 +63,17 @@ $(document).ready(function(){
                     title: 'Background color',
                     image: '\uf043' // <img src="path/to/image.png" width="16" height="16" alt="" />
                 },
-                alignleft: index == 2 ? false : {
+                alignleft: index != 0 ? false : {
                     title: 'Left',
                     image: '\uf036', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
                 },
-                aligncenter: index == 2 ? false : {
+                aligncenter: index != 0 ? false : {
                     title: 'Center',
                     image: '\uf037', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
                 },
-                alignright: index == 2 ? false : {
+                alignright: index != 0 ? false : {
                     title: 'Right',
                     image: '\uf038', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
@@ -83,12 +83,12 @@ $(document).ready(function(){
                     image: '\uf039', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
                 },
-                subscript: index != 0 ? false : {
+                subscript: index == 1 ? false : {
                     title: 'Subscript',
                     image: '\uf12c', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
                 },
-                superscript: index != 0 ? false : {
+                superscript: index == 1 ? false : {
                     title: 'Superscript',
                     image: '\uf12b', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     secondary: true
@@ -325,7 +325,7 @@ a full-featured editor which depends on:
 <h1><center>Examples:</center></h1>
 
 <div style="width:800px; margin: 30px auto;">
-  <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Toolbar on top + on toolbar selection:</div>
+  <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): All toolbar-buttons on top + toolbar with some buttons on selection:</div>
   <textarea id="editor1" name="editor" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
@@ -334,7 +334,7 @@ a full-featured editor which depends on:
 </div>
 
 <div style="width:800px; margin: 30px auto;">
-  <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Toolbar on bottom + submit-button, no selection-toolbar:</div>
+  <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Some toolbar-buttons on bottom + submit-button, no selection-toolbar:</div>
   <textarea id="editor1" name="editor" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
@@ -343,7 +343,7 @@ a full-featured editor which depends on:
 </div>
 
 <div style="width:800px; margin: 30px auto;">
-  <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Toolbar only on selection, hijack right-click:</div>
+  <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Toolbar with some buttons on selection, hijack right-click:</div>
   <textarea id="editor3" name="editor" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
