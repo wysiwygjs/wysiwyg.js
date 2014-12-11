@@ -389,6 +389,17 @@
                 $toolbar.append( $button );
             });
         };
+        var fixed_parent = function()
+        {
+            var node = $(wysiwygeditor.getElement());
+            while( node.length )
+            {
+                if( node.css('position') == 'fixed' )
+                    return true;
+                node = node.parent();
+            }
+            return false;
+        };
 
 
         // Transform the textarea to contenteditable
@@ -457,6 +468,8 @@
                         if( ! $toolbar.hasClass('wysiwyg-popup') )
                         {
                             // add classes + buttons
+                            if( fixed_parent() )
+                                $toolbar.css({position:'fixed'});
                             $toolbar.addClass( 'wysiwyg-popup wysiwyg-arrowtop' );
                             add_buttons_to_toolbar( $toolbar, function( $content )
                             {
@@ -547,6 +560,8 @@
                 if( ! $toolbar.hasClass('wysiwyg-popup') )
                 {
                     // add classes + content
+                    if( fixed_parent() )
+                        $toolbar.css({position:'fixed'});
                     $toolbar.addClass( 'wysiwyg-popup' );
                     $toolbar.append( $content );
                 }
