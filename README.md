@@ -5,7 +5,7 @@ Example:
 wysiwyg.js
 ==========
 
-'wysiwyg.js' is a (minified) 12k contenteditable-editor with no dependencies.
+'wysiwyg.js' is a (minified) 13k contenteditable-editor with no dependencies.
 It does only:
 * Transforms any HTML-element into contenteditable
 * onselection-event: e.g. to open a toolbar
@@ -23,8 +23,8 @@ If a &lt;textarea&gt; was used as 'element', the library:
 * falls back to the &lt;textarea&gt; if the browser does not support 'contenteditable'
 * Old iOS and Android 2.3- degrade to &lt;textarea&gt;
 
-There is also a (minified) 9k jQuery-plugin '$.wysiwyg()' to create
-a full-featured editor which depends on:
+There is also a (minified) 12k (10k with simpler color chart) jQuery-plugin '$.wysiwyg()'
+to create a full-featured editor which depends on:
 * wysiwyg.js
 * jQuery
 * FontAwesome (or PNG images)
@@ -80,6 +80,7 @@ $.wysiwyg()-API:
 ==========
 ````
 var $editor = $('#editor').wysiwyg({
+    classes: 'some-more-classes',
     placeholder: 'Type your text here...',
     position: 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection',
     buttons = { ... },

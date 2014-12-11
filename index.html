@@ -15,21 +15,25 @@ $(document).ready(function(){
     $('#editor1,#editor2,#editor3').each( function(index, element)
     {
         $(element).wysiwyg({
+            classes: 'some-more-classes',
             position: index == 0 ? 'top-selection' : (index == 1 ? 'bottom' : 'selection'),
             buttons: {
                 submit: index == 1 ? {
                     html: '<input id="submit" type="submit" value="submit" />',
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 } : false,
                 smilies: {
                     title: 'Smilies',
                     image: '\uf118', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 insertimage: {
                     title: 'Insert image',
                     image: '\uf030', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 insertlink: {
                     title: 'Insert link',
@@ -66,52 +70,62 @@ $(document).ready(function(){
                 alignleft: index != 0 ? false : {
                     title: 'Left',
                     image: '\uf036', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 aligncenter: index != 0 ? false : {
                     title: 'Center',
                     image: '\uf037', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 alignright: index != 0 ? false : {
                     title: 'Right',
                     image: '\uf038', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 alignjustify: index != 0 ? false : {
                     title: 'Justify',
                     image: '\uf039', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 subscript: index == 1 ? false : {
                     title: 'Subscript',
                     image: '\uf12c', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 superscript: index == 1 ? false : {
                     title: 'Superscript',
                     image: '\uf12b', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 indent: index != 0 ? false : {
                     title: 'Indent',
                     image: '\uf03c', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 outdent: index != 0 ? false : {
                     title: 'Outdent',
                     image: '\uf03b', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 orderedList: index != 0 ? false : {
                     title: 'Ordered list',
                     image: '\uf0cb', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 unorderedList: index != 0 ? false : {
                     title: 'Unordered list',
                     image: '\uf0ca', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    secondary: true
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 removeformat: {
                     title: 'Remove format',
@@ -300,7 +314,7 @@ p {
 <h1><center>wysiwyg.js</center></h1>
 
 <pre style="width:800px; margin: 30px auto;">
-'wysiwyg.js' is a (minified) 12k contenteditable-editor with no dependencies.
+'wysiwyg.js' is a (minified) 13k contenteditable-editor with no dependencies.
 It does only:
     * Transforms any HTML-element into contenteditable
     * onselection-event: e.g. to open a toolbar
@@ -318,8 +332,8 @@ If a &lt;textarea&gt; was used as 'element', the library:
     * falls back to the &lt;textarea&gt; if the browser does not support 'contenteditable'
     * Old iOS and Android 2.3- degrade to &lt;textarea&gt;
 
-There is also a (minified) 9k jQuery-plugin '$.wysiwyg()' to create
-a full-featured editor which depends on:
+There is also a (minified) 12k (10k with simpler color chart) jQuery-plugin '$.wysiwyg()'
+to create a full-featured editor which depends on:
     * wysiwyg.js
     * jQuery
     * FontAwesome (or PNG images)

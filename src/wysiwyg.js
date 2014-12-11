@@ -525,8 +525,11 @@
                 };
                 node_textarea.value = newlineAfterBR( node_textarea.value );
                 // Command structure
-                var dummy = function() {
+                var dummy_this = function() {
                     return this;
+                };
+                var dummy_null = function() {
+                    return null;
                 };
                 return {
                     legacy: true,
@@ -544,31 +547,31 @@
                         node_textarea.value = newlineAfterBR( html );
                         return this;
                     },
-                    getSelectedHTML: dummy,
+                    getSelectedHTML: dummy_null,
                     // selection and popup
-                    collapseSelection: dummy,
-                    openPopup: dummy,
-                    closePopup: dummy,
+                    collapseSelection: dummy_this,
+                    openPopup: dummy_null,
+                    closePopup: dummy_this,
                     // exec commands
-                    markup: dummy,
-                    removeFormat: dummy,
-                    bold: dummy,
-                    italic: dummy,
-                    underline: dummy,
-                    strikethrough: dummy,
-                    forecolor: dummy,
-                    highlight: dummy,
-                    fontName: dummy,
-                    fontSize: dummy,
-                    subscript: dummy,
-                    superscript: dummy,
-                    align: dummy,
-                    format: dummy,
-                    indent: dummy,
-                    insertLink: dummy,
-                    insertImage: dummy,
-                    insertHTML: dummy,
-                    insertList: dummy
+                    markup: dummy_this,
+                    removeFormat: dummy_this,
+                    bold: dummy_this,
+                    italic: dummy_this,
+                    underline: dummy_this,
+                    strikethrough: dummy_this,
+                    forecolor: dummy_this,
+                    highlight: dummy_this,
+                    fontName: dummy_this,
+                    fontSize: dummy_this,
+                    subscript: dummy_this,
+                    superscript: dummy_this,
+                    align: dummy_this,
+                    format: dummy_this,
+                    indent: dummy_this,
+                    insertLink: dummy_this,
+                    insertImage: dummy_this,
+                    insertHTML: dummy_this,
+                    insertList: dummy_this
                 };
             }
         }
