@@ -18,11 +18,11 @@ $(document).ready(function(){
             classes: 'some-more-classes',
             position: index == 0 ? 'top-selection' : (index == 1 ? 'bottom' : 'selection'),
             buttons: {
-                submit: index == 1 ? {
+                submit: index != 1 ? false : {
                     html: '<input id="submit" type="submit" value="submit" />',
                     //toolbar: true,    // wanted on the toolbar
                     selection: false    // wanted on selection
-                } : false,
+                },
                 smilies: {
                     title: 'Smilies',
                     image: '\uf118', // <img src="path/to/image.png" width="16" height="16" alt="" />
@@ -95,13 +95,13 @@ $(document).ready(function(){
                     title: 'Subscript',
                     image: '\uf12c', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    selection: true    // wanted on selection
                 },
                 superscript: index == 1 ? false : {
                     title: 'Superscript',
                     image: '\uf12b', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    selection: true    // wanted on selection
                 },
                 indent: index != 0 ? false : {
                     title: 'Indent',
