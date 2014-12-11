@@ -100,6 +100,7 @@
 }
 .wysiwyg-toolbar-feature {
     padding: 10px;
+    line-height: 1; /* color chart */
 }
 .wysiwyg-toolbar-feature.wysiwyg-toolbar-smilies {
     text-align: center;
@@ -109,7 +110,6 @@
     display: inline-block;
     width: 16px;
     height: 16px;
-    border: 1px solid white;
     *zoom: 1;
     vertical-align: top;
     cursor: pointer;
