@@ -391,14 +391,15 @@
         };
         var fixed_parent = function()
         {
-            var node = $(wysiwygeditor.getElement());
-            while( node.length )
-            {
-                if( node.css('position') == 'fixed' )
-                    return true;
-                node = node.parent();
-            }
-            return false;
+            var fixed_parent = false;
+            $(wysiwygeditor.getElement()).parents().each(function(index,element){
+                if( $(element).css('position') == 'fixed' )
+                {
+                    fixed_parent = true;
+                    return false;
+                }
+            });
+            return fixed_parent;
         };
 
 
