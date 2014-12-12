@@ -113,6 +113,8 @@ $editor.wysiwyg('alignjustify');
 $editor.wysiwyg('subscript');
 $editor.wysiwyg('superscript');
 $editor.wysiwyg('format', tagname );
+$editor.wysiwyg('fontname', fontname );
+$editor.wysiwyg('fontsize', fontsize );
 $editor.wysiwyg('indent');
 $editor.wysiwyg('outdent');
 $editor.wysiwyg('orderedlist');
