@@ -129,7 +129,7 @@
             var $inputurl = $('<input type="text" value=""' + (placeholder_url ? ' placeholder="'+placeholder_url+'"' : '') + ' />').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which == 10 || event.which == 13 )
-                                        wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup(); // .collapseSelection()
+                                        wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection(); 
                                 });
             var $okaybutton = $button.click(function(event){
                                     wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();

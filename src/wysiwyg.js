@@ -310,7 +310,13 @@
         {
             var sel = window.getSelection();
             if( sel && ! sel.isCollapsed )
-                sel.collapseToEnd();
+            {
+                // NS_ERROR_FAILURE
+                try {
+                    sel.collapseToEnd();
+                }
+                catch(e){}
+            }
         }
         else if( document.selection )
         {
