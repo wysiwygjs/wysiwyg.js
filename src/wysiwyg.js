@@ -192,7 +192,7 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( sel.isCollapsed )
+            if( ! sel || sel.isCollapsed )
                 return true;
             return false;
         }

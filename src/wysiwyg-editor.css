@@ -126,6 +126,7 @@
 }
 .wysiwyg-toolbar-form {
     padding: 10px;
+    white-space: nowrap;
 }
 .wysiwyg-toolbar-smilies {
     text-align: center;
