@@ -132,7 +132,7 @@
                                         wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup(); // .collapseSelection()
                                 });
             var $okaybutton = $button.click(function(event){
-                                    wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup(); // .collapseSelection()
+                                    wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();
                                     event.stopPropagation();
                                     event.preventDefault();
                                     return false;
