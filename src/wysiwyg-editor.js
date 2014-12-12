@@ -46,8 +46,23 @@
     };
 
     // Resize image
-    var resize_image = function( $image, image_width, image_height, max_width, max_height )
+    var resize_image = function( $image, max_width, max_height )
     {
+        var image_width, image_height;
+        if( $image.is(':visible') )
+        {
+            image_width = $image.width();
+            image_height = $image.height();
+        }
+        else
+        {
+            image_width = $image.attr('width');
+            image_height = $image.attr('height');
+            if( ! image_width || ! image_height )
+                return 0;
+            image_width = parseInt(image_width);
+            image_height = parseInt(image_height);
+        }
         if( image_width > max_width || image_height > max_height )
         {
             if( (image_width/image_height) > (max_width/max_height) )
@@ -63,6 +78,7 @@
             $image.attr('width',image_width)
                   .attr('height',image_height);
         }
+        return image_width;
     };
 
     // Create the Editor
@@ -79,10 +95,8 @@
                 if( index != 0 )
                     $content.append(' ');
                 var $image = $(smiley).attr('unselectable','on');
-                var image_width = $image.attr('width'),
-                    image_height = $image.attr('height');
-                if( clip_smiley && image_width && image_height )
-                    resize_image( $image, parseInt(image_width), parseInt(image_height), clip_smiley[0], clip_smiley[1] );
+                if( clip_smiley )
+                    smiley_sum_width += resize_image( $image, clip_smiley[0], clip_smiley[1] );
                 // Append smiley
                 var imagehtml = ' '+$('<div/>').append($image.clone()).html()+' ';
                 $image
@@ -92,10 +106,9 @@
                         wysiwygeditor.insertHTML( imagehtml );
                     })
                     .appendTo( $content );
-                if( image_width )
-                    smiley_sum_width += parseInt(image_width);
             });
-            $content.css({ maxWidth: parseInt(smiley_sum_width*1.35/4)+'px' })
+            if( smiley_sum_width )
+                $content.css({ maxWidth: parseInt(smiley_sum_width*1.35/4)+'px' })
             return $content;
         };
 
@@ -146,9 +159,7 @@
                           .load( function() {
                                 $image.css({maxWidth: '',
                                             maxHeight: ''});
-                                var image_width = $image.width();
-                                var image_height = $image.height();
-                                resize_image( $image, image_width, image_height, clip_image[0], clip_image[1] );
+                                resize_image( $image, clip_image[0], clip_image[1] );
                             });
                 }
                 $image.attr('src', url);

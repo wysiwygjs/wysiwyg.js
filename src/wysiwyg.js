@@ -983,8 +983,12 @@
             if( ! skip_focus_restore_selection )
             {
                 restoreSelection( node_wysiwyg, popup_saved_selection );
-                var selection_inside = clipSelectionTo( node_wysiwyg );
-                if( ! selection_inside )
+                if( ! clipSelectionTo(node_wysiwyg) ) // returns 'selection inside editor'
+                {
+                    node_wysiwyg.focus();
+                    collapseSelectionEnd();
+                }
+                if( ! clipSelectionTo(node_wysiwyg) ) // returns 'selection inside editor'
                     return false;
             }
             // for webkit, mozilla, opera
