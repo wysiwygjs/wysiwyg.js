@@ -88,7 +88,7 @@
         // Content: Smilies
         var content_smilies = function(wysiwygeditor)
         {
-            var $content = $('<div/>').addClass('wysiwyg-toolbar-form wysiwyg-toolbar-smilies')
+            var $content = $('<div/>').addClass('wysiwyg-toolbar-smilies')
                                       .attr('unselectable','on');
             var smiley_sum_width = 0;
             $.each( toolbar_smilies, function(index,smiley){

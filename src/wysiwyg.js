@@ -94,7 +94,7 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( sel.rangeCount > 0 )
+            if( sel && sel.rangeCount > 0 )
                 return sel.getRangeAt(0);
         }
         else if( document.selection )
@@ -108,11 +108,14 @@
     {
         if( ! savedSel )
             return;
-        if( window.getSelection && document.createRange )
+        if( window.getSelection )
         {
             var sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(savedSel);
+            if( sel )
+            {
+                sel.removeAllRanges();
+                sel.addRange(savedSel);
+            }
         }
         else if( document.selection )
         {
@@ -124,10 +127,10 @@
     // http://stackoverflow.com/questions/6846230/coordinates-of-selected-text-in-browser-page
     var getSelectionRect = function()
     {
-        if( window.getSelection && document.createRange )
+        if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( ! sel.rangeCount )
+            if( ! sel || ! sel.rangeCount )
                 return false;
             var range = sel.getRangeAt(0).cloneRange();
             if( range.getBoundingClientRect ) // Missing for Firefox 3.5+3.6
@@ -219,6 +222,8 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
+            if( ! sel || ! sel.rangeCount )
+                return [];
             var nodes = [];
             for( var i=0; i < sel.rangeCount; ++i )
             {
@@ -304,9 +309,8 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( sel.isCollapsed )
-                return false;
-            sel.collapseToEnd();
+            if( sel && sel.isCollapsed )
+                sel.collapseToEnd();
         }
         else if( document.selection )
         {
@@ -328,7 +332,7 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( sel.rangeCount )
+            if( sel && sel.rangeCount )
             {
                 var container = document.createElement('div'),
                     len = sel.rangeCount;
@@ -357,6 +361,8 @@
         if( window.getSelection && containerNode.compareDocumentPosition )
         {
             var sel = window.getSelection();
+            if( ! sel )
+                return false;
             var left_node = sel.anchorNode,
                 left_offset = sel.anchorOffset,
                 right_node = sel.focusNode,
@@ -434,7 +440,7 @@
         {
             // IE9 and non-IE
             var sel = window.getSelection();
-            if( sel.getRangeAt && sel.rangeCount )
+            if( sel && sel.getRangeAt && sel.rangeCount )
             {
                 var range = sel.getRangeAt(0);
                 // Range.createContextualFragment() would be useful here but is
@@ -996,7 +1002,7 @@
             {
                 var sel = window.getSelection();
                 var range;
-                if( sel.anchorNode && sel.getRangeAt )
+                if( sel && sel.anchorNode && sel.getRangeAt )
                     range = sel.getRangeAt(0);
                 if( range )
                 {
