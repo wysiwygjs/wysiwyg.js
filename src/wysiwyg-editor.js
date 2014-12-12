@@ -128,8 +128,15 @@
             var $button = toolbar_button( toolbar_submit );
             var $inputurl = $('<input type="text" value=""' + (placeholder_url ? ' placeholder="'+placeholder_url+'"' : '') + ' />').addClass('wysiwyg-input')
                                 .keypress(function(event){
-                                    if( event.which == 10 || event.which == 13 )
+                                    if( event.which != 10 && event.which != 13 )
+                                        return ;
+                                    // Catch 'NS_ERROR_FAILURE' on Firefox 34
+                                    try {
                                         wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection(); 
+                                    }
+                                    catch( e ) {
+                                        wysiwygeditor.closePopup(); 
+                                    }
                                 });
             var $okaybutton = $button.click(function(event){
                                     wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();
