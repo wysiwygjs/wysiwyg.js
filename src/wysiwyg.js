@@ -309,7 +309,7 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( sel && sel.isCollapsed )
+            if( sel && ! sel.isCollapsed )
                 sel.collapseToEnd();
         }
         else if( document.selection )
