@@ -98,27 +98,6 @@
     bottom: 100%;
     border-bottom: 10px solid #aaaaaa;
 }
-.wysiwyg-toolbar-feature {
-    padding: 10px;
-    line-height: 1; /* color chart */
-}
-.wysiwyg-toolbar-feature.wysiwyg-toolbar-smilies {
-    text-align: center;
-}
-.wysiwyg-toolbar-feature .wysiwyg-color {
-    display: -moz-inline-stack;
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    *zoom: 1;
-    vertical-align: top;
-    cursor: pointer;
-}
-.wysiwyg-toolbar-feature img {
-    display: -moz-inline-stack; /* inline-block: http://blog.mozilla.org/webdev/2009/02/20/cross-browser-inline-block/ */
-    display: inline-block;
-    *display: inline;
-}
 .wysiwyg-toolbar-icon {
     display: -moz-inline-stack;
     display: inline-block;
@@ -142,6 +121,41 @@
     font: 16px FontAwesome;
 }
 .wysiwyg-toolbar-icon:hover {
+    color: HighlightText;
+    background-color: Highlight;
+}
+.wysiwyg-toolbar-form {
+    padding: 10px;
+}
+.wysiwyg-toolbar-smilies {
+    text-align: center;
+}
+.wysiwyg-toolbar-smilies img {
+    display: -moz-inline-stack; /* inline-block: http://blog.mozilla.org/webdev/2009/02/20/cross-browser-inline-block/ */
+    display: inline-block;
+    *display: inline;
+}
+.wysiwyg-toolbar-color {
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+}
+.wysiwyg-toolbar-list {
+    max-height: 16em;
+    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+.wysiwyg-toolbar-list a,
+.wysiwyg-toolbar-list a:link,
+.wysiwyg-toolbar-list a:visited {
+    display: block;
+    color: black;
+    padding: 5px 10px;
+    text-decoration: none;
+    cursor: pointer;
+}
+.wysiwyg-toolbar-list a:hover {
     color: HighlightText;
     background-color: Highlight;
 }

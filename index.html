@@ -18,8 +18,11 @@ $(document).ready(function(){
             classes: 'some-more-classes',
             position: index == 0 ? 'top-selection' : (index == 1 ? 'bottom' : 'selection'),
             buttons: {
-                submit: index != 1 ? false : {
-                    html: '<input id="submit" type="submit" value="submit" />',
+                custombutton: index != 1 ? false : {
+                    html: $('<input id="submit" type="submit" value="bold" />').click(function(){
+                                // We simply make 'bold'
+                                $(element).wysiwyg('bold');
+                            }),
                     //toolbar: true,    // wanted on the toolbar
                     selection: false    // wanted on selection
                 },
@@ -66,6 +69,18 @@ $(document).ready(function(){
                 highlight: {
                     title: 'Background color',
                     image: '\uf043' // <img src="path/to/image.png" width="16" height="16" alt="" />
+                },
+                fontname: index != 0 ? false : {
+                    title: 'Font',
+                    image: '\uf031', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
+                },
+                fontsize: index != 0 ? false : {
+                    title: 'Size',
+                    image: '\uf034', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    //toolbar: true,    // wanted on the toolbar
+                    selection: false    // wanted on selection
                 },
                 alignleft: index != 0 ? false : {
                     title: 'Left',
@@ -313,8 +328,8 @@ p {
 
 <h1><center>wysiwyg.js</center></h1>
 
-<pre style="width:800px; margin: 30px auto;">
-'wysiwyg.js' is a (minified) 13k contenteditable-editor with no dependencies.
+<pre style="width:860px; margin: 30px auto;">
+'wysiwyg.js' is a (minified) 12k contenteditable-editor with no dependencies.
 It does only:
     * Transforms any HTML-element into contenteditable
     * onselection-event: e.g. to open a toolbar
@@ -332,8 +347,8 @@ If a &lt;textarea&gt; was used as 'element', the library:
     * falls back to the &lt;textarea&gt; if the browser does not support 'contenteditable'
     * Old iOS and Android 2.3- degrade to &lt;textarea&gt;
 
-There is also a (minified) 12k (10k with simpler color chart) jQuery-plugin '$.wysiwyg()'
-to create a full-featured editor which depends on:
+There is also a (minified) 11k jQuery-plugin '$.wysiwyg()' to create a
+full-featured editor which depends on:
     * wysiwyg.js
     * jQuery
     * FontAwesome (or PNG images)
@@ -341,7 +356,7 @@ to create a full-featured editor which depends on:
 
 <h1><center>Examples:</center></h1>
 
-<div style="width:800px; margin: 30px auto;">
+<div style="width:860px; margin: 30px auto;">
   <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): All toolbar-buttons on top + toolbar with some buttons on selection:</div>
   <textarea id="editor1" name="editor" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
@@ -350,7 +365,7 @@ to create a full-featured editor which depends on:
   </textarea>
 </div>
 
-<div style="width:800px; margin: 30px auto;">
+<div style="width:860px; margin: 30px auto;">
   <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Some toolbar-buttons on bottom + submit-button, no selection-toolbar:</div>
   <textarea id="editor1" name="editor" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
@@ -359,7 +374,7 @@ to create a full-featured editor which depends on:
   </textarea>
 </div>
 
-<div style="width:800px; margin: 30px auto;">
+<div style="width:860px; margin: 30px auto;">
   <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Toolbar with some buttons on selection, hijack right-click:</div>
   <textarea id="editor3" name="editor" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
@@ -372,7 +387,7 @@ to create a full-featured editor which depends on:
   <a id="editor3-inserthtml" class="button" href="#" unselectable="on">insert html</a>
 </div>
 
-<div style="width:800px; margin: 30px auto;">
+<div style="width:860px; margin: 30px auto;">
   <div style="color:#aa0000;font-weight:bold">Raw wysiwyg.js-editor (no jQuery, no CSS):</div>
   <div id="editor0" style="padding:5px;border:1px dashed black">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
@@ -383,7 +398,7 @@ to create a full-featured editor which depends on:
 
 <h1><center>API:</center></h1>
 
-<pre style="width:800px; margin: 30px auto;">
+<pre style="width:860px; margin: 30px auto;">
 // create wysiwyg:
 var wysiwygeditor = wysiwyg({
     element: document.getElmentById('editor-id'),

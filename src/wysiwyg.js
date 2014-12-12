@@ -137,10 +137,11 @@
                 if( ! rect || (rect.left == 0 && rect.top == 0 && rect.right == 0 && rect.bottom == 0) )
                     return false;
                 return {
-                    left: rect.left + window.pageXOffset,
-                    top: rect.top + window.pageYOffset,
-                    width: rect.right - rect.left,
-                    height: rect.bottom - rect.top
+                    // Firefox returns floating-point numbers
+                    left: parseInt(rect.left),
+                    top: parseInt(rect.top),
+                    width: parseInt(rect.right - rect.left),
+                    height: parseInt(rect.bottom - rect.top)
                 };
             }
             /*
@@ -158,10 +159,10 @@
                 // Glue any broken text nodes back together
                 spanParent.normalize();
                 return {
-                    left: rect.left + window.pageXOffset,
-                    top: rect.top + window.pageYOffset,
-                    width: rect.right - rect.left,
-                    height: rect.bottom - rect.top
+                    left: parseInt(rect.left),
+                    top: parseInt(rect.top),
+                    width: parseInt(rect.right - rect.left),
+                    height: parseInt(rect.bottom - rect.top)
                 };
             }
             */
@@ -176,8 +177,8 @@
                 // http://www.softcomplex.com/docs/get_window_size_and_scrollbar_position.html
                 // http://www.howtocreate.co.uk/tutorials/javascript/browserwindow
                 return {
-                    left: range.boundingLeft + (document.documentElement ? document.documentElement.scrollLeft : document.body.scrollLeft),
-                    top: range.boundingTop + (document.documentElement ? document.documentElement.scrollTop : document.body.scrollTop),
+                    left: range.boundingLeft,
+                    top: range.boundingTop,
                     width: range.boundingWidth,
                     height: range.boundingHeight
                 };
@@ -665,70 +666,58 @@
             debounced_handleSelection = null;
         if( option_onselection )
         {
-            handleSelection = function( x, y, rightclick )
+            handleSelection = function( clientX, clientY, rightclick )
             {
                 // Detect collapsed selection
                 var collapsed = getSelectionCollapsed( node_wysiwyg );
                 // List of all selected nodes
                 var nodes = getSelectedNodes( node_wysiwyg );
                 // Rectangle of the selection
-                var rect = (x === null || y === null) ? null :
+                var rect = (clientX === null || clientY === null) ? null :
                             {
-                                left: x,
-                                top: y,
+                                left: clientX,
+                                top: clientY,
                                 width: 0,
                                 height: 0
                             };
                 var selectionRect = getSelectionRect();
                 if( selectionRect )
-                    rect = {
-                        left: Math.round( selectionRect.left ),
-                        top: Math.round( selectionRect.top ),
-                        width: Math.round( selectionRect.width ),
-                        height: Math.round( selectionRect.height )
-                    };
+                    rect = selectionRect;
                 if( rect )
                 {
-                    // getBoundingClientRect() is viewport, so we better walk the tree
-                    var wysiwygLeft = 0,
-                        wysiwygTop = 0,
-                        wysiwygWidth = node_wysiwyg.offsetWidth,
-                        wysiwygHeight = node_wysiwyg.offsetHeight;
-                    var iterator = node_wysiwyg;
-                    do {
-                        if( !isNaN(iterator.offsetLeft) )
-                            wysiwygLeft += iterator.offsetLeft;
-                        if( !isNaN(iterator.offsetTop) )
-                            wysiwygTop += iterator.offsetTop;
+                    // So far 'rect' is relative to viewport
+                    if( node_wysiwyg.getBoundingClientRect )
+                    {
+                        // Make it relative to the editor via 'getBoundingClientRect()'
+                        var boundingrect = node_wysiwyg.getBoundingClientRect();
+                        rect.left -= parseInt(boundingrect.left);
+                        rect.top -= parseInt(boundingrect.top);
                     }
-                    while( iterator = iterator.offsetParent );
+                    else
+                    {
+                        var node = node_wysiwyg,
+                            offsetLeft = 0,
+                            offsetTop = 0,
+                            fixed = false;
+                        do {
+                            offsetLeft += node.offsetLeft ? parseInt(node.offsetLeft) : 0;
+                            offsetTop += node.offsetTop ? parseInt(node.offsetTop) : 0;
+                            if( node.style.position == 'fixed' )
+                                fixed = true;
+                        }
+                        while( node = node.offsetParent );
+                        rect.left -= offsetLeft - (fixed ? 0 : window.pageXOffset);
+                        rect.top -= offsetTop - (fixed ? 0 : window.pageYOffset);
+                    }
                     // Trim rectangle to the editor
-                    if( rect.left < wysiwygLeft )
-                        rect.left = wysiwygLeft;
-                    if( rect.top < wysiwygTop )
-                        rect.top = wysiwygTop;
-                    if( (rect.left + rect.width) > (wysiwygLeft + wysiwygWidth) )
-                    {
-                        if( rect.left > (wysiwygLeft + wysiwygWidth) )
-                        {
-                            rect.left = wysiwygLeft + wysiwygWidth;
-                            rect.width = 0;
-                        }
-                        else
-                            rect.width = (wysiwygLeft + wysiwygWidth) - rect.left;
-                    }
-                    if( (rect.top + rect.height) > (wysiwygTop + wysiwygHeight) )
-                    {
-                        if( rect.top > (wysiwygTop + wysiwygHeight) )
-                        {
-                            rect.top = wysiwygTop + wysiwygHeight;
-                            rect.height = 0;
-                        }
-                        else
-                            rect.height = (wysiwygTop + wysiwygHeight) - rect.top;
-                    }
-                    rect.left -= wysiwygLeft;
-                    rect.top -= wysiwygTop;
+                    if( rect.left < 0 )
+                        rect.left = 0;
+                    if( rect.top < 0 )
+                        rect.top = 0;
+                    if( rect.width > node_wysiwyg.offsetWidth )
+                        rect.width = node_wysiwyg.offsetWidth;
+                    if( rect.height > node_wysiwyg.offsetHeight )
+                        rect.height = node_wysiwyg.offsetHeight;
                 }
                 else if( nodes.length )
                 {
@@ -759,11 +748,7 @@
             // http://www.quirksmode.org/js/events_properties.html
             if( !e )
                 var e = window.event;
-            var target;
-            if( e.target )
-                target = e.target;
-            else if( e.srcElement )
-                target = e.srcElement;
+            var target = e.target || e.srcElement;
             if( target.nodeType == Node_TEXT_NODE ) // defeat Safari bug
                 target = target.parentNode;
             // Click within popup?
@@ -783,7 +768,6 @@
 
             // Create popup element
             node_popup = document.createElement( 'DIV' );
-            node_popup.style.position = 'absolute';
             document.body.appendChild( node_popup );
             return node_popup;
         };
@@ -925,17 +909,17 @@
             if( !e )
                 var e = window.event;
             // mouse position
-            var posx = 0;
-            var posy = 0;
-            if( e.pageX || e.pageY )
+            var clientX = null,
+                clientY = null;
+            if( e.clientX && e.clientY )
             {
-                posx = e.pageX;
-                posy = e.pageY;
+                clientX = e.clientX;
+                clientY = e.clientY;
             }
-            else if( e.clientX || e.clientY )
+            else if( e.pageX && e.pageY )
             {
-                posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-                posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+                clientX = e.pageX - window.pageXOffset;
+                clientY = e.pageY - window.pageYOffset;
             }
             // mouse button
             if( e.which && e.which == 3 )
@@ -950,7 +934,7 @@
             if( ! option_hijackcontextmenu && rightclick )
                 return ;
             if( debounced_handleSelection )
-                debounced_handleSelection( posx, posy, rightclick );
+                debounced_handleSelection( clientX, clientY, rightclick );
         };
         addEvent( node_wysiwyg, 'mousedown', function(e)
         {
