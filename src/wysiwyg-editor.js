@@ -83,7 +83,7 @@
 
     // Create the Editor
     var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_smilies, label_dropfileclick,
-                                  content_styleWithCSS, content_insertBrOnReturn, placeholder_url, clip_image, clip_smiley, onImageUpload, onEnterSubmit )
+                                  content_styleWithCSS, content_insertBrOnReturn, placeholder_url, clip_image, clip_smiley, onImageUpload, onKeyEnter )
     {
         // Content: Smilies
         var content_smilies = function(wysiwygeditor)
@@ -527,8 +527,8 @@
                 element: $textarea.get(0),
                 onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey )
                     {
-                        if( onEnterSubmit && (code == 10 || code == 13) && !altKey && !ctrlKey && !metaKey )
-                            return onEnterSubmit();
+                        if( onKeyEnter && (code == 10 || code == 13) && !altKey && !ctrlKey && !metaKey )
+                            return onKeyEnter();
                         // Exec hotkey
                         if( character && !shiftKey && !altKey && ctrlKey && !metaKey )
                         {
@@ -733,11 +733,11 @@
                 var clip_image = option.clipImage || null;
                 var clip_smiley = option.clipSmiley || null;
                 var onImageUpload = option.onImageUpload;
-                var onEnterSubmit = option.onEnterSubmit;
+                var onKeyEnter = option.onKeyEnter;
 
                 // Create the WYSIWYG Editor
                 var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_smilies, label_dropfileclick,
-                                          content_styleWithCSS, content_insertBrOnReturn, placeholder_url, clip_image, clip_smiley, onImageUpload, onEnterSubmit );
+                                          content_styleWithCSS, content_insertBrOnReturn, placeholder_url, clip_image, clip_smiley, onImageUpload, onKeyEnter );
                 $that.data( 'wysiwyg', data );
             });
         }

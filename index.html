@@ -235,22 +235,32 @@ $(document).ready(function(){
             placeholderUrl: 'www.example.com',
             clipImage: [600,200],
             clipSmiley: [64,24],
-            styleWithCSS: true,
-            insertBrOnReturn: true,
             /*
             onImageUpload: function( insert_image ) {
-                                // A bit tricky, because we can't easily upload a file
-                                // via '$.ajax()' on a legacy browser.
-                                // You have to submit the form into to a '<iframe/>' element.
-                                // Best way to do: http://malsup.com/jquery/form/
-                                // Call 'insert_image(url)' as soon as the file is online.
-                                // Not many people need this, so this is not part of
-                                // this demo.
-                            },
+                            // A bit tricky, because we can't easily upload a file
+                            // via '$.ajax()' on a legacy browser.
+                            // You have to submit the form into to a '<iframe/>' element.
+                            // Call 'insert_image(url)' as soon as the file is online.
+                            // Best way to do: http://malsup.com/jquery/form/
+                            // For example:
+                            //$(this).parents('form')
+                            //       .attr('action','/path/to/file')
+                            //       .attr('method','POST')
+                            //       .attr('enctype','multipart/form-data')
+                            //       .ajaxSubmit({
+                            //          success: function(data,textStatus,jqXHR){
+                            //            var image_url = data;
+                            //            console.log( 'URL: ' + image_url );
+                            //            insert_image( image_url );
+                            //          }
+                            //        });
+                        },
+            onKeyEnter: function() {
+                            return false; // swallow enter
+                        },
             */
-            onEnterSubit: function() {
-                                return true; // don't swallow enter...
-                            }
+            styleWithCSS: true,
+            insertBrOnReturn: true            
         })
         .change(function(){
             if( typeof console != 'undefined' )
