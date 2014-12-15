@@ -356,6 +356,33 @@
         return null;
     };
 
+    // http://stackoverflow.com/questions/1335252/how-can-i-get-the-dom-element-which-contains-the-current-selection
+    var setSelectionTo = function( containerNode )
+    {
+        if( window.getSelection )
+        {
+            var sel = window.getSelection();
+            if( ! sel )
+                return ;
+            var range = document.createRange();
+            range.selectNodeContents( containerNode );
+            range.collapse( false );
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+        else if( document.selection )
+        {
+            // http://stackoverflow.com/questions/12243898/how-to-select-all-text-in-contenteditable-div
+            var range = document.body.createTextRange();
+            range.moveToElementText(containerNode);
+            range.setEndPoint('StartToEnd',range); // collapse
+            range.select();
+        }
+        else
+            containerNode.focus();
+    }
+
     var clipSelectionTo = function( containerNode )
     {
         if( window.getSelection && containerNode.compareDocumentPosition )
@@ -983,19 +1010,19 @@
         // exec command
         // https://developer.mozilla.org/en-US/docs/Web/API/document.execCommand
         // http://www.quirksmode.org/dom/execCommand.html
-        var execCommand = function( command, param, skip_focus_restore_selection )
+        var execCommand = function( command, param, force_or_skip_selection )
         {
             // give focus and selection to contenteditable element
-            if( ! skip_focus_restore_selection )
+            if( force_or_skip_selection !== false )
             {
                 restoreSelection( node_wysiwyg, popup_saved_selection );
-                if( ! clipSelectionTo(node_wysiwyg) ) // returns 'selection inside editor'
-                {
-                    node_wysiwyg.focus();
-                    collapseSelectionEnd();
-                }
-                if( ! clipSelectionTo(node_wysiwyg) ) // returns 'selection inside editor'
+                // returns 'selection inside editor'
+                if( clipSelectionTo(node_wysiwyg) )
+                    ;
+                else if( ! force_or_skip_selection )
                     return false;
+                else // Selection to editor
+                    setSelectionTo( node_wysiwyg );
             }
             // for webkit, mozilla, opera
             if( window.getSelection )
@@ -1100,10 +1127,10 @@
             markup: function( styleWithCSS, insertBrOnReturn )
             {
                 // This should be document-wide, so we don't need to set the focus
-                execCommand( 'styleWithCSS', styleWithCSS, true ); // ignore 'useCSS'
-                execCommand( 'insertBrOnReturn', insertBrOnReturn, true );
-                //execCommand( 'enableInlineTableEditing', enableInlineTableEditing, true );
-                //execCommand( 'enableObjectResizing', enableObjectResizing, true );
+                execCommand( 'styleWithCSS', styleWithCSS, false ); // ignore 'useCSS'
+                execCommand( 'insertBrOnReturn', insertBrOnReturn, false );
+                //execCommand( 'enableInlineTableEditing', enableInlineTableEditing, false );
+                //execCommand( 'enableObjectResizing', enableObjectResizing, false );
                 return this;
             },
             removeFormat: function()
@@ -1147,7 +1174,7 @@
             {
                 // http://stackoverflow.com/questions/2756931/highlight-the-text-of-the-dom-range-element
                 if( ! execCommand('hiliteColor',color) ) // some browsers apply 'backColor' to the whole block
-                    execCommand( 'backColor', color, true );
+                    execCommand( 'backColor', color );
                 callUpdates();
                 return this;
             },
@@ -1208,13 +1235,13 @@
             },
             insertImage: function( url )
             {
-                execCommand( 'insertImage', url );
+                execCommand( 'insertImage', url, true );
                 callUpdates( true ); // selection destroyed
                 return this;
             },
             insertHTML: function( html )
             {
-                if( ! execCommand('insertHTML', html) )
+                if( ! execCommand('insertHTML', html, true) )
                 {
                     // IE 11 still does not support 'insertHTML'
                     restoreSelection( node_wysiwyg, popup_saved_selection );
