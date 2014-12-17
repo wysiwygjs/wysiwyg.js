@@ -151,6 +151,24 @@ $(document).ready(function(){
                 title: 'Submit',
                 image: '\uf00c' // <img src="path/to/image.png" width="16" height="16" alt="" />
             },
+            fontnames: {
+                // Name : Font
+                'Arial, Helvetica' : 'Arial,Helvetica',
+                'Verdana'          : 'Verdana,Geneva',
+                'Georgia'          : 'Georgia',
+                'Courier New'      : 'Courier New,Courier',
+                'Times New Roman'  : 'Times New Roman,Times'
+            },
+            fontsizes: {
+                // Name : Size
+                'Huge'    : 7,
+                'Larger'  : 6,
+                'Large'   : 5,
+                'Normal'  : 4,
+                'Small'   : 3,
+                'Smaller' : 2,
+                'Tiny'    : 1
+            },
             smilies: [
                     '<img src="smiley/afraid.png" width="16" height="16" alt="" />',
                     '<img src="smiley/amorous.png" width="16" height="16" alt="" />',
@@ -260,7 +278,7 @@ $(document).ready(function(){
                         },
             */
             styleWithCSS: true,
-            insertBrOnReturn: true            
+            insertBrOnReturn: true
         })
         .change(function(){
             if( typeof console != 'undefined' )

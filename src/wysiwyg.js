@@ -94,7 +94,7 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( sel && sel.rangeCount > 0 )
+            if( sel.rangeCount > 0 )
                 return sel.getRangeAt(0);
         }
         else if( document.selection )
@@ -111,11 +111,8 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( sel )
-            {
-                sel.removeAllRanges();
-                sel.addRange(savedSel);
-            }
+            sel.removeAllRanges();
+            sel.addRange(savedSel);
         }
         else if( document.selection )
         {
@@ -130,7 +127,7 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( ! sel || ! sel.rangeCount )
+            if( ! sel.rangeCount )
                 return false;
             var range = sel.getRangeAt(0).cloneRange();
             if( range.getBoundingClientRect ) // Missing for Firefox 3.5+3.6
@@ -195,7 +192,7 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( ! sel || sel.isCollapsed )
+            if( sel.isCollapsed )
                 return true;
             return false;
         }
@@ -222,7 +219,7 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( ! sel || ! sel.rangeCount )
+            if( ! sel.rangeCount )
                 return [];
             var nodes = [];
             for( var i=0; i < sel.rangeCount; ++i )
@@ -309,7 +306,7 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( sel && ! sel.isCollapsed )
+            if( ! sel.isCollapsed )
                 sel.collapseToEnd();
         }
         else if( document.selection )
@@ -332,7 +329,7 @@
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( sel && sel.rangeCount )
+            if( sel.rangeCount )
             {
                 var container = document.createElement('div'),
                     len = sel.rangeCount;
@@ -356,7 +353,6 @@
         return null;
     };
 
-    // http://stackoverflow.com/questions/1335252/how-can-i-get-the-dom-element-which-contains-the-current-selection
     var setSelectionTo = function( containerNode )
     {
         if( window.getSelection )
@@ -379,8 +375,6 @@
             range.setEndPoint('StartToEnd',range); // collapse
             range.select();
         }
-        else
-            containerNode.focus();
     }
 
     var clipSelectionTo = function( containerNode )
@@ -388,8 +382,6 @@
         if( window.getSelection && containerNode.compareDocumentPosition )
         {
             var sel = window.getSelection();
-            if( ! sel )
-                return false;
             var left_node = sel.anchorNode,
                 left_offset = sel.anchorOffset,
                 right_node = sel.focusNode,
@@ -422,7 +414,6 @@
                 range.setStart( left_node, left_offset );
             if( right_inside )
                 range.setEnd( right_node, right_offset );
-            var sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
             return true;
@@ -467,7 +458,7 @@
         {
             // IE9 and non-IE
             var sel = window.getSelection();
-            if( sel && sel.getRangeAt && sel.rangeCount )
+            if( sel.getRangeAt && sel.rangeCount )
             {
                 var range = sel.getRangeAt(0);
                 // Range.createContextualFragment() would be useful here but is
@@ -1012,30 +1003,20 @@
         // http://www.quirksmode.org/dom/execCommand.html
         var execCommand = function( command, param, force_or_skip_selection )
         {
-            // give focus and selection to contenteditable element
+            // give selection to contenteditable element
             if( force_or_skip_selection !== false )
             {
                 restoreSelection( node_wysiwyg, popup_saved_selection );
-                // returns 'selection inside editor'
-                if( clipSelectionTo(node_wysiwyg) )
+                if( clipSelectionTo(node_wysiwyg) ) // returns 'selection inside editor'
                     ;
-                else if( ! force_or_skip_selection )
-                    return false;
-                else // Selection to editor
+                else if( force_or_skip_selection )
                     setSelectionTo( node_wysiwyg );
+                else
+                    return false;
             }
             // for webkit, mozilla, opera
             if( window.getSelection )
             {
-                var sel = window.getSelection();
-                var range;
-                if( sel && sel.anchorNode && sel.getRangeAt )
-                    range = sel.getRangeAt(0);
-                if( range )
-                {
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                }
                 // Buggy, call within 'try/catch'
                 try {
                     if( document.queryCommandSupported && ! document.queryCommandSupported(command) )
@@ -1245,9 +1226,8 @@
                 {
                     // IE 11 still does not support 'insertHTML'
                     restoreSelection( node_wysiwyg, popup_saved_selection );
-                    var selection_inside = clipSelectionTo( node_wysiwyg );
-                    if( ! selection_inside )
-                        return this;
+                    if( ! clipSelectionTo(node_wysiwyg) ) // returns 'selection inside editor'
+                        setSelectionTo( node_wysiwyg );
                     pasteHtmlAtCaret( node_wysiwyg, html );
                 }
                 callUpdates( true ); // selection destroyed

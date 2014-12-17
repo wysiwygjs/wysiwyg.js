@@ -65,6 +65,8 @@
     background: white;
     background: rgba(255,255,255,0.9);
     left: -50%;
+    overflow: hidden;
+    white-space: nowrap;
     border: 1px solid #aaaaaa;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
@@ -131,6 +133,7 @@
 .wysiwyg-toolbar-smilies {
     padding: 10px;
     text-align: center;
+    white-space: normal;
 }
 .wysiwyg-toolbar-smilies img {
     display: -moz-inline-stack; /* inline-block: http://blog.mozilla.org/webdev/2009/02/20/cross-browser-inline-block/ */

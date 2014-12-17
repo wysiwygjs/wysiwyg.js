@@ -1,24 +1,6 @@
 (function(window, document, $, undefined){
     'use strict';
 
-    // Variables
-    var fonts = [
-      'Arial, Helvetica',
-      'Verdana, Geneva',
-      'Georgia',
-      'Courier, Courier New',
-      'Times New Roman,Times'
-    ];
-    var sizes = {
-        Huge: 7,
-        Larger: 6,
-        Large: 5,
-        Normal: 4,
-        Small: 3 ,
-        Smaller: 2,
-        Tiny: 1
-    };
-
     // http://stackoverflow.com/questions/17242144/javascript-convert-hsb-hsv-color-to-rgb-accurately
     var HSVtoRGB = function( h, s, v )
     {
@@ -82,7 +64,7 @@
     };
 
     // Create the Editor
-    var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_smilies, label_dropfileclick,
+    var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_fontnames, toolbar_fontsizes, toolbar_smilies, label_dropfileclick,
                                   content_styleWithCSS, content_insertBrOnReturn, placeholder_url, clip_image, clip_smiley, onImageUpload, onKeyEnter )
     {
         // Content: Smilies
@@ -132,10 +114,10 @@
                                         return ;
                                     // Catch 'NS_ERROR_FAILURE' on Firefox 34
                                     try {
-                                        wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection(); 
+                                        wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();
                                     }
                                     catch( e ) {
-                                        wysiwygeditor.closePopup(); 
+                                        wysiwygeditor.closePopup();
                                     }
                                 });
             var $okaybutton = $button.click(function(event){
@@ -264,10 +246,10 @@
         {
             var $content = $('<div/>').addClass('wysiwyg-toolbar-list')
                                       .attr('unselectable','on');
-            $.each( fonts, function( index, font ){
+            $.each( toolbar_fontnames, function( name, font ){
                 var $link = $('<a/>').attr('href','#')
                                      .css( 'font-family', font )
-                                     .html( font )
+                                     .html( name )
                                      .click(function(event){
                                         wysiwygeditor.fontName(font).closePopup().collapseSelection();
                                         event.stopPropagation();
@@ -282,7 +264,7 @@
         {
             var $content = $('<div/>').addClass('wysiwyg-toolbar-list')
                                       .attr('unselectable','on');
-            $.each( sizes, function( name, size ){
+            $.each( toolbar_fontsizes, function( name, size ){
                 var $link = $('<a/>').attr('href','#')
                                      .css( 'font-size', (8 + (size * 3)) + 'px' )
                                      .html( name )
@@ -527,8 +509,8 @@
                 element: $textarea.get(0),
                 onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey )
                     {
-                        if( onKeyEnter && (code == 10 || code == 13) && !altKey && !ctrlKey && !metaKey )
-                            return onKeyEnter();
+                        if( onKeyEnter && (code == 10 || code == 13) && !shiftKey && !altKey && !ctrlKey && !metaKey )
+                            return onKeyEnter.call( wysiwygeditor.getElement() );
                         // Exec hotkey
                         if( character && !shiftKey && !altKey && ctrlKey && !metaKey )
                         {
@@ -565,13 +547,19 @@
                         var apply_toolbar_position = function()
                         {
                             var offset = fixed_offset($(wysiwygeditor.getElement()));
+                            var toolbar_width = $toolbar.outerWidth();
                             // Point is the center of the selection
-                            var x = rect.left + parseInt(rect.width / 2);
-                            var y = rect.top + rect.height;
-                            var left = x - ($toolbar.width() / 2);
-                            var top = y;
-                            $toolbar.css({ left: Math.max(offset.left + left, 0)+'px',
-                                           top: Math.max(offset.top + top, 0)+'px',
+                            var left = offset.left + rect.left + parseInt(rect.width / 2) - parseInt(toolbar_width / 2);
+                            var top = offset.top + rect.top + rect.height;
+                            // Trim to viewport
+                            var viewport_width = $(window).width();
+                            if( left + toolbar_width > viewport_width - 1 )
+                                left = viewport_width - toolbar_width - 1;
+                            var scroll_left = fixed_parent() ? 0 : $(window).scrollLeft();
+                            if( left < scroll_left + 1 )
+                                left = scroll_left + 1;
+                            $toolbar.css({ left: left + 'px',
+                                           top: top + 'px',
                                            overflow: 'visible' });
                         };
                         // Open popup
@@ -682,14 +670,23 @@
                 // Popup position
                 var $button = $(target);
                 var offset = fixed_offset($button);
-                var left = Math.max( offset.left - ($toolbar.width() / 2), 0 ) + ($button.width() / 2);
+                var toolbar_width = $toolbar.outerWidth();
+                // Point is the top/bottom-center of the button
+                var left = offset.left + parseInt($button.width() / 2) - parseInt(toolbar_width / 2);
                 var top = offset.top;
                 if( toolbar_top )
-                    top += $button.height();
+                    top += $button.outerHeight();
                 else
                     top -= $toolbar.height();
-                $toolbar.css({ left: left+'px',
-                               top: top+'px',
+                // Trim to viewport
+                var viewport_width = $(window).width();
+                if( left + toolbar_width > viewport_width - 1 )
+                    left = viewport_width - toolbar_width - 1;
+                var scroll_left = fixed_parent() ? 0 : $(window).scrollLeft();
+                if( left < scroll_left + 1 )
+                    left = scroll_left + 1;
+                $toolbar.css({ left: left + 'px',
+                               top: top + 'px',
                                overflow: 'visible'
                              });
                 $toolbar.find('input[type=text]:first').focus();
@@ -725,6 +722,8 @@
                 var toolbar_position = (option.position && (option.position == 'top' || option.position == 'top-selection' || option.position == 'bottom' || option.position == 'bottom-selection' || option.position == 'selection')) ? option.position : 'top-selection';
                 var toolbar_buttons = option.buttons;
                 var toolbar_submit = option.submit;
+                var toolbar_fontnames = option.fontnames || {};
+                var toolbar_fontsizes = option.fontsizes || {};
                 var toolbar_smilies = option.smilies;
                 var label_dropfileclick = option.dropfileclick;
                 var content_styleWithCSS = option.styleWithCSS;
@@ -736,7 +735,7 @@
                 var onKeyEnter = option.onKeyEnter;
 
                 // Create the WYSIWYG Editor
-                var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_smilies, label_dropfileclick,
+                var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_fontnames, toolbar_fontsizes, toolbar_smilies, label_dropfileclick,
                                           content_styleWithCSS, content_insertBrOnReturn, placeholder_url, clip_image, clip_smiley, onImageUpload, onKeyEnter );
                 $that.data( 'wysiwyg', data );
             });
@@ -761,13 +760,13 @@
                 data.wysiwygeditor.highlight( param ).closePopup().collapseSelection();
             }
             else if( option == 'format' ) {
-                data.wysiwygeditor.format( param ).closePopup().collapseSelection(); 
+                data.wysiwygeditor.format( param ).closePopup().collapseSelection();
             }
             else if( option == 'fontname' ) {
-                data.wysiwygeditor.fontName( param ).closePopup().collapseSelection();  
+                data.wysiwygeditor.fontName( param ).closePopup().collapseSelection();
             }
             else if( option == 'fontsize' ) {
-                data.wysiwygeditor.fontSize( param ).closePopup().collapseSelection(); 
+                data.wysiwygeditor.fontSize( param ).closePopup().collapseSelection();
             }
             else if( option == 'insertlink' ) {
                 wysiwygeditor_insertLink(data.wysiwygeditor,param).closePopup().collapseSelection();
