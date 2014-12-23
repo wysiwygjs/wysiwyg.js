@@ -67,33 +67,6 @@
     var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_fontnames, toolbar_fontsizes, toolbar_smilies, label_dropfileclick,
                                   content_styleWithCSS, content_insertBrOnReturn, placeholder_url, clip_image, clip_smiley, onImageUpload, onKeyEnter )
     {
-        // Content: Smilies
-        var content_smilies = function(wysiwygeditor)
-        {
-            var $content = $('<div/>').addClass('wysiwyg-toolbar-smilies')
-                                      .attr('unselectable','on');
-            var smiley_sum_width = 0;
-            $.each( toolbar_smilies, function(index,smiley){
-                if( index != 0 )
-                    $content.append(' ');
-                var $image = $(smiley).attr('unselectable','on');
-                if( clip_smiley )
-                    smiley_sum_width += resize_image( $image, clip_smiley[0], clip_smiley[1] );
-                // Append smiley
-                var imagehtml = ' '+$('<div/>').append($image.clone()).html()+' ';
-                $image
-                    .css({ cursor: 'pointer' })
-                    .click(function(event){
-                        // do not close popup
-                        wysiwygeditor.insertHTML( imagehtml );
-                    })
-                    .appendTo( $content );
-            });
-            if( smiley_sum_width )
-                $content.css({ maxWidth: parseInt(smiley_sum_width*1.35/4)+'px' })
-            return $content;
-        };
-
         // Content: Insert link
         var wysiwygeditor_insertLink = function( wysiwygeditor, url )
         {
@@ -129,6 +102,33 @@
             var $content = $('<div/>').addClass('wysiwyg-toolbar-form')
                                       .attr('unselectable','on');
             $content.append($inputurl).append($okaybutton);
+            return $content;
+        };
+
+        // Content: Smilies
+        var content_smilies = function(wysiwygeditor)
+        {
+            var $content = $('<div/>').addClass('wysiwyg-toolbar-smilies')
+                                      .attr('unselectable','on');
+            var smiley_sum_width = 0;
+            $.each( toolbar_smilies, function(index,smiley){
+                if( index != 0 )
+                    $content.append(' ');
+                var $image = $(smiley).attr('unselectable','on');
+                if( clip_smiley )
+                    smiley_sum_width += resize_image( $image, clip_smiley[0], clip_smiley[1] );
+                // Append smiley
+                var imagehtml = ' '+$('<div/>').append($image.clone()).html()+' ';
+                $image
+                    .css({ cursor: 'pointer' })
+                    .click(function(event){
+                        // do not close popup
+                        wysiwygeditor.insertHTML( imagehtml );
+                    })
+                    .appendTo( $content );
+            });
+            if( smiley_sum_width )
+                $content.css({ maxWidth: parseInt(smiley_sum_width*1.35/4)+'px' });
             return $content;
         };
 
@@ -461,7 +461,7 @@
                         toolbar_handler( event.currentTarget );
                         // Give the focus back to the editor. Technically not necessary
                         if( get_toolbar_handler(key) ) // only if not a popup-handler
-                            wysiwygeditor.getElement().focus()
+                            wysiwygeditor.getElement().focus();
                         event.stopPropagation();
                         event.preventDefault();
                         return false;
@@ -618,7 +618,10 @@
         var $wrapper = false;
         if( placeholder )
         {
-            $wrapper = $('<div/>').addClass('wysiwyg-wrapper');
+            $wrapper = $('<div/>').addClass('wysiwyg-wrapper')
+                                  .click(function(){     // Clicking the placeholder focus editor - fixes IE6-IE8
+                                     wysiwygeditor.getElement().focus();
+                                  });
             $textarea.wrap( $wrapper );
             $wrapper = $textarea.parent( '.wysiwyg-wrapper' );
         }
@@ -657,39 +660,52 @@
                 var handle = wysiwygeditor.openPopup();
                 if( ! handle )
                     return ;
-                var $toolbar = $(handle);
-                if( $toolbar.hasClass('wysiwyg-popup') && $toolbar.hasClass('wysiwyg-arrowtop') )
-                    $toolbar = $(wysiwygeditor.closePopup().openPopup()); // wrong popup -> create a new one
-                if( ! $toolbar.hasClass('wysiwyg-popup') )
+                var $popup = $(handle);
+                if( $popup.hasClass('wysiwyg-popup') && $popup.hasClass('wysiwyg-arrowtop') )
+                    $popup = $(wysiwygeditor.closePopup().openPopup()); // wrong popup -> create a new one
+                if( ! $popup.hasClass('wysiwyg-popup') )
                 {
                     // add classes + content
-                    $toolbar.addClass( 'wysiwyg-popup' )
-                            .css('position', fixed_parent() ? 'fixed' : 'absolute' );
-                    $toolbar.append( $content );
+                    $popup.addClass( 'wysiwyg-popup' )
+                          .css('position', fixed_parent() ? 'fixed' : 'absolute' );
+                    $popup.append( $content );
                 }
                 // Popup position
                 var $button = $(target);
                 var offset = fixed_offset($button);
-                var toolbar_width = $toolbar.outerWidth();
+                var popup_width = $popup.outerWidth();
                 // Point is the top/bottom-center of the button
-                var left = offset.left + parseInt($button.width() / 2) - parseInt(toolbar_width / 2);
+                var left = offset.left + parseInt($button.width() / 2) - parseInt(popup_width / 2);
                 var top = offset.top;
                 if( toolbar_top )
                     top += $button.outerHeight();
                 else
-                    top -= $toolbar.height();
+                    top -= $popup.height();
+                // Smilies do not close on click, so cover the toolbar
+                if( $content.hasClass('wysiwyg-toolbar-smilies') )
+                {
+                    $content.css({ maxWidth: parseInt($container.width()*0.95)+'px' });
+                    popup_width = $popup.outerWidth();
+                    offset = fixed_offset($toolbar);
+                    left = offset.left + parseInt($container.width() / 2) - parseInt(popup_width / 2);
+                    var top = offset.top;
+                    if( toolbar_top )
+                        top -= $popup.height() - parseInt($button.outerHeight() * 1/4);
+                    else
+                        top += parseInt($button.outerHeight() * 3/4);
+                }
                 // Trim to viewport
                 var viewport_width = $(window).width();
-                if( left + toolbar_width > viewport_width - 1 )
-                    left = viewport_width - toolbar_width - 1;
+                if( left + popup_width > viewport_width - 1 )
+                    left = viewport_width - popup_width - 1;
                 var scroll_left = fixed_parent() ? 0 : $(window).scrollLeft();
                 if( left < scroll_left + 1 )
                     left = scroll_left + 1;
-                $toolbar.css({ left: left + 'px',
-                               top: top + 'px',
-                               overflow: 'visible'
-                             });
-                $toolbar.find('input[type=text]:first').focus();
+                $popup.css({ left: left + 'px',
+                             top: top + 'px',
+                             overflow: 'visible'
+                           });
+                $popup.find('input[type=text]:first').focus();
             });
             if( toolbar_top )
                 $container.prepend( $toolbar );
