@@ -11,6 +11,7 @@ It does only:
 * onselection-event: e.g. to open a toolbar
 * onkeypress-event: e.g. to handle hotkeys
 * onplaceholder-event: show/hide a placeholder
+* .bold(), .forecolor(), .inserthtml(), ... functions
 
 It works with:
 * Internet Explorer 6+
