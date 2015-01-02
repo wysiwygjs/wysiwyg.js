@@ -42,23 +42,37 @@
             var html = '<a href="' + url.replace(/"/,'&quot;') + '">' + url + '</a>';
             return wysiwygeditor.insertHTML( html );
         };
-        var content_insertlink = function(wysiwygeditor)
+        var content_insertlink = function(wysiwygeditor, $modify_link)
         {
             var $button = toolbar_button( toolbar_submit );
-            var $inputurl = $('<input type="text" value=""' + (placeholder_url ? ' placeholder="'+placeholder_url+'"' : '') + ' />').addClass('wysiwyg-input')
+            var $inputurl = $('<input type="text" value="' + ($modify_link ? $modify_link.attr('href') : '') + '"' + (placeholder_url ? ' placeholder="'+placeholder_url+'"' : '') + ' />').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which != 10 && event.which != 13 )
                                         return ;
-                                    // Catch 'NS_ERROR_FAILURE' on Firefox 34
-                                    try {
-                                        wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();
+                                    if( $modify_link )
+                                    {
+                                        $modify_link.attr( 'href', $inputurl.val() );
+                                        wysiwygeditor.closePopup().collapseSelection();
                                     }
-                                    catch( e ) {
-                                        wysiwygeditor.closePopup();
+                                    else
+                                    {
+                                        // Catch 'NS_ERROR_FAILURE' on Firefox 34
+                                        try {
+                                            wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();
+                                        }
+                                        catch( e ) {
+                                            wysiwygeditor.closePopup();
+                                        }
                                     }
                                 });
             var $okaybutton = $button.click(function(event){
-                                    wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();
+                                    if( $modify_link )
+                                    {
+                                        $modify_link.attr( 'href', $inputurl.val() );
+                                        wysiwygeditor.closePopup().collapseSelection();
+                                    }
+                                    else
+                                        wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();
                                     event.stopPropagation();
                                     event.preventDefault();
                                     return false;
@@ -442,21 +456,25 @@
                     },
                 onselection: function( collapsed, rect, nodes, rightclick )
                     {
-                        var want_toolbar = true;
+                        var show_toolbar = true,
+                            $modify_link = null;
+                        // Click on a link?
+                        if( nodes.length == 1 && $(nodes[0]).parents('a').length != 0 ) // nodes is not a sparse array
+                            $modify_link = $(nodes[0]).parents('a:first');
                         // No selection-toolbar wanted?
-                        if( ! rightclick && toolbar_position != 'top-selection' && toolbar_position != 'bottom-selection' && toolbar_position != 'selection' )
-                            want_toolbar = false;
+                        else if( ! rightclick && toolbar_position != 'top-selection' && toolbar_position != 'bottom-selection' && toolbar_position != 'selection' )
+                            show_toolbar = false;
                         // Selection properties
                         else if( rect === undefined || ! rightclick )
                         {
                             // Nothing selected?
                             if( collapsed || rect === undefined )
-                                want_toolbar = false;
+                                show_toolbar = false;
                             // Only one image?
-                            else if( nodes.length == 1 && nodes.shift().nodeName == 'IMG' )
-                                want_toolbar = false;
+                            else if( nodes.length == 1 && nodes[0].nodeName == 'IMG' ) // nodes is not a sparse array
+                                show_toolbar = false;
                         }
-                        if( ! want_toolbar )
+                        if( ! show_toolbar )
                         {
                             wysiwygeditor.closePopup();
                             return ;
@@ -500,6 +518,8 @@
                                 function( $popup ) {
                                     apply_toolbar_position();
                                 });
+                            if( $modify_link )
+                                $toolbar.empty().append( content_insertlink(wysiwygeditor, $modify_link) );
                         }
                         // Toolbar position
                         apply_toolbar_position();
