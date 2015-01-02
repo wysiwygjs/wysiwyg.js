@@ -142,8 +142,8 @@
     background: none white;
     border: 1px solid #aaaaaa;
     width: 20em;
-    height: 16px;
-    padding: 7px 4px;  /* 8 - border(1) = 7 */
+    height: 20px;
+    padding: 5px 4px;  /* 8 - extraheight(2) - border(1) = 5 */
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     -o-border-radius: 3px;
