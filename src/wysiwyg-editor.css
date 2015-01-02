@@ -1,5 +1,5 @@
 /*
- * If you prefer to host 'FontAwesome' local
+ * If you prefer to host 'FontAwesome' on your server
 @font-face {
     font-family: 'FontAwesome';
     src: url('fonts/fontawesome-webfont.eot?v=4.2.0');
@@ -42,20 +42,19 @@
     color: #cccccc;
     background: transparent;
 }
+.wysiwyg-toolbar {
+    overflow: hidden;
+    white-space: nowrap;
+}
 .wysiwyg-toolbar-top {
     border-bottom: 1px solid #aaaaaa;
     padding: 0;
-    overflow: hidden;
-    white-space: nowrap;
 }
 .wysiwyg-toolbar-bottom {
     border-top: 1px solid #aaaaaa;
     padding: 0 5px;
-    overflow: hidden;
-    white-space: nowrap;
 }
-.wysiwyg-toolbar-top a,
-.wysiwyg-toolbar-bottom a {
+.wysiwyg-toolbar a {
     vertical-align: top;
 }
 .wysiwyg-popup {
@@ -130,39 +129,10 @@
     padding: 10px;
     white-space: nowrap;
 }
-.wysiwyg-toolbar-smilies {
-    padding: 10px;
-    text-align: center;
-    white-space: normal;
-}
-.wysiwyg-toolbar-smilies img {
-    display: -moz-inline-stack; /* inline-block: http://blog.mozilla.org/webdev/2009/02/20/cross-browser-inline-block/ */
-    display: inline-block;
-    *display: inline;
-}
 .wysiwyg-toolbar-color {
     width: 12px;
     height: 12px;
     cursor: pointer;
-}
-.wysiwyg-toolbar-list {
-    max-height: 16em;
-    overflow: auto;
-    overflow-x: hidden;
-    overflow-y: scroll;
-}
-.wysiwyg-toolbar-list a,
-.wysiwyg-toolbar-list a:link,
-.wysiwyg-toolbar-list a:visited {
-    display: block;
-    color: black;
-    padding: 5px 10px;
-    text-decoration: none;
-    cursor: pointer;
-}
-.wysiwyg-toolbar-list a:hover {
-    color: HighlightText;
-    background-color: Highlight;
 }
 .wysiwyg-input {
     display: -moz-inline-stack;

@@ -27,45 +27,9 @@
                      (hb.length < 2 ? '0' : '') + hb;
     };
 
-    // Resize image
-    var resize_image = function( $image, max_width, max_height )
-    {
-        var image_width, image_height;
-        if( $image.is(':visible') )
-        {
-            image_width = $image.width();
-            image_height = $image.height();
-        }
-        else
-        {
-            image_width = $image.attr('width');
-            image_height = $image.attr('height');
-            if( ! image_width || ! image_height )
-                return 0;
-            image_width = parseInt(image_width);
-            image_height = parseInt(image_height);
-        }
-        if( image_width > max_width || image_height > max_height )
-        {
-            if( (image_width/image_height) > (max_width/max_height) )
-            {
-                image_height = parseInt(image_height / image_width * max_width);
-                image_width = max_width;
-            }
-            else
-            {
-                image_width = parseInt(image_width / image_height * max_height);
-                image_height = max_height;
-            }
-            $image.attr('width',image_width)
-                  .attr('height',image_height);
-        }
-        return image_width;
-    };
-
     // Create the Editor
-    var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_fontnames, toolbar_fontsizes, toolbar_smilies, label_dropfileclick,
-                                  content_styleWithCSS, content_insertBrOnReturn, placeholder_url, clip_image, clip_smiley, onImageUpload, onKeyEnter )
+    var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_dropfileclick,
+                                  placeholder_url, max_imagesize, onImageUpload, onKeyEnter )
     {
         // Content: Insert link
         var wysiwygeditor_insertLink = function( wysiwygeditor, url )
@@ -105,33 +69,6 @@
             return $content;
         };
 
-        // Content: Smilies
-        var content_smilies = function(wysiwygeditor)
-        {
-            var $content = $('<div/>').addClass('wysiwyg-toolbar-smilies')
-                                      .attr('unselectable','on');
-            var smiley_sum_width = 0;
-            $.each( toolbar_smilies, function(index,smiley){
-                if( index != 0 )
-                    $content.append(' ');
-                var $image = $(smiley).attr('unselectable','on');
-                if( clip_smiley )
-                    smiley_sum_width += resize_image( $image, clip_smiley[0], clip_smiley[1] );
-                // Append smiley
-                var imagehtml = ' '+$('<div/>').append($image.clone()).html()+' ';
-                $image
-                    .css({ cursor: 'pointer' })
-                    .click(function(event){
-                        // do not close popup
-                        wysiwygeditor.insertHTML( imagehtml );
-                    })
-                    .appendTo( $content );
-            });
-            if( smiley_sum_width )
-                $content.css({ maxWidth: parseInt(smiley_sum_width*1.35/4)+'px' });
-            return $content;
-        };
-
         // Content: Insert image
         var content_insertimage = function(wysiwygeditor)
         {
@@ -141,14 +78,31 @@
                 var html = '<img id="wysiwyg-insert-image" src="" alt=""' + (filename ? ' title="'+filename.replace(/"/,'&quot;')+'"' : '') + ' />';
                 wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
                 var $image = $('#wysiwyg-insert-image').removeAttr('id');
-                if( clip_image )
+                if( max_imagesize )
                 {
-                    $image.css({maxWidth: clip_image[0]+'px',
-                                maxHeight: clip_image[1]+'px'})
+                    $image.css({maxWidth: max_imagesize[0]+'px',
+                                maxHeight: max_imagesize[1]+'px'})
                           .load( function() {
                                 $image.css({maxWidth: '',
                                             maxHeight: ''});
-                                resize_image( $image, clip_image[0], clip_image[1] );
+                                // Resize $image to fit "clip-image"
+                                var image_width = $image.width(),
+                                    image_height = $image.height();
+                                if( image_width > max_imagesize[0] || image_height > max_imagesize[1] )
+                                {
+                                    if( (image_width/image_height) > (max_imagesize[0]/max_imagesize[1]) )
+                                    {
+                                        image_height = parseInt(image_height / image_width * max_imagesize[0]);
+                                        image_width = max_imagesize[0];
+                                    }
+                                    else
+                                    {
+                                        image_width = parseInt(image_width / image_height * max_imagesize[1]);
+                                        image_height = max_imagesize[1];
+                                    }
+                                    $image.attr('width',image_width)
+                                          .attr('height',image_height);
+                                }
                             });
                 }
                 $image.attr('src', url);
@@ -241,44 +195,6 @@
             return $content;
         };
 
-        // Fontname + Fontsize
-        var content_fontname = function(wysiwygeditor)
-        {
-            var $content = $('<div/>').addClass('wysiwyg-toolbar-list')
-                                      .attr('unselectable','on');
-            $.each( toolbar_fontnames, function( name, font ){
-                var $link = $('<a/>').attr('href','#')
-                                     .css( 'font-family', font )
-                                     .html( name )
-                                     .click(function(event){
-                                        wysiwygeditor.fontName(font).closePopup().collapseSelection();
-                                        event.stopPropagation();
-                                        event.preventDefault();
-                                        return false;
-                                     });
-                $content.append( $link );
-            });
-            return $content;
-        };
-        var content_fontsize = function(wysiwygeditor)
-        {
-            var $content = $('<div/>').addClass('wysiwyg-toolbar-list')
-                                      .attr('unselectable','on');
-            $.each( toolbar_fontsizes, function( name, size ){
-                var $link = $('<a/>').attr('href','#')
-                                     .css( 'font-size', (8 + (size * 3)) + 'px' )
-                                     .html( name )
-                                     .click(function(event){
-                                        wysiwygeditor.fontSize(size).closePopup().collapseSelection();
-                                        event.stopPropagation();
-                                        event.preventDefault();
-                                        return false;
-                                     });
-                $content.append( $link );
-            });
-            return $content;
-        };
-
         // Content: Color palette
         var content_colorpalette = function( wysiwygeditor, forecolor )
         {
@@ -329,12 +245,6 @@
         {
             switch( name )
             {
-                case 'smilies':
-                    if( ! popup_callback )
-                        return null;
-                    return function( target ) {
-                        popup_callback( content_smilies(wysiwygeditor), target );
-                    };
                 case 'insertimage':
                     if( ! popup_callback )
                         return null;
@@ -346,18 +256,6 @@
                         return null;
                     return function( target ) {
                         popup_callback( content_insertlink(wysiwygeditor), target );
-                    };
-                case 'fontname':
-                    if( ! popup_callback )
-                        return null;
-                    return function( target ) {
-                        popup_callback( content_fontname(wysiwygeditor), target );
-                    };
-                case 'fontsize':
-                    if( ! popup_callback )
-                        return null;
-                    return function( target ) {
-                        popup_callback( content_fontsize(wysiwygeditor), target );
                     };
                 case 'bold':
                     return function() {
@@ -443,7 +341,7 @@
                             .attr('unselectable','on')
                             .append(button.image);
         };
-        var add_buttons_to_toolbar = function( $toolbar, popup_callback, selection )
+        var add_buttons_to_toolbar = function( $toolbar, selection, popup_open_callback, popup_position_callback )
         {
             $.each( toolbar_buttons, function(key, value) {
                 if( ! value )
@@ -454,7 +352,27 @@
                 // Skip buttons on selection
                 if( selection && 'selection' in value && ! value.selection )
                     return ;
-                var toolbar_handler = get_toolbar_handler( key, popup_callback );
+                // Click handler
+                var toolbar_handler;
+                if( 'click' in value )
+                    toolbar_handler = function( target ) {
+                        value.click( $(target) );
+                    };
+                else if( 'popup' in value )
+                    toolbar_handler = function( target ) {
+                        var $popup = popup_open_callback();
+                        var apply_position = value.popup( $popup, $container, $(target) );
+                        if( apply_position !== false )
+                            popup_position_callback( $popup, target );
+                    };
+                else
+                    toolbar_handler = get_toolbar_handler( key, function( $content, target ) {
+                        var $popup = popup_open_callback();
+                        $popup.append( $content );
+                        popup_position_callback( $popup, target );
+                        $popup.find('input[type=text]:first').focus();
+                    });
+                // Create the toolbar button
                 var $button;
                 if( toolbar_handler )
                     $button = toolbar_button( value ).click( function(event) {
@@ -466,9 +384,10 @@
                         event.preventDefault();
                         return false;
                     });
-                else
+                else if( value.html )
                     $button = $(value.html);
-                $toolbar.append( $button );
+                if( $button )
+                    $toolbar.append( $button );
             });
         };
         var fixed_parent = function()
@@ -574,12 +493,13 @@
                             // add classes + buttons
                             $toolbar.addClass( 'wysiwyg-popup wysiwyg-arrowtop' )
                                     .css('position', fixed_parent() ? 'fixed' : 'absolute' );
-                            add_buttons_to_toolbar( $toolbar, function( $content )
-                            {
-                                $toolbar.empty().append( $content );
-                                $toolbar.find('input[type=text]:first').focus();
-                                apply_toolbar_position();
-                            }, true );
+                            add_buttons_to_toolbar( $toolbar, true,
+                                function() {
+                                    return $toolbar.empty();
+                                },
+                                function( $popup ) {
+                                    apply_toolbar_position();
+                                });
                         }
                         // Toolbar position
                         apply_toolbar_position();
@@ -601,8 +521,6 @@
             }
 
             var wysiwygeditor = wysiwyg( option );
-            if( wysiwygeditor && (content_styleWithCSS !== undefined || content_insertBrOnReturn !== undefined) )
-                wysiwygeditor.markup( content_styleWithCSS || false, content_insertBrOnReturn || false );
             return wysiwygeditor;
         }
 
@@ -650,63 +568,50 @@
             commands[key] = toolbar_handler;
         });
 
-        // Toolbar top or bottom
+        // Toolbar on top or bottom
         if( toolbar_position != 'selection' )
         {
             var toolbar_top = toolbar_position == 'top' || toolbar_position == 'top-selection';
-            var $toolbar = $('<div/>').addClass( toolbar_top ? 'wysiwyg-toolbar-top' : 'wysiwyg-toolbar-bottom' );
-            add_buttons_to_toolbar( $toolbar, function( $content, target ){
-                // Open a popup from the toolbar
-                var handle = wysiwygeditor.openPopup();
-                if( ! handle )
-                    return ;
-                var $popup = $(handle);
-                if( $popup.hasClass('wysiwyg-popup') && $popup.hasClass('wysiwyg-arrowtop') )
-                    $popup = $(wysiwygeditor.closePopup().openPopup()); // wrong popup -> create a new one
-                if( ! $popup.hasClass('wysiwyg-popup') )
-                {
-                    // add classes + content
-                    $popup.addClass( 'wysiwyg-popup' )
-                          .css('position', fixed_parent() ? 'fixed' : 'absolute' );
-                    $popup.append( $content );
-                }
-                // Popup position
-                var $button = $(target);
-                var offset = fixed_offset($button);
-                var popup_width = $popup.outerWidth();
-                // Point is the top/bottom-center of the button
-                var left = offset.left + parseInt($button.width() / 2) - parseInt(popup_width / 2);
-                var top = offset.top;
-                if( toolbar_top )
-                    top += $button.outerHeight();
-                else
-                    top -= $popup.height();
-                // Smilies do not close on click, so cover the toolbar
-                if( $content.hasClass('wysiwyg-toolbar-smilies') )
-                {
-                    $content.css({ maxWidth: parseInt($container.width()*0.95)+'px' });
-                    popup_width = $popup.outerWidth();
-                    offset = fixed_offset($toolbar);
-                    left = offset.left + parseInt($container.width() / 2) - parseInt(popup_width / 2);
+            var $toolbar = $('<div/>').addClass( 'wysiwyg-toolbar' ).addClass( toolbar_top ? 'wysiwyg-toolbar-top' : 'wysiwyg-toolbar-bottom' );
+            add_buttons_to_toolbar( $toolbar, false,
+                function() {
+                    // Open a popup from the toolbar
+                    var $popup = $(wysiwygeditor.openPopup());
+                    // if wrong popup -> create a new one
+                    if( $popup.hasClass('wysiwyg-popup') && $popup.hasClass('wysiwyg-arrowtop') )
+                        $popup = $(wysiwygeditor.closePopup().openPopup());
+                    if( ! $popup.hasClass('wysiwyg-popup') )
+                    {
+                        // add classes + content
+                        $popup.addClass( 'wysiwyg-popup' )
+                              .css('position', fixed_parent() ? 'fixed' : 'absolute' );
+                    }
+                    return $popup;
+                },
+                function( $popup, target ) {
+                    // Popup position
+                    var $button = $(target);
+                    var popup_width = $popup.outerWidth();
+                    // Point is the top/bottom-center of the button
+                    var offset = fixed_offset($button);
+                    var left = offset.left + parseInt($button.width() / 2) - parseInt(popup_width / 2);
                     var top = offset.top;
                     if( toolbar_top )
-                        top -= $popup.height() - parseInt($button.outerHeight() * 1/4);
+                        top += $button.outerHeight();
                     else
-                        top += parseInt($button.outerHeight() * 3/4);
-                }
-                // Trim to viewport
-                var viewport_width = $(window).width();
-                if( left + popup_width > viewport_width - 1 )
-                    left = viewport_width - popup_width - 1;
-                var scroll_left = fixed_parent() ? 0 : $(window).scrollLeft();
-                if( left < scroll_left + 1 )
-                    left = scroll_left + 1;
-                $popup.css({ left: left + 'px',
-                             top: top + 'px',
-                             overflow: 'visible'
-                           });
-                $popup.find('input[type=text]:first').focus();
-            });
+                        top -= $popup.height();
+                    // Trim left to viewport
+                    var viewport_width = $(window).width();
+                    if( left + popup_width > viewport_width - 1 )
+                        left = viewport_width - popup_width - 1;
+                    var scroll_left = fixed_parent() ? 0 : $(window).scrollLeft();
+                    if( left < scroll_left + 1 )
+                        left = scroll_left + 1;
+                    $popup.css({ left: left + 'px',
+                                 top: top + 'px',
+                                 overflow: 'visible'
+                               });
+                });
             if( toolbar_top )
                 $container.prepend( $toolbar );
             else
@@ -738,21 +643,15 @@
                 var toolbar_position = (option.position && (option.position == 'top' || option.position == 'top-selection' || option.position == 'bottom' || option.position == 'bottom-selection' || option.position == 'selection')) ? option.position : 'top-selection';
                 var toolbar_buttons = option.buttons;
                 var toolbar_submit = option.submit;
-                var toolbar_fontnames = option.fontnames || {};
-                var toolbar_fontsizes = option.fontsizes || {};
-                var toolbar_smilies = option.smilies;
                 var label_dropfileclick = option.dropfileclick;
-                var content_styleWithCSS = option.styleWithCSS;
-                var content_insertBrOnReturn = option.insertBrOnReturn;
                 var placeholder_url = option.placeholderUrl || null;
-                var clip_image = option.clipImage || null;
-                var clip_smiley = option.clipSmiley || null;
+                var max_imagesize = option.maxImageSize || null;
                 var onImageUpload = option.onImageUpload;
                 var onKeyEnter = option.onKeyEnter;
 
                 // Create the WYSIWYG Editor
-                var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, toolbar_fontnames, toolbar_fontsizes, toolbar_smilies, label_dropfileclick,
-                                          content_styleWithCSS, content_insertBrOnReturn, placeholder_url, clip_image, clip_smiley, onImageUpload, onKeyEnter );
+                var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_dropfileclick,
+                                          placeholder_url, max_imagesize, onImageUpload, onKeyEnter );
                 $that.data( 'wysiwyg', data );
             });
         }
@@ -769,29 +668,35 @@
                 else
                     return data.wysiwygeditor.getHTML();
             }
+            else if( option == 'selected-html' ) {
+                return data.wysiwygeditor.getSelectedHTML();
+            }
+            else if( option == 'close-popup' ) {
+                data.wysiwygeditor.closePopup().collapseSelection();
+            }
             else if( option == 'forecolor' ) {
-                data.wysiwygeditor.forecolor( param ).closePopup().collapseSelection();
+                data.wysiwygeditor.forecolor( param );
             }
             else if( option == 'highlight' ) {
-                data.wysiwygeditor.highlight( param ).closePopup().collapseSelection();
+                data.wysiwygeditor.highlight( param );
             }
             else if( option == 'format' ) {
-                data.wysiwygeditor.format( param ).closePopup().collapseSelection();
+                data.wysiwygeditor.format( param );
             }
             else if( option == 'fontname' ) {
-                data.wysiwygeditor.fontName( param ).closePopup().collapseSelection();
+                data.wysiwygeditor.fontName( param );
             }
             else if( option == 'fontsize' ) {
-                data.wysiwygeditor.fontSize( param ).closePopup().collapseSelection();
+                data.wysiwygeditor.fontSize( param );
             }
             else if( option == 'insertlink' ) {
-                wysiwygeditor_insertLink(data.wysiwygeditor,param).closePopup().collapseSelection();
+                wysiwygeditor_insertLink(data.wysiwygeditor,param);
             }
             else if( option == 'insertimage' ) {
-                data.wysiwygeditor.insertImage( param ).closePopup().collapseSelection();
+                data.wysiwygeditor.insertImage( param );
             }
             else if( option == 'inserthtml' ) {
-                data.wysiwygeditor.insertHTML( param ).closePopup().collapseSelection();
+                data.wysiwygeditor.insertHTML( param );
             }
             else if( data.commands[option] )
                 data.commands[option]( param );

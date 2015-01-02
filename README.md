@@ -24,11 +24,13 @@ If a &lt;textarea&gt; was used as 'element', the library:
 * falls back to the &lt;textarea&gt; if the browser does not support 'contenteditable'
 * Old iOS and Android 2.3- also degrade to &lt;textarea&gt;
 
-There is also a (minified) 11k jQuery-plugin '$.wysiwyg()' to create a
+There is also a (minified) 10k jQuery-plugin '$.wysiwyg()' to create a
 full-featured editor which depends on:
 * wysiwyg.js
 * jQuery
-* FontAwesome (or PNG images)
+* FontAwesome (or JPG/PNG/GIF/SVG images)
+The toolbar is easy to extend.
+It is used on a website with 300M page impressions a month.
 
 wysiwyg.js-API:
 ==========
@@ -57,7 +59,6 @@ wysiwygeditor.openPopup(); -> popup-handle
 wysiwygeditor.closePopup();
 
 // exec commands:
-wysiwygeditor.markup( styleWithCSS, insertBrOnReturn );
 wysiwygeditor.removeFormat();
 wysiwygeditor.bold();
 wysiwygeditor.italic();
@@ -88,11 +89,8 @@ var $editor = $('#editor').wysiwyg({
     submit = { ... },
     smilies = { ... },
     dropfileclick: 'Click or drop image',
-    styleWithCSS: false,
-    insertBrOnReturn: false,
     placeholderUrl: 'www.example.com',
-    clipImage: [width,height] | false,
-    clipSmiley: [width,height] | false,
+    maxImageSize: [width,height],
     onImageUpload: function( insert_image ),
     onEnterSubmit: function()
 })
@@ -101,6 +99,8 @@ var $editor = $('#editor').wysiwyg({
 .change(function(){});
 $editor.wysiwyg('html');
 $editor.wysiwyg('html','new html');
+$editor.wysiwyg('selected-html');
+$editor.wysiwyg('close-popup');
 $editor.wysiwyg('bold');
 $editor.wysiwyg('italic');
 $editor.wysiwyg('underline');
@@ -113,15 +113,15 @@ $editor.wysiwyg('alignright');
 $editor.wysiwyg('alignjustify');
 $editor.wysiwyg('subscript');
 $editor.wysiwyg('superscript');
-$editor.wysiwyg('format', tagname );
-$editor.wysiwyg('fontname', fontname );
-$editor.wysiwyg('fontsize', fontsize );
+$editor.wysiwyg('format',tagname);
+$editor.wysiwyg('fontname',fontname);
+$editor.wysiwyg('fontsize',fontsize);
 $editor.wysiwyg('indent');
 $editor.wysiwyg('outdent');
 $editor.wysiwyg('orderedlist');
 $editor.wysiwyg('unorderedlist');
-$editor.wysiwyg('insertlink','http://url.com/');
-$editor.wysiwyg('insertimage','http://url.com/');
+$editor.wysiwyg('insertlink','http://www.example.com/page.html');
+$editor.wysiwyg('insertimage','http://www.example.com/image.gif');
 $editor.wysiwyg('inserthtml','html');
 $editor.wysiwyg('removeformat');
 ````

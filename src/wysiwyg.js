@@ -2,13 +2,18 @@
     'use strict';
 
     // http://stackoverflow.com/questions/97962/debounce-clicks-when-submitting-a-web-form
-    var debounce = function( callback, wait )
+    var debounce = function( callback, wait, cancelprevious )
     {
         var timeout;
         return function()
         {
             if( timeout )
-                return ;
+            {
+                if( cancelprevious )
+                    clearTimeout( timeout );
+                else
+                    return ;
+            }
             var context = this,
                 args = arguments;
             timeout = setTimeout(
@@ -578,7 +583,6 @@
                     openPopup: dummy_null,
                     closePopup: dummy_this,
                     // exec commands
-                    markup: dummy_this,
                     removeFormat: dummy_this,
                     bold: dummy_this,
                     italic: dummy_this,
@@ -826,7 +830,7 @@
         if( showPlaceholder || syncTextarea )
         {
             // debounce 'syncTextarea' a second time, because 'innerHTML' is quite burdensome
-            var debounced_syncTextarea = syncTextarea ? debounce( syncTextarea, 50 ) : null;
+            var debounced_syncTextarea = syncTextarea ? debounce( syncTextarea, 50, true ) : null;
             var changeHandler = function( e )
             {
                 if( showPlaceholder )
@@ -1102,16 +1106,6 @@
             closePopup: function()
             {
                 popupClose();
-                return this;
-            },
-            // exec commands
-            markup: function( styleWithCSS, insertBrOnReturn )
-            {
-                // This should be document-wide, so we don't need to set the focus
-                execCommand( 'styleWithCSS', styleWithCSS, false ); // ignore 'useCSS'
-                execCommand( 'insertBrOnReturn', insertBrOnReturn, false );
-                //execCommand( 'enableInlineTableEditing', enableInlineTableEditing, false );
-                //execCommand( 'enableObjectResizing', enableObjectResizing, false );
                 return this;
             },
             removeFormat: function()
