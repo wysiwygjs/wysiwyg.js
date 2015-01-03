@@ -361,10 +361,10 @@
                 if( ! value )
                     return ;
                 // Skip buttons on the toolbar
-                if( ! selection && 'toolbar' in value && ! value.toolbar )
+                if( selection === false && 'showstatic' in value && ! value.showstatic )
                     return ;
                 // Skip buttons on selection
-                if( selection && 'selection' in value && ! value.selection )
+                if( selection === true && 'showselection' in value && ! value.showselection )
                     return ;
                 // Click handler
                 var toolbar_handler;
@@ -457,23 +457,22 @@
                 onselection: function( collapsed, rect, nodes, rightclick )
                     {
                         var show_toolbar = true,
-                            $modify_link = null;
+                            $special_toolbar = null;
                         // Click on a link?
                         if( nodes.length == 1 && $(nodes[0]).parents('a').length != 0 ) // nodes is not a sparse array
-                            $modify_link = $(nodes[0]).parents('a:first');
+                            $special_toolbar = content_insertlink( wysiwygeditor, $(nodes[0]).parents('a:first') );
+                        // A right-click always opens the toolbar
+                        else if( rightclick )
+                            ;
                         // No selection-toolbar wanted?
-                        else if( ! rightclick && toolbar_position != 'top-selection' && toolbar_position != 'bottom-selection' && toolbar_position != 'selection' )
+                        else if( toolbar_position != 'selection' && toolbar_position != 'top-selection' && toolbar_position != 'bottom-selection' )
                             show_toolbar = false;
-                        // Selection properties
-                        else if( rect === undefined || ! rightclick )
-                        {
-                            // Nothing selected?
-                            if( collapsed || rect === undefined )
-                                show_toolbar = false;
-                            // Only one image?
-                            else if( nodes.length == 1 && nodes[0].nodeName == 'IMG' ) // nodes is not a sparse array
-                                show_toolbar = false;
-                        }
+                        // Selected toolbar wanted, but nothing selected (=selection collapsed)
+                        else if( rect === undefined || collapsed )
+                            show_toolbar = false;
+                        // Only one image? Better: Display a special image-toolbar
+                        else if( nodes.length == 1 && nodes[0].nodeName == 'IMG' ) // nodes is not a sparse array
+                            show_toolbar = false;
                         if( ! show_toolbar )
                         {
                             wysiwygeditor.closePopup();
@@ -500,26 +499,25 @@
                                            overflow: 'visible' });
                         };
                         // Open popup
-                        var handle = wysiwygeditor.openPopup();
-                        if( ! handle )
-                            return ;
-                        $toolbar = $(handle);
+                        $toolbar = $(wysiwygeditor.openPopup());
+                        // if wrong popup -> create a new one
                         if( $toolbar.hasClass('wysiwyg-popup') && ! $toolbar.hasClass('wysiwyg-arrowtop') )
-                            $toolbar = $(wysiwygeditor.closePopup().openPopup()); // wrong popup -> create a new one
+                            $toolbar = $(wysiwygeditor.closePopup().openPopup()); 
                         if( ! $toolbar.hasClass('wysiwyg-popup') )
                         {
                             // add classes + buttons
                             $toolbar.addClass( 'wysiwyg-popup wysiwyg-arrowtop' )
                                     .css('position', fixed_parent() ? 'fixed' : 'absolute' );
-                            add_buttons_to_toolbar( $toolbar, true,
-                                function() {
-                                    return $toolbar.empty();
-                                },
-                                function( $popup ) {
-                                    apply_toolbar_position();
-                                });
-                            if( $modify_link )
-                                $toolbar.empty().append( content_insertlink(wysiwygeditor, $modify_link) );
+                            if( $special_toolbar )
+                                $toolbar.empty().append( $special_toolbar );
+                            else 
+                                add_buttons_to_toolbar( $toolbar, true,
+                                    function() {
+                                        return $toolbar.empty();
+                                    },
+                                    function( $popup ) {
+                                        apply_toolbar_position();
+                                    });
                         }
                         // Toolbar position
                         apply_toolbar_position();
@@ -658,16 +656,16 @@
                     return ;
 
                 // Two modes: toolbar on top and on bottom
-                var classes = option.classes;
-                var placeholder = option.placeholder || $that.attr('placeholder');
-                var toolbar_position = (option.position && (option.position == 'top' || option.position == 'top-selection' || option.position == 'bottom' || option.position == 'bottom-selection' || option.position == 'selection')) ? option.position : 'top-selection';
-                var toolbar_buttons = option.buttons;
-                var toolbar_submit = option.submit;
-                var label_dropfileclick = option.dropfileclick;
-                var placeholder_url = option.placeholderUrl || null;
-                var max_imagesize = option.maxImageSize || null;
-                var onImageUpload = option.onImageUpload;
-                var onKeyEnter = option.onKeyEnter;
+                var classes = option.classes,
+                    placeholder = option.placeholder || $that.attr('placeholder'),
+                    toolbar_position = (option.position && (option.position == 'top' || option.position == 'top-selection' || option.position == 'bottom' || option.position == 'bottom-selection' || option.position == 'selection')) ? option.position : 'top-selection',
+                    toolbar_buttons = option.buttons,
+                    toolbar_submit = option.submit,
+                    label_dropfileclick = option.dropfileclick,
+                    placeholder_url = option.placeholderUrl || null,
+                    max_imagesize = option.maxImageSize || null,
+                    onImageUpload = option.onImageUpload,
+                    onKeyEnter = option.onKeyEnter;
 
                 // Create the WYSIWYG Editor
                 var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_dropfileclick,

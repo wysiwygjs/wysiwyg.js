@@ -27,8 +27,8 @@ $(document).ready(function(){
                                 else
                                     alert( 'Please selection some text' );
                             }),
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 // Dummy-Button-Plugin
                 dummybutton2: index != 1 ? false : {
@@ -37,8 +37,8 @@ $(document).ready(function(){
                     click: function( $button ) {
                             alert('Do something');
                            },
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 // Smiley-Plugin
                 smilies: {
@@ -168,14 +168,14 @@ $(document).ready(function(){
                             // prevent applying position
                             return false;
                            },
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: index == 2 ? true : false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: index == 2 ? true : false    // wanted on selection
                 },
                 insertimage: {
                     title: 'Insert image',
                     image: '\uf030', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 insertlink: {
                     title: 'Insert link',
@@ -212,8 +212,8 @@ $(document).ready(function(){
                             });
                             $popup.append( $list );
                            },
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 fontsize: index != 0 ? false : {
                     title: 'Size',
@@ -247,8 +247,8 @@ $(document).ready(function(){
                             });
                             $popup.append( $list );
                            },
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 bold: {
                     title: 'Bold (Ctrl+B)',
@@ -281,72 +281,74 @@ $(document).ready(function(){
                 alignleft: index != 0 ? false : {
                     title: 'Left',
                     image: '\uf036', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 aligncenter: index != 0 ? false : {
                     title: 'Center',
                     image: '\uf037', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 alignright: index != 0 ? false : {
                     title: 'Right',
                     image: '\uf038', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 alignjustify: index != 0 ? false : {
                     title: 'Justify',
                     image: '\uf039', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 subscript: index == 1 ? false : {
                     title: 'Subscript',
                     image: '\uf12c', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: true    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: true    // wanted on selection
                 },
                 superscript: index == 1 ? false : {
                     title: 'Superscript',
                     image: '\uf12b', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: true    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: true    // wanted on selection
                 },
                 indent: index != 0 ? false : {
                     title: 'Indent',
                     image: '\uf03c', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 outdent: index != 0 ? false : {
                     title: 'Outdent',
                     image: '\uf03b', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 orderedList: index != 0 ? false : {
                     title: 'Ordered list',
                     image: '\uf0cb', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 unorderedList: index != 0 ? false : {
                     title: 'Unordered list',
                     image: '\uf0ca', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    //toolbar: true,    // wanted on the toolbar
-                    selection: false    // wanted on selection
+                    //showstatic: true,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
                 },
                 removeformat: {
                     title: 'Remove format',
                     image: '\uf12d' // <img src="path/to/image.png" width="16" height="16" alt="" />
                 }
             },
+            // Submit-Button
             submit: {
                 title: 'Submit',
                 image: '\uf00c' // <img src="path/to/image.png" width="16" height="16" alt="" />
             },
+            // Other properties
             dropfileclick: 'Drop image or click',
             placeholderUrl: 'www.example.com',
             maxImageSize: [600,200]
