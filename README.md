@@ -29,6 +29,7 @@ to create a full-featured editor which depends on:
 * wysiwyg.js
 * jQuery
 * FontAwesome (or JPG/PNG/GIF/SVG images)
+
 The toolbar is easy to extend.
 It is used on a website with 300M page impressions a month.
 
