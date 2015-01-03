@@ -213,7 +213,7 @@ $(document).ready(function(){
                             $popup.append( $list );
                            },
                     //showstatic: true,    // wanted on the toolbar
-                    showselection: false    // wanted on selection
+                    showselection: index == 0 ? true : false    // wanted on selection
                 },
                 fontsize: index != 0 ? false : {
                     title: 'Size',
@@ -248,7 +248,7 @@ $(document).ready(function(){
                             $popup.append( $list );
                            },
                     //showstatic: true,    // wanted on the toolbar
-                    showselection: false    // wanted on selection
+                    showselection: index == 0 ? true : false    // wanted on selection
                 },
                 bold: {
                     title: 'Bold (Ctrl+B)',
