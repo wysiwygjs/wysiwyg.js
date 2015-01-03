@@ -30,7 +30,7 @@ to create a full-featured editor which depends on:
 * jQuery
 * FontAwesome (or JPG/PNG/GIF/SVG images)
 
-The toolbar is easy to extend.
+The toolbar is easy to extend - e.g. smiley, fontname and fontsize buttons below.
 It is used on a website with 300M page impressions a month.
 
 wysiwyg.js-API:
