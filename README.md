@@ -24,8 +24,8 @@ If a &lt;textarea&gt; was used as 'element', the library:
 * falls back to the &lt;textarea&gt; if the browser does not support 'contenteditable'
 * Old iOS and Android 2.3- also degrade to &lt;textarea&gt;
 
-There is also a (minified) 10k jQuery-plugin '$.wysiwyg()' to create a
-full-featured editor which depends on:
+There is also a (minified) 10k jQuery-plugin '$.wysiwyg()' - plus (minified) 2k CSS -
+to create a full-featured editor which depends on:
 * wysiwyg.js
 * jQuery
 * FontAwesome (or JPG/PNG/GIF/SVG images)

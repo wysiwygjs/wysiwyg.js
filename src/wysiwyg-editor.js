@@ -502,7 +502,7 @@
                         $toolbar = $(wysiwygeditor.openPopup());
                         // if wrong popup -> create a new one
                         if( $toolbar.hasClass('wysiwyg-popup') && ! $toolbar.hasClass('wysiwyg-arrowtop') )
-                            $toolbar = $(wysiwygeditor.closePopup().openPopup()); 
+                            $toolbar = $(wysiwygeditor.closePopup().openPopup());
                         if( ! $toolbar.hasClass('wysiwyg-popup') )
                         {
                             // add classes + buttons
@@ -510,7 +510,7 @@
                                     .css('position', fixed_parent() ? 'fixed' : 'absolute' );
                             if( $special_toolbar )
                                 $toolbar.empty().append( $special_toolbar );
-                            else 
+                            else
                                 add_buttons_to_toolbar( $toolbar, true,
                                     function() {
                                         return $toolbar.empty();
