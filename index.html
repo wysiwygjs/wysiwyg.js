@@ -44,7 +44,7 @@ $(document).ready(function(){
                 smilies: {
                     title: 'Smilies',
                     image: '\uf118', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    popup: function( $popup, $editor, $button ) {
+                    popup: function( $popup, $button, $editor ) {
                             var list_smilies = [
                                     '<img src="smiley/afraid.png" width="16" height="16" alt="" />',
                                     '<img src="smiley/amorous.png" width="16" height="16" alt="" />',
@@ -185,7 +185,7 @@ $(document).ready(function(){
                 fontname: index != 0 ? false : {
                     title: 'Font',
                     image: '\uf031', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    popup: function( $popup, $editor, $button ) {
+                    popup: function( $popup, $button, $editor ) {
                             var list_fontnames = {
                                     // Name : Font
                                     'Arial, Helvetica' : 'Arial,Helvetica',
@@ -218,7 +218,7 @@ $(document).ready(function(){
                 fontsize: index != 0 ? false : {
                     title: 'Size',
                     image: '\uf034', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    popup: function( $popup, $editor, $button ) {
+                    popup: function( $popup, $button, $editor ) {
                             var list_fontsizes = {
                                 // Name : Size
                                 'Huge'    : 7,

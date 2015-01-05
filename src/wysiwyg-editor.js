@@ -375,7 +375,7 @@
                 else if( 'popup' in value )
                     toolbar_handler = function( target ) {
                         var $popup = popup_open_callback();
-                        var apply_position = value.popup( $popup, $container, $(target) );
+                        var apply_position = value.popup( $popup, $(target), $container );
                         if( apply_position !== false )
                             popup_position_callback( $popup, target );
                     };
