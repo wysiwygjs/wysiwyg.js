@@ -182,7 +182,7 @@ $(document).ready(function(){
                     image: '\uf08e' // <img src="path/to/image.png" width="16" height="16" alt="" />
                 },
                 // Fontanme + Fontsize Plugin
-                fontname: index != 0 ? false : {
+                fontname: index == 1 ? false : {
                     title: 'Font',
                     image: '\uf031', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     popup: function( $popup, $button, $editor ) {
@@ -215,7 +215,7 @@ $(document).ready(function(){
                     //showstatic: true,    // wanted on the toolbar
                     showselection: index == 0 ? true : false    // wanted on selection
                 },
-                fontsize: index != 0 ? false : {
+                fontsize: index == 1 ? false : {
                     title: 'Size',
                     image: '\uf034', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     popup: function( $popup, $button, $editor ) {
@@ -246,9 +246,9 @@ $(document).ready(function(){
                                 $list.append( $link );
                             });
                             $popup.append( $list );
-                           },
+                           }
                     //showstatic: true,    // wanted on the toolbar
-                    showselection: index == 0 ? true : false    // wanted on selection
+                    //showselection: true    // wanted on selection
                 },
                 bold: {
                     title: 'Bold (Ctrl+B)',
