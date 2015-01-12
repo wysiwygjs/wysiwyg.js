@@ -9,10 +9,9 @@
         {
             if( timeout )
             {
-                if( cancelprevious )
-                    clearTimeout( timeout );
-                else
+                if( ! cancelprevious )
                     return ;
+                clearTimeout( timeout );
             }
             var context = this,
                 args = arguments;
@@ -542,7 +541,7 @@
             {
                 // Sniffer useragent...
                 var webkit = navigator.userAgent.match(/(?:iPad|iPhone|Android).* AppleWebKit\/([^ ]+)/);
-                if( webkit && parseInt(webkit[1]) < 534 )
+                if( webkit && 420 <= parseInt(webkit[1]) && parseInt(webkit[1]) < 534 ) // iPhone 1 was Webkit/420
                     canContentEditable = false;
             }
             if( ! canContentEditable )

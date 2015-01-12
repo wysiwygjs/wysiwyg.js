@@ -16,7 +16,8 @@ $(document).ready(function(){
     {
         $(element).wysiwyg({
             classes: 'some-more-classes',
-            position: index == 0 ? 'top-selection' : (index == 1 ? 'bottom' : 'selection'),
+            // 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection'
+            toolbar: index == 0 ? 'top-selection' : (index == 1 ? 'bottom' : 'selection'),
             buttons: {
                 // Dummy-HTML-Plugin
                 dummybutton1: index != 1 ? false : {

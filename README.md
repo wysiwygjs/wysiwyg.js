@@ -85,7 +85,7 @@ $.wysiwyg()-API:
 var $editor = $('#editor').wysiwyg({
     classes: 'some-more-classes',
     placeholder: 'Type your text here...',
-    position: 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection',
+    toolbar: 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection',
     buttons = { ... },
     submit = { ... },
     smilies = { ... },

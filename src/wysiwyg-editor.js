@@ -658,7 +658,7 @@
                 // Two modes: toolbar on top and on bottom
                 var classes = option.classes,
                     placeholder = option.placeholder || $that.attr('placeholder'),
-                    toolbar_position = (option.position && (option.position == 'top' || option.position == 'top-selection' || option.position == 'bottom' || option.position == 'bottom-selection' || option.position == 'selection')) ? option.position : 'top-selection',
+                    toolbar_position = (option.toolbar && (option.toolbar == 'top' || option.toolbar == 'top-selection' || option.toolbar == 'bottom' || option.toolbar == 'bottom-selection' || option.toolbar == 'selection')) ? option.toolbar : 'top-selection',
                     toolbar_buttons = option.buttons,
                     toolbar_submit = option.submit,
                     label_dropfileclick = option.dropfileclick,
