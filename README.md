@@ -96,10 +96,10 @@ var $editor = $('#editor').wysiwyg({
     onEnterSubmit: function()
 })
 Events:
-.focus(function(){})
-.blur(function(){})
-.change(function(){});
+    .focus(function(){})
+    .blur(function(){})
+    .change(function(){});
 Properties:
-$editor.wysiwyg('container'); -> $(container-div)
-$editor.wysiwyg('shell'); -> wysiwyg.js API
+    $editor.wysiwyg('container'); -> $(container-div)
+    $editor.wysiwyg('shell'); -> wysiwyg.js API
 ````
