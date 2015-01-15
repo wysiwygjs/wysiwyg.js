@@ -92,8 +92,8 @@ var $editor = $('#editor').wysiwyg({
     dropfileclick: 'Click or drop image',
     placeholderUrl: 'www.example.com',
     maxImageSize: [width,height],
-    onImageUpload: function( insert_image ),
-    onEnterSubmit: function()
+    onImageUpload: function( insert_image ){},
+    onEnterSubmit: function(){}
 })
 Properties:
     $editor.wysiwyg('container'); -> $(container-div)
