@@ -41,7 +41,7 @@ $(document).ready(function(){
                     //showstatic: true,    // wanted on the toolbar
                     showselection: false    // wanted on selection
                 },
-                // Smiley-Plugin
+                // Smiley plugin
                 smilies: {
                     title: 'Smilies',
                     image: '\uf118', // <img src="path/to/image.png" width="16" height="16" alt="" />
@@ -182,7 +182,7 @@ $(document).ready(function(){
                     title: 'Insert link',
                     image: '\uf08e' // <img src="path/to/image.png" width="16" height="16" alt="" />
                 },
-                // Fontanme + Fontsize Plugin
+                // Fontname plugin
                 fontname: index == 1 ? false : {
                     title: 'Font',
                     image: '\uf031', // <img src="path/to/image.png" width="16" height="16" alt="" />
@@ -216,6 +216,7 @@ $(document).ready(function(){
                     //showstatic: true,    // wanted on the toolbar
                     showselection: index == 0 ? true : false    // wanted on selection
                 },
+                // Fontsize plugin
                 fontsize: index == 1 ? false : {
                     title: 'Size',
                     image: '\uf034', // <img src="path/to/image.png" width="16" height="16" alt="" />
@@ -250,6 +251,42 @@ $(document).ready(function(){
                            }
                     //showstatic: true,    // wanted on the toolbar
                     //showselection: true    // wanted on selection
+                },
+                // Header plugin
+                header: index != 1 ? false : {
+                    title: 'Header',
+                    image: '\uf1dc', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    popup: function( $popup, $button, $editor ) {
+                            var list_headers = {
+                                    // Name : Font
+                                    'Header 1'     : '<h1>',
+                                    'Header 2'     : '<h2>',
+                                    'Header 3'     : '<h3>',
+                                    'Header 4'     : '<h4>',
+                                    'Header 5'     : '<h5>',
+                                    'Header 6'     : '<h6>',
+                                    'Preformatted' : '<pre>',
+                                };
+                            var $list = $('<div/>').addClass('wysiwyg-toolbar-list')
+                                                   .attr('unselectable','on');
+                            $.each( list_headers, function( name, format ){
+                                var $link = $('<a/>').attr('href','#')
+                                                     .css( 'font-family', format )
+                                                     .html( name )
+                                                     .click(function(event){
+                                                        $(element).wysiwyg('format',format);
+                                                        $(element).wysiwyg('close-popup');
+                                                        // prevent link-href-#
+                                                        event.stopPropagation();
+                                                        event.preventDefault();
+                                                        return false;
+                                                    });
+                                $list.append( $link );
+                            });
+                            $popup.append( $list );
+                           }
+                    //showstatic: true,    // wanted on the toolbar
+                    //showselection: false    // wanted on selection
                 },
                 bold: {
                     title: 'Bold (Ctrl+B)',
@@ -528,7 +565,7 @@ It is used on a website with 300M page impressions a month.
 </div>
 
 <div style="width:860px; margin: 30px auto;">
-  <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Toolbar on bottom, no selection-toolbar, custom buttons and smiley plugin:</div>
+  <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Toolbar on bottom, no selection-toolbar, custom buttons and smiley+header plugin:</div>
   <textarea id="editor1" name="editor" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
