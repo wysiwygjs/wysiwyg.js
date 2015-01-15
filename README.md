@@ -95,34 +95,11 @@ var $editor = $('#editor').wysiwyg({
     onImageUpload: function( insert_image ),
     onEnterSubmit: function()
 })
+Events:
 .focus(function(){})
 .blur(function(){})
 .change(function(){});
-$editor.wysiwyg('html');
-$editor.wysiwyg('html','new html');
-$editor.wysiwyg('selected-html');
-$editor.wysiwyg('close-popup');
-$editor.wysiwyg('bold');
-$editor.wysiwyg('italic');
-$editor.wysiwyg('underline');
-$editor.wysiwyg('strikethrough');
-$editor.wysiwyg('forecolor','#color');
-$editor.wysiwyg('highlight','#color');
-$editor.wysiwyg('alignleft');
-$editor.wysiwyg('aligncenter');
-$editor.wysiwyg('alignright');
-$editor.wysiwyg('alignjustify');
-$editor.wysiwyg('subscript');
-$editor.wysiwyg('superscript');
-$editor.wysiwyg('format',tagname);
-$editor.wysiwyg('fontname',fontname);
-$editor.wysiwyg('fontsize',fontsize);
-$editor.wysiwyg('indent');
-$editor.wysiwyg('outdent');
-$editor.wysiwyg('orderedlist');
-$editor.wysiwyg('unorderedlist');
-$editor.wysiwyg('insertlink','http://www.example.com/page.html');
-$editor.wysiwyg('insertimage','http://www.example.com/image.gif');
-$editor.wysiwyg('inserthtml','html');
-$editor.wysiwyg('removeformat');
+Properties:
+$editor.wysiwyg('container'); -> $(container-div)
+$editor.wysiwyg('shell'); -> wysiwyg.js API
 ````

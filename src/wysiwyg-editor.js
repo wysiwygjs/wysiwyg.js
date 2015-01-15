@@ -375,7 +375,7 @@
                 else if( 'popup' in value )
                     toolbar_handler = function( target ) {
                         var $popup = popup_open_callback();
-                        var apply_position = value.popup( $popup, $(target), $container );
+                        var apply_position = value.popup( $popup, $(target) );
                         if( apply_position !== false )
                             popup_position_callback( $popup, target );
                     };
@@ -639,7 +639,7 @@
         // Export userdata
         return {
             wysiwygeditor: wysiwygeditor,
-            commands: commands
+            $container: $container
         };
     };
 
@@ -675,51 +675,14 @@
         }
         else if( this.length == 1 )
         {
-            var $that = $(this);
-            var data = $that.data('wysiwyg');
+            var data = this.data('wysiwyg');
             if( ! data )
-                return false;
-            if( option == 'html' )
-            {
-                if( typeof(param) != 'undefined' )
-                    data.wysiwygeditor.setHTML( param );
-                else
-                    return data.wysiwygeditor.getHTML();
-            }
-            else if( option == 'selected-html' ) {
-                return data.wysiwygeditor.getSelectedHTML();
-            }
-            else if( option == 'close-popup' ) {
-                data.wysiwygeditor.closePopup().collapseSelection();
-            }
-            else if( option == 'forecolor' ) {
-                data.wysiwygeditor.forecolor( param );
-            }
-            else if( option == 'highlight' ) {
-                data.wysiwygeditor.highlight( param );
-            }
-            else if( option == 'format' ) {
-                data.wysiwygeditor.format( param );
-            }
-            else if( option == 'fontname' ) {
-                data.wysiwygeditor.fontName( param );
-            }
-            else if( option == 'fontsize' ) {
-                data.wysiwygeditor.fontSize( param );
-            }
-            else if( option == 'insertlink' ) {
-                wysiwygeditor_insertLink(data.wysiwygeditor,param);
-            }
-            else if( option == 'insertimage' ) {
-                data.wysiwygeditor.insertImage( param );
-            }
-            else if( option == 'inserthtml' ) {
-                data.wysiwygeditor.insertHTML( param );
-            }
-            else if( data.commands[option] )
-                data.commands[option]( param );
-            return this;
+                return this;
+            if( option == 'container' )
+                return data.$container;
+            if( option == 'shell' )
+                return data.wysiwygeditor;
         }
-        return false;
+        return this;
     };
 })(window, document, jQuery);

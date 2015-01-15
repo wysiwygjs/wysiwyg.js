@@ -23,8 +23,8 @@ $(document).ready(function(){
                 dummybutton1: index != 1 ? false : {
                     html: $('<input id="submit" type="button" value="bold" />').click(function(){
                                 // We simply make 'bold'
-                                if( $(element).wysiwyg('selected-html') )
-                                    $(element).wysiwyg('bold');
+                                if( $(element).wysiwyg('shell').getSelectedHTML() )
+                                    $(element).wysiwyg('shell').bold();
                                 else
                                     alert( 'Please selection some text' );
                             }),
@@ -45,7 +45,7 @@ $(document).ready(function(){
                 smilies: {
                     title: 'Smilies',
                     image: '\uf118', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    popup: function( $popup, $button, $editor ) {
+                    popup: function( $popup, $button ) {
                             var list_smilies = [
                                     '<img src="smiley/afraid.png" width="16" height="16" alt="" />',
                                     '<img src="smiley/amorous.png" width="16" height="16" alt="" />',
@@ -137,13 +137,12 @@ $(document).ready(function(){
                                 $image
                                     .css({ cursor: 'pointer' })
                                     .click(function(event){
-                                        $(element).wysiwyg('inserthtml',imagehtml);
-                                        // do not close popup
-                                        //$(element).wysiwyg('close-popup');
+                                        $(element).wysiwyg('shell').insertHTML(imagehtml); // .closePopup(); - do not close the popup
                                     })
                                     .appendTo( $smilies );
                             });
-                            $smilies.css({ maxWidth: parseInt($editor.width()*0.95)+'px' });
+                            var $container = $(element).wysiwyg('container');
+                            $smilies.css({ maxWidth: parseInt($container.width()*0.95)+'px' });
                             $popup.append( $smilies );
                             // Smilies do not close on click, so force the popup-position to cover the toolbar
                             var $toolbar = $button.parents( '.wysiwyg-toolbar' );
@@ -186,7 +185,7 @@ $(document).ready(function(){
                 fontname: index == 1 ? false : {
                     title: 'Font',
                     image: '\uf031', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    popup: function( $popup, $button, $editor ) {
+                    popup: function( $popup, $button ) {
                             var list_fontnames = {
                                     // Name : Font
                                     'Arial, Helvetica' : 'Arial,Helvetica',
@@ -202,8 +201,7 @@ $(document).ready(function(){
                                                     .css( 'font-family', font )
                                                     .html( name )
                                                     .click(function(event){
-                                                        $(element).wysiwyg('fontname',font);
-                                                        $(element).wysiwyg('close-popup');
+                                                        $(element).wysiwyg('shell').fontName(font).closePopup();
                                                         // prevent link-href-#
                                                         event.stopPropagation();
                                                         event.preventDefault();
@@ -220,7 +218,7 @@ $(document).ready(function(){
                 fontsize: index == 1 ? false : {
                     title: 'Size',
                     image: '\uf034', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    popup: function( $popup, $button, $editor ) {
+                    popup: function( $popup, $button ) {
                             var list_fontsizes = {
                                 // Name : Size
                                 'Huge'    : 7,
@@ -238,8 +236,7 @@ $(document).ready(function(){
                                                     .css( 'font-size', (8 + (size * 3)) + 'px' )
                                                     .html( name )
                                                     .click(function(event){
-                                                        $(element).wysiwyg('fontsize',size);
-                                                        $(element).wysiwyg('close-popup');
+                                                        $(element).wysiwyg('shell').fontSize(size).closePopup();
                                                         // prevent link-href-#
                                                         event.stopPropagation();
                                                         event.preventDefault();
@@ -256,7 +253,7 @@ $(document).ready(function(){
                 header: index != 1 ? false : {
                     title: 'Header',
                     image: '\uf1dc', // <img src="path/to/image.png" width="16" height="16" alt="" />
-                    popup: function( $popup, $button, $editor ) {
+                    popup: function( $popup, $button ) {
                             var list_headers = {
                                     // Name : Font
                                     'Header 1'     : '<h1>',
@@ -274,8 +271,7 @@ $(document).ready(function(){
                                                      .css( 'font-family', format )
                                                      .html( name )
                                                      .click(function(event){
-                                                        $(element).wysiwyg('format',format);
-                                                        $(element).wysiwyg('close-popup');
+                                                        $(element).wysiwyg('shell').format(format).closePopup();
                                                         // prevent link-href-#
                                                         event.stopPropagation();
                                                         event.preventDefault();
@@ -433,19 +429,19 @@ $(document).ready(function(){
 
     // Demo-Buttons
     $('#editor3-bold').click(function(){
-        $('#editor3').wysiwyg('bold');
+        $('#editor3').wysiwyg('shell').bold();
         return false;
     });
     $('#editor3-red').click(function(){
-        $('#editor3').wysiwyg('highlight','#ff0000');
+        $('#editor3').wysiwyg('shell').highlight('#ff0000');
         return false;
     });
     $('#editor3-sethtml').click(function(){
-        $('#editor3').wysiwyg('html', 'This is a the html text');
+        $('#editor3').wysiwyg('shell').setHTML('This is the new text.');
         return false;
     });
     $('#editor3-inserthtml').click(function(){
-        $('#editor3').wysiwyg('inserthtml', 'This is some text');
+        $('#editor3').wysiwyg('shell').insertHTML('Insert some text.');
         return false;
     });
 
