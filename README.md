@@ -84,16 +84,15 @@ $.wysiwyg()-API:
 ````
 var $editor = $('#editor').wysiwyg({
     classes: 'some-more-classes',
-    placeholder: 'Type your text here...',
     toolbar: 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection',
     buttons = { ... },
     submit = { ... },
-    smilies = { ... },
+    placeholder: 'Type your text here...',
     dropfileclick: 'Click or drop image',
     placeholderUrl: 'www.example.com',
     maxImageSize: [width,height],
     onImageUpload: function( insert_image ){},
-    onEnterSubmit: function(){}
+    onKeyEnter: function(){}
 })
 Properties:
     $editor.wysiwyg('container'); -> $(container-div)
