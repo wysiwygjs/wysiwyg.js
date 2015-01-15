@@ -95,11 +95,11 @@ var $editor = $('#editor').wysiwyg({
     onImageUpload: function( insert_image ),
     onEnterSubmit: function()
 })
+Properties:
+    $editor.wysiwyg('container'); -> $(container-div)
+    $editor.wysiwyg('shell'); -> wysiwyg.js API
 Events:
     .focus(function(){})
     .blur(function(){})
     .change(function(){});
-Properties:
-    $editor.wysiwyg('container'); -> $(container-div)
-    $editor.wysiwyg('shell'); -> wysiwyg.js API
 ````
