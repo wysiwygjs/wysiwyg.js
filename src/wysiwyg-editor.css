@@ -10,7 +10,7 @@
 */
 .wysiwyg-container {
     overflow: visible;
-    border: 1px solid #aaaaaa;
+    border: 1px solid #cccccc;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     -o-border-radius: 3px;
@@ -35,27 +35,27 @@
     -ms-word-wrap: break-word;
     word-wrap: break-word;
 }
+.wysiwyg-toolbar {
+    overflow: hidden;
+    white-space: nowrap;
+}
+.wysiwyg-toolbar-top {
+    border-bottom: 1px solid #cccccc;
+    padding: 0;
+}
+.wysiwyg-toolbar-bottom {
+    border-top: 1px solid #cccccc;
+    padding: 0 5px;
+}
+.wysiwyg-toolbar a {
+    vertical-align: top;
+}
 .wysiwyg-placeholder {
     position: absolute;
     top: 10px;  /* same as padding in .wysiwyg-editor */
     left: 10px;
     color: #cccccc;
     background: transparent;
-}
-.wysiwyg-toolbar {
-    overflow: hidden;
-    white-space: nowrap;
-}
-.wysiwyg-toolbar-top {
-    border-bottom: 1px solid #aaaaaa;
-    padding: 0;
-}
-.wysiwyg-toolbar-bottom {
-    border-top: 1px solid #aaaaaa;
-    padding: 0 5px;
-}
-.wysiwyg-toolbar a {
-    vertical-align: top;
 }
 .wysiwyg-popup {
     position: absolute;
