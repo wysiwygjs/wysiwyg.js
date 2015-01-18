@@ -38,7 +38,7 @@ wysiwyg.js-API:
 ````
 // create wysiwyg:
 var wysiwygeditor = wysiwyg({
-    element: document.getElmentById('editor-id'),
+    element: document.getElementById('editor-id'),
     onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) {
         },
     onselection: function( collapsed, rect, nodes, rightclick ) {
