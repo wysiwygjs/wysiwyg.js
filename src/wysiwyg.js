@@ -213,6 +213,7 @@
             }
             if( sel.type == 'Control' ) // e.g. an image selected
                 return false;
+            // sel.type == 'None' -> collapsed selection
         }
         return true;
     };
@@ -271,7 +272,7 @@
             if( sel.type == 'Text' )
             {
                 var nodes = [];
-                var range = document.selection.createRange(),
+                var range = sel.createRange(),
                     node = containerNode;
                 while( node )
                 {
@@ -295,7 +296,7 @@
             {
                 var nodes = [];
                 // http://msdn.microsoft.com/en-us/library/ie/hh826021%28v=vs.85%29.aspx
-                var range = document.selection.createRange();
+                var range = sel.createRange();
                 for( var i=0; i < range.length; ++i )
                     nodes.push( range(i) );
                 return nodes;
@@ -357,30 +358,59 @@
         return null;
     };
 
-    var setSelectionTo = function( containerNode )
+    var selectionInside = function( containerNode, force )
     {
+        // selection inside editor?
         if( window.getSelection )
         {
             var sel = window.getSelection();
-            if( ! sel )
-                return ;
+            if( isOrContainsNode(containerNode,sel.anchorNode) && isOrContainsNode(containerNode,sel.focusNode) )
+                return true;
+            // selection at least partly outside editor
+            if( ! force )
+                return false; 
+            // force selection to editor
             var range = document.createRange();
             range.selectNodeContents( containerNode );
             range.collapse( false );
-            var sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
         }
         else if( document.selection )
         {
+            var sel = document.selection;
+            if( sel.type == 'Control' ) // e.g. an image selected
+            {
+                // http://msdn.microsoft.com/en-us/library/ie/hh826021%28v=vs.85%29.aspx
+                var range = sel.createRange();
+                if( range.length != 0 && isOrContainsNode(containerNode,range(0)) ) // test only the first element
+                    return true;
+            }
+            else //if( sel.type == 'Text' || sel.type == 'None' )
+            {
+                // Range of container
+                // http://stackoverflow.com/questions/12243898/how-to-select-all-text-in-contenteditable-div
+                var rangeContainer = document.body.createTextRange();
+                rangeContainer.moveToElementText(containerNode);
+                // Compare with selection range
+                var range = sel.createRange();
+                if( rangeContainer.inRange(range) )
+                    return true;
+            }
+            // selection at least partly outside editor
+            if( ! force )
+                return false; 
+            // force selection to editor
             // http://stackoverflow.com/questions/12243898/how-to-select-all-text-in-contenteditable-div
             var range = document.body.createTextRange();
             range.moveToElementText(containerNode);
             range.setEndPoint('StartToEnd',range); // collapse
             range.select();
         }
+        return true;
     }
 
+    /*
     var clipSelectionTo = function( containerNode )
     {
         if( window.getSelection && containerNode.compareDocumentPosition )
@@ -452,6 +482,7 @@
         }
         return true;
     };
+    */
 
     // http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div/6691294#6691294
     // http://stackoverflow.com/questions/4823691/insert-an-html-element-in-a-contenteditable-element
@@ -829,7 +860,7 @@
         if( showPlaceholder || syncTextarea )
         {
             // debounce 'syncTextarea' a second time, because 'innerHTML' is quite burdensome
-            var debounced_syncTextarea = syncTextarea ? debounce( syncTextarea, 50, true ) : null;
+            var debounced_syncTextarea = syncTextarea ? debounce( syncTextarea, 250, true ) : null; // high timeout is save, because of "onblur" fallback
             var changeHandler = function( e )
             {
                 if( showPlaceholder )
@@ -1004,19 +1035,12 @@
         // exec command
         // https://developer.mozilla.org/en-US/docs/Web/API/document.execCommand
         // http://www.quirksmode.org/dom/execCommand.html
-        var execCommand = function( command, param, force_or_skip_selection )
+        var execCommand = function( command, param, force_selection )
         {
             // give selection to contenteditable element
-            if( force_or_skip_selection !== false )
-            {
-                restoreSelection( node_wysiwyg, popup_saved_selection );
-                if( clipSelectionTo(node_wysiwyg) ) // returns 'selection inside editor'
-                    ;
-                else if( force_or_skip_selection )
-                    setSelectionTo( node_wysiwyg );
-                else
-                    return false;
-            }
+            restoreSelection( node_wysiwyg, popup_saved_selection );
+            if( ! selectionInside(node_wysiwyg, force_selection) ) // returns 'selection inside editor'
+                return false;
             // for webkit, mozilla, opera
             if( window.getSelection )
             {
@@ -1084,8 +1108,7 @@
             getSelectedHTML: function()
             {
                 restoreSelection( node_wysiwyg, popup_saved_selection );
-                var selection_inside = clipSelectionTo( node_wysiwyg );
-                if( ! selection_inside )
+                if( ! selectionInside(node_wysiwyg) )
                     return null;
                 return getSelectionHtml( node_wysiwyg );
             },
@@ -1110,7 +1133,7 @@
             removeFormat: function()
             {
                 execCommand( 'removeFormat' );
-                execCommand( 'unlink', true );
+                execCommand( 'unlink' );
                 callUpdates();
                 return this;
             },
@@ -1219,8 +1242,7 @@
                 {
                     // IE 11 still does not support 'insertHTML'
                     restoreSelection( node_wysiwyg, popup_saved_selection );
-                    if( ! clipSelectionTo(node_wysiwyg) ) // returns 'selection inside editor'
-                        setSelectionTo( node_wysiwyg );
+                    selectionInside( node_wysiwyg, true );
                     pasteHtmlAtCaret( node_wysiwyg, html );
                 }
                 callUpdates( true ); // selection destroyed
