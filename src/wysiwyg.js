@@ -29,16 +29,19 @@
     {
         if( element.addEventListener ) {
             element.addEventListener( type, handler, false );
-        } else if( element.attachEvent ) {
+        }
+        else if( element.attachEvent ) {
             element.attachEvent( 'on' + type, handler );
-        } else if( element != window ) {
+        }
+        else if( element != window ) {
             element['on' + type] = handler;
         }
     };
     var removeEvent = function( element, type, handler ) {
         if( element.removeEventListener ) {
             element.removeEventListener( type, handler, false );
-        } else if( element.detachEvent) {
+        }
+        else if( element.detachEvent) {
             element.detachEvent( 'on' + type, handler );
         } else if( element != window ) {
             element['on' + type] = null;
@@ -56,6 +59,21 @@
             var event = document.createEventObject();
             obj.fireEvent( 'on' + evt, event );
         }
+        else if( typeof(element['on' + type]) == 'function' )
+            element['on' + type]();
+    };
+    // prevent default
+    var cancelEvent = function( e )
+    {
+        if( e.preventDefault )
+            e.preventDefault();
+        else
+            e.returnValue = false;
+        if( e.stopPropagation )
+            e.stopPropagation();
+        else
+            e.cancelBubble = true;
+        return false;
     };
 
     // http://stackoverflow.com/questions/13377887/javascript-node-undefined-in-ie8-and-under
@@ -907,16 +925,7 @@
             {
                 var rv = option_onkeypress( code, character?String(String):String.fromCharCode(code), e.shiftKey||false, e.altKey||false, e.ctrlKey||false, e.metaKey||false );
                 if( rv === false ) // dismiss key
-                {
-                    // prevent default
-                    if( e.preventDefault )
-                        e.preventDefault();
-                    if( e.stopPropagation )
-                        e.stopPropagation();
-                    else
-                        e.cancelBubble = true;
-                    return false;
-                }
+                    return cancelEvent( e );
             }
             // Keys can change the selection
             if( phase == 2 || phase == 3 )
@@ -1020,14 +1029,7 @@
             addEvent( node_wysiwyg, 'contextmenu', function(e)
             {
                 mouseHandler( e, true );
-                // prevent default
-                if( e.preventDefault )
-                    e.preventDefault();
-                if( e.stopPropagation )
-                    e.stopPropagation();
-                else
-                    e.cancelBubble = true;
-                return false;
+                return cancelEvent( e );
             });
         }
 
