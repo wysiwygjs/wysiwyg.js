@@ -878,7 +878,7 @@
         if( showPlaceholder || syncTextarea )
         {
             // debounce 'syncTextarea' a second time, because 'innerHTML' is quite burdensome
-            var debounced_syncTextarea = syncTextarea ? debounce( syncTextarea, 250, true ) : null; // high timeout is save, because of "onblur" fallback
+            var debounced_syncTextarea = syncTextarea ? debounce( syncTextarea, 50, true ) : null; // high timeout is save, because of "onblur" fallback
             var changeHandler = function( e )
             {
                 if( showPlaceholder )
