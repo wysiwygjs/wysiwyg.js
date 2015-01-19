@@ -33,20 +33,20 @@
         else if( element.attachEvent ) {
             element.attachEvent( 'on' + type, handler );
         }
-        else if( element != window ) {
+        else if( element != window )
             element['on' + type] = handler;
-        }
     };
-    var removeEvent = function( element, type, handler ) {
+    var removeEvent = function( element, type, handler )
+    {
         if( element.removeEventListener ) {
             element.removeEventListener( type, handler, false );
         }
         else if( element.detachEvent) {
             element.detachEvent( 'on' + type, handler );
-        } else if( element != window ) {
-            element['on' + type] = null;
         }
-    }
+        else if( element != window )
+            element['on' + type] = null;
+    };
     // http://www.cristinawithout.com/content/function-trigger-events-javascript
     var fireEvent = function( obj, evt, bubbles, cancelable )
     {
