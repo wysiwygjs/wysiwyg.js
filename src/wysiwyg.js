@@ -368,7 +368,7 @@
                 return true;
             // selection at least partly outside editor
             if( ! force )
-                return false; 
+                return false;
             // force selection to editor
             var range = document.createRange();
             range.selectNodeContents( containerNode );
@@ -399,7 +399,7 @@
             }
             // selection at least partly outside editor
             if( ! force )
-                return false; 
+                return false;
             // force selection to editor
             // http://stackoverflow.com/questions/12243898/how-to-select-all-text-in-contenteditable-div
             var range = document.body.createTextRange();
