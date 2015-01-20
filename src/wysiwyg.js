@@ -426,7 +426,7 @@
             range.select();
         }
         return true;
-    }
+    };
 
     /*
     var clipSelectionTo = function( containerNode )
