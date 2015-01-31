@@ -48,16 +48,16 @@
             element['on' + type] = null;
     };
     // http://www.cristinawithout.com/content/function-trigger-events-javascript
-    var fireEvent = function( obj, evt, bubbles, cancelable )
+    var fireEvent = function( element, type, bubbles, cancelable )
     {
         if( document.createEvent ) {
             var event = document.createEvent('Event');
-            event.initEvent( evt, bubbles !== undefined ? bubbles : true, cancelable !== undefined ? cancelable : false );
-            obj.dispatchEvent(event);
+            event.initEvent( type, bubbles !== undefined ? bubbles : true, cancelable !== undefined ? cancelable : false );
+            element.dispatchEvent(event);
         }
         else if( document.createEventObject ) { //IE
             var event = document.createEventObject();
-            obj.fireEvent( 'on' + evt, event );
+            element.fireEvent( 'on' + type, event );
         }
         else if( typeof(element['on' + type]) == 'function' )
             element['on' + type]();
