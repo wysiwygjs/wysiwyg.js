@@ -443,7 +443,7 @@
                 onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey )
                     {
                         if( onKeyEnter && (code == 10 || code == 13) && !shiftKey && !altKey && !ctrlKey && !metaKey )
-                            return onKeyEnter.call( wysiwygeditor.sync().getElement() );
+                            return onKeyEnter();
                         // Exec hotkey
                         if( character && !shiftKey && !altKey && ctrlKey && !metaKey )
                         {
