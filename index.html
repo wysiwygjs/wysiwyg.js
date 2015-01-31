@@ -409,6 +409,8 @@ $(document).ready(function(){
                             //        });
                         },
             onKeyEnter: function() {
+                            if( typeof console != 'undefined' )
+                                console.log( 'e.g. submit form' );
                             return false; // swallow enter
                         }
             */
@@ -611,6 +613,7 @@ wysiwygeditor.getElement();
 wysiwygeditor.getHTML(); -> 'html'
 wysiwygeditor.setHTML( html );
 wysiwygeditor.getSelectedHTML(); -> 'html'|false
+wysiwygeditor.sync();
 
 // selection and popup:
 wysiwygeditor.collapseSelection();

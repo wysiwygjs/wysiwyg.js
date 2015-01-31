@@ -626,6 +626,7 @@
                         return this;
                     },
                     getSelectedHTML: dummy_null,
+                    sync: dummy_this,
                     // selection and popup
                     collapseSelection: dummy_this,
                     openPopup: dummy_null,
@@ -820,7 +821,8 @@
 
         // Open popup
         var node_popup = null;
-        var popupClickClose = function(e){
+        var popupClickClose = function( e )
+        {
             // http://www.quirksmode.org/js/events_properties.html
             if( !e )
                 var e = window.event;
@@ -865,7 +867,7 @@
         });
         addEvent( node_wysiwyg, 'blur', function()
         {
-            // sync textarea
+            // sync textarea immediately
             if( syncTextarea )
                 syncTextarea();
             // forward focus/blur to the textarea
@@ -878,7 +880,7 @@
         if( showPlaceholder || syncTextarea )
         {
             // debounce 'syncTextarea' a second time, because 'innerHTML' is quite burdensome
-            var debounced_syncTextarea = syncTextarea ? debounce( syncTextarea, 50, true ) : null; // high timeout is save, because of "onblur" fallback
+            var debounced_syncTextarea = syncTextarea ? debounce( syncTextarea, 250, true ) : null; // high timeout is save, because of "onblur" fires immediately
             var changeHandler = function( e )
             {
                 if( showPlaceholder )
@@ -956,15 +958,15 @@
                 }
             }
         };
-        addEvent( node_wysiwyg, 'keydown', function(e)
+        addEvent( node_wysiwyg, 'keydown', function( e )
         {
             return keyHandler( e, 1 );
         });
-        addEvent( node_wysiwyg, 'keypress', function(e)
+        addEvent( node_wysiwyg, 'keypress', function( e )
         {
             return keyHandler( e, 2 );
         });
-        addEvent( node_wysiwyg, 'keyup', function(e)
+        addEvent( node_wysiwyg, 'keyup', function( e )
         {
             return keyHandler( e, 3 );
         });
@@ -1003,30 +1005,30 @@
             if( debounced_handleSelection )
                 debounced_handleSelection( clientX, clientY, rightclick );
         };
-        addEvent( node_wysiwyg, 'mousedown', function(e)
+        addEvent( node_wysiwyg, 'mousedown', function( e )
         {
             // catch event if 'mouseup' outside 'node_wysiwyg'
             removeEvent( window_ie8, 'mouseup', mouseHandler );
             addEvent( window_ie8, 'mouseup', mouseHandler );
         });
-        addEvent( node_wysiwyg, 'mouseup', function(e)
+        addEvent( node_wysiwyg, 'mouseup', function( e )
         {
             mouseHandler( e );
             // Trigger change
             if( debounced_changeHandler )
                 debounced_changeHandler();
         });
-        addEvent( node_wysiwyg, 'dblclick', function(e)
+        addEvent( node_wysiwyg, 'dblclick', function( e )
         {
             mouseHandler( e );
         });
-        addEvent( node_wysiwyg, 'selectionchange',  function(e)
+        addEvent( node_wysiwyg, 'selectionchange',  function( e )
         {
             mouseHandler( e );
         });
         if( option_hijackcontextmenu )
         {
-            addEvent( node_wysiwyg, 'contextmenu', function(e)
+            addEvent( node_wysiwyg, 'contextmenu', function( e )
             {
                 mouseHandler( e, true );
                 return cancelEvent( e );
@@ -1078,10 +1080,8 @@
         // Command structure
         var callUpdates = function( selection_destroyed )
         {
-            if( showPlaceholder )
-                showPlaceholder();
-            if( syncTextarea )
-                syncTextarea();
+            if( debounced_changeHandler )
+                debounced_changeHandler();
             // handle saved selection
             if( selection_destroyed )
             {
@@ -1113,6 +1113,12 @@
                 if( ! selectionInside(node_wysiwyg) )
                     return null;
                 return getSelectionHtml( node_wysiwyg );
+            },
+            sync: function()
+            {
+                if( syncTextarea )
+                    syncTextarea();
+                return this;
             },
             // selection and popup
             collapseSelection: function()

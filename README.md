@@ -53,6 +53,7 @@ wysiwygeditor.getElement();
 wysiwygeditor.getHTML(); -> 'html'
 wysiwygeditor.setHTML( html );
 wysiwygeditor.getSelectedHTML(); -> 'html'|false
+wysiwygeditor.sync();
 
 // selection and popup:
 wysiwygeditor.collapseSelection();
