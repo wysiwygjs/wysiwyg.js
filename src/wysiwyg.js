@@ -570,7 +570,7 @@
     };
 
     // Interface: Create wysiwyg
-    module = module || {};:w
+    module = module || {};
     module.exports  = window.wysiwyg = function( option )
     {
         // Options
