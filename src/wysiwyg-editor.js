@@ -458,8 +458,11 @@
                     {
                         var show_toolbar = true,
                             $special_toolbar = null;
-                        // Click on a link?
-                        if( nodes.length == 1 && $(nodes[0]).parents('a').length != 0 ) // nodes is not a sparse array
+                        // Fix type error - https://github.com/wysiwygjs/wysiwyg.js/issues/4
+                        if( ! rect )
+                            show_toolbar = false;
+                        // Click on a link opens the link-popup
+                        else if( nodes.length == 1 && $(nodes[0]).parents('a').length != 0 ) // nodes is not a sparse array
                             $special_toolbar = content_insertlink( wysiwygeditor, $(nodes[0]).parents('a:first') );
                         // A right-click always opens the toolbar
                         else if( rightclick )
@@ -468,7 +471,7 @@
                         else if( toolbar_position != 'selection' && toolbar_position != 'top-selection' && toolbar_position != 'bottom-selection' )
                             show_toolbar = false;
                         // Selected toolbar wanted, but nothing selected (=selection collapsed)
-                        else if( rect === undefined || collapsed )
+                        else if( collapsed )
                             show_toolbar = false;
                         // Only one image? Better: Display a special image-toolbar
                         else if( nodes.length == 1 && nodes[0].nodeName == 'IMG' ) // nodes is not a sparse array
@@ -515,9 +518,7 @@
                                     function() {
                                         return $toolbar.empty();
                                     },
-                                    function( $popup ) {
-                                        apply_toolbar_position();
-                                    });
+                                    apply_toolbar_position );
                         }
                         // Toolbar position
                         apply_toolbar_position();
