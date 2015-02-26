@@ -150,6 +150,14 @@
     border-radius: 3px;
     outline: none;
 }
+.wysiwyg-input.wysiwyg-inputtextarea {
+    width: 100%;
+    height: 5em;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    resize: none;
+}
 .wysiwyg-input:hover,
 .wysiwyg-input:active,
 .wysiwyg-input:focus {
@@ -174,4 +182,7 @@
 .wysiwyg-browse:focus {
     color: black;
     border-color: #777777;
+}
+.wysiwyg-embedcode {
+    margin-bottom: 10px;
 }

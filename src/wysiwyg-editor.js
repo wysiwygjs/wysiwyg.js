@@ -29,7 +29,7 @@
 
     // Create the Editor
     var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_dropfileclick,
-                                  placeholder_url, max_imagesize, onImageUpload, onKeyEnter )
+                                  placeholder_url, placeholder_embed, max_imagesize, on_imageupload, video_from_url, on_keypress )
     {
         // Content: Insert link
         var wysiwygeditor_insertLink = function( wysiwygeditor, url )
@@ -45,7 +45,7 @@
         var content_insertlink = function(wysiwygeditor, $modify_link)
         {
             var $button = toolbar_button( toolbar_submit );
-            var $inputurl = $('<input type="text" value="' + ($modify_link ? $modify_link.attr('href') : '') + '"' + (placeholder_url ? ' placeholder="'+placeholder_url+'"' : '') + ' />').addClass('wysiwyg-input')
+            var $inputurl = $('<input type="text" value="' + ($modify_link ? $modify_link.attr('href') : '') + '" />').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which != 10 && event.which != 13 )
                                         return ;
@@ -65,6 +65,8 @@
                                         }
                                     }
                                 });
+            if( placeholder_url )
+                $inputurl.attr( 'placeholder', placeholder_url );
             var $okaybutton = $button.click(function(event){
                                     if( $modify_link )
                                     {
@@ -171,7 +173,7 @@
                                         return false;
                                     });
             }
-            else if( onImageUpload )
+            else if( on_imageupload )
             {
                 // Upload image to a server
                 var $input = $('<input type="file" />')
@@ -183,7 +185,7 @@
                                               opacity: 0,
                                               cursor: 'pointer'})
                                         .change(function(event){
-                                            onImageUpload.call( this, insert_image_wysiwyg );
+                                            on_imageupload.call( this, insert_image_wysiwyg );
                                         });
                 $fileuploader = $('<form/>').append($input);
             }
@@ -194,13 +196,59 @@
                            .appendTo( $content );
             // Add image via 'URL'
             var $button = toolbar_button( toolbar_submit );
-            var $inputurl = $('<input type="text" value=""' + (placeholder_url ? ' placeholder="'+placeholder_url+'"' : '') + ' />').addClass('wysiwyg-input')
+            var $inputurl = $('<input type="text" value="" />').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which == 10 || event.which == 13 )
                                         insert_image_wysiwyg( $inputurl.val() );
                                 });
+            if( placeholder_url )
+                $inputurl.attr( 'placeholder', placeholder_url );
             var $okaybutton = $button.click(function(event){
                                     insert_image_wysiwyg( $inputurl.val() );
+                                    event.stopPropagation();
+                                    event.preventDefault();
+                                    return false;
+                                });
+            $content.append( $('<div/>').append($inputurl).append($okaybutton) );
+            return $content;
+        };
+
+        // Content: Insert video
+        var content_insertvideo = function(wysiwygeditor)
+        {
+            // Add video to editor
+            var insert_video_wysiwyg = function( url, html )
+            {
+                if( url && ! html )
+                {
+                    if( video_from_url )
+                        html = video_from_url( url );
+                    if( ! html )
+                        html = '<video src="' + url.replace(/"/,'&quot;') + '" />';
+                }
+                wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
+            };
+            // Create popup
+            var $content = $('<div/>').addClass('wysiwyg-toolbar-form')
+                                      .attr('unselectable','on');
+            // Add video via '<embed/>'
+            var $textareaembed = $('<textarea>').addClass('wysiwyg-input wysiwyg-inputtextarea');
+            if( placeholder_embed )
+                $textareaembed.attr( 'placeholder', placeholder_embed );
+            $('<div/>').addClass( 'wysiwyg-embedcode' )
+                       .append( $textareaembed )
+                       .appendTo( $content );
+            // Add video via 'URL'
+            var $button = toolbar_button( toolbar_submit );
+            var $inputurl = $('<input type="text" value="" />').addClass('wysiwyg-input')
+                                .keypress(function(event){
+                                    if( event.which == 10 || event.which == 13 )
+                                        insert_video_wysiwyg( $inputurl.val() );
+                                });
+            if( placeholder_url )
+                $inputurl.attr( 'placeholder', placeholder_url );
+            var $okaybutton = $button.click(function(event){
+                                    insert_video_wysiwyg( $inputurl.val(), $textareaembed.val() );
                                     event.stopPropagation();
                                     event.preventDefault();
                                     return false;
@@ -264,6 +312,12 @@
                         return null;
                     return function( target ) {
                         popup_callback( content_insertimage(wysiwygeditor), target );
+                    };
+                case 'insertvideo':
+                    if( ! popup_callback )
+                        return null;
+                    return function( target ) {
+                        popup_callback( content_insertvideo(wysiwygeditor), target );
                     };
                 case 'insertlink':
                     if( ! popup_callback )
@@ -442,8 +496,9 @@
                 element: $textarea.get(0),
                 onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey )
                     {
-                        if( onKeyEnter && (code == 10 || code == 13) && !shiftKey && !altKey && !ctrlKey && !metaKey )
-                            return onKeyEnter();
+                        // Ask master
+                        if( on_keypress && on_keypress(code, character, shiftKey, altKey, ctrlKey, metaKey) === false )
+                            return false; // swallow key
                         // Exec hotkey
                         if( character && !shiftKey && !altKey && ctrlKey && !metaKey )
                         {
@@ -664,13 +719,15 @@
                     toolbar_submit = option.submit,
                     label_dropfileclick = option.dropfileclick,
                     placeholder_url = option.placeholderUrl || null,
+                    placeholder_embed = option.placeholderEmbed || null,
                     max_imagesize = option.maxImageSize || null,
-                    onImageUpload = option.onImageUpload,
-                    onKeyEnter = option.onKeyEnter;
+                    on_imageupload = option.onImageUpload || null,
+                    video_from_url = option.videoFromUrl || null,
+                    on_keypress = option.onKeyPress;
 
                 // Create the WYSIWYG Editor
                 var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_dropfileclick,
-                                          placeholder_url, max_imagesize, onImageUpload, onKeyEnter );
+                                          placeholder_url, placeholder_embed, max_imagesize, on_imageupload, video_from_url, on_keypress );
                 $that.data( 'wysiwyg', data );
             });
         }

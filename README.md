@@ -91,9 +91,11 @@ var $editor = $('#editor').wysiwyg({
     placeholder: 'Type your text here...',
     dropfileclick: 'Click or drop image',
     placeholderUrl: 'www.example.com',
+    placeholderEmbed: '<embed/>',
     maxImageSize: [width,height],
     onImageUpload: function( insert_image ){},
-    onKeyEnter: function(){}
+    videoFromUrl: function( url ){}
+    onKeyPress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ){}
 })
 Properties:
     $editor.wysiwyg('container'); -> $(container-div)
