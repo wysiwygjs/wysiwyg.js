@@ -559,12 +559,12 @@
                         // Open popup
                         $toolbar = $(wysiwygeditor.openPopup());
                         // if wrong popup -> create a new one
-                        if( $toolbar.hasClass('wysiwyg-popup') && ! $toolbar.hasClass('wysiwyg-arrowtop') )
+                        if( $toolbar.hasClass('wysiwyg-popup') && ! $toolbar.hasClass('wysiwyg-popuphover') )
                             $toolbar = $(wysiwygeditor.closePopup().openPopup());
                         if( ! $toolbar.hasClass('wysiwyg-popup') )
                         {
                             // add classes + buttons
-                            $toolbar.addClass( 'wysiwyg-popup wysiwyg-arrowtop' )
+                            $toolbar.addClass( 'wysiwyg-popup wysiwyg-popuphover' )
                                     .css('position', fixed_parent() ? 'fixed' : 'absolute' );
                             if( $special_toolbar )
                                 $toolbar.empty().append( $special_toolbar );
@@ -652,7 +652,7 @@
                     // Open a popup from the toolbar
                     var $popup = $(wysiwygeditor.openPopup());
                     // if wrong popup -> create a new one
-                    if( $popup.hasClass('wysiwyg-popup') && $popup.hasClass('wysiwyg-arrowtop') )
+                    if( $popup.hasClass('wysiwyg-popup') && $popup.hasClass('wysiwyg-popuphover') )
                         $popup = $(wysiwygeditor.closePopup().openPopup());
                     if( ! $popup.hasClass('wysiwyg-popup') )
                     {

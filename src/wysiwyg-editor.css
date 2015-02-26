@@ -71,9 +71,6 @@
     -webkit-border-radius: 3px;
     -o-border-radius: 3px;
     border-radius: 3px;
-    -moz-box-shadow: 0 0 5px #333333;
-    -webkit-box-shadow: 0 0 5px #333333;
-    box-shadow: 0 0 5px #333333;
     -moz-user-select: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -81,23 +78,24 @@
     -ms-user-select: none;
     user-select: none;
 }
-.wysiwyg-popup.wysiwyg-arrowtop:after {
+.wysiwyg-popup.wysiwyg-popuphover {
+    margin-top: 9px;
+    -moz-box-shadow: 0 0 5px #333333;
+    -webkit-box-shadow: 0 0 5px #333333;
+    box-shadow: 0 0 5px #333333;
+}
+.wysiwyg-popup.wysiwyg-popuphover:after {
     position: absolute;
     left: 50%;
+    bottom: 100%;
     border: solid transparent;
-    content: " ";
+    content: '';
     width: 0;
     height: 0;
-    margin-left: -14px;
-    border-left: 14px solid transparent;
-    border-right: 14px solid transparent;
-}
-.wysiwyg-popup.wysiwyg-arrowtop {
-    margin-top: 7px;
-}
-.wysiwyg-popup.wysiwyg-arrowtop:after {
-    bottom: 100%;
-    border-bottom: 10px solid #aaaaaa;
+    margin-left: -18px;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-bottom: 8px solid #333333;
 }
 .wysiwyg-toolbar-icon {
     display: -moz-inline-stack;
