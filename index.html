@@ -419,10 +419,10 @@ $(document).ready(function(){
             videoFromUrl: function( url ) {
                 // Contributions will be placed here.
                 
-                // Get <embed code> from youtube-url
-                var youtube_match = url.match( /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/ );
-                if( youtube_match && youtube_match[2].length == 11 )
-                    return '<iframe width="640" height="360" src="http://www.youtube.com/embed/' + youtube_match[2] + '" frameborder="0" allowfullscreen></iframe>';
+                // Get <embed code> from youtube-url - http://stackoverflow.com/questions/3392993/php-regex-to-get-youtube-video-id
+                var youtube_match = url.match( /^(?:http(?:s)?:\/\/)?(?:[a-z0-9.]+\.)?(?:youtu\.be|youtube\.com)\/(?:(?:watch)?\?(?:.*&)?v(?:i)?=|(?:embed|v|vi|user)\/)([^\?&\"'>]+)/ );
+                if( youtube_match && youtube_match[1].length == 11 )
+                    return '<iframe width="640" height="360" src="//www.youtube.com/embed/' + youtube_match[1] + '" frameborder="0" allowfullscreen></iframe>';
 
                 // Default: create '<video/>' tag
                 return null;
