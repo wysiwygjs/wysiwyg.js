@@ -717,7 +717,7 @@
                     toolbar_position = (option.toolbar && (option.toolbar == 'top' || option.toolbar == 'top-selection' || option.toolbar == 'bottom' || option.toolbar == 'bottom-selection' || option.toolbar == 'selection')) ? option.toolbar : 'top-selection',
                     toolbar_buttons = option.buttons,
                     toolbar_submit = option.submit,
-                    label_dropfileclick = option.dropfileclick,
+                    label_dropfileclick = option.dropfileClick,
                     placeholder_url = option.placeholderUrl || null,
                     placeholder_embed = option.placeholderEmbed || null,
                     max_imagesize = option.maxImageSize || null,
