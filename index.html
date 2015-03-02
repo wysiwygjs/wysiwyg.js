@@ -148,25 +148,10 @@ $(document).ready(function(){
                             var $toolbar = $button.parents( '.wysiwyg-toolbar' );
                             if( ! $toolbar.length ) // selection toolbar?
                                 return ;
-                            var left = 0,
-                                top = 0,
-                                node = $toolbar.get(0);
-                            while( node )
-                            {
-                                left += node.offsetLeft;
-                                top += node.offsetTop;
-                                node = node.offsetParent;
-                            }
-                            left += parseInt( ($toolbar.outerWidth() - $popup.outerWidth()) / 2 );
-                            if( $toolbar.hasClass('wysiwyg-toolbar-top') )
-                                top -= $popup.height() - parseInt($button.outerHeight() * 1/4);
-                            else
-                                top += parseInt($button.outerHeight() * 3/4);
-                            $popup.css({ left: left + 'px',
-                                         top: top + 'px'
-                                       });
-                            // prevent applying position
-                            return false;
+                            return { // this prevents applying default position
+                                left: parseInt( ($toolbar.outerWidth() - $popup.outerWidth()) / 2 ),
+                                top: $toolbar.hasClass('wysiwyg-toolbar-bottom') ? ($container.outerHeight() - parseInt($button.outerHeight()/4)) : (parseInt($button.outerHeight()/4) - $popup.height())
+                            };
                            },
                     //showstatic: true,    // wanted on the toolbar
                     showselection: index == 2 ? true : false    // wanted on selection

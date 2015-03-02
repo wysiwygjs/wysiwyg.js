@@ -147,12 +147,12 @@
                 $fileuploader = $('<input type="file" />')
                                     .attr('draggable','true')
                                     .css({position: 'absolute',
-                                            left: 0,
-                                            top: 0,
-                                            width: '100%',
-                                            height: '100%',
-                                            opacity: 0,
-                                            cursor: 'pointer'})
+                                          left: 0,
+                                          top: 0,
+                                          width: '100%',
+                                          height: '100%',
+                                          opacity: 0,
+                                          cursor: 'pointer'})
                                     .change(function(event){
                                         var files = event.target.files; // FileList object
                                         for(var i=0; i < files.length; ++i)
@@ -429,9 +429,8 @@
                 else if( 'popup' in value )
                     toolbar_handler = function( target ) {
                         var $popup = popup_open_callback();
-                        var apply_position = value.popup( $popup, $(target) );
-                        if( apply_position !== false )
-                            popup_position_callback( $popup, target );
+                        var overwrite_offset = value.popup( $popup, $(target) );
+                        popup_position_callback( $popup, target, overwrite_offset );
                     };
                 else
                     toolbar_handler = get_toolbar_handler( key, function( $content, target ) {
@@ -458,33 +457,49 @@
                     $toolbar.append( $button );
             });
         };
-        var fixed_parent = function()
+        var popup_position = function( $popup, $container, left, top )  // left+top relative to $container
         {
-            var parent_fixed = false;
-            $(wysiwygeditor.getElement()).parents().each(function(index,element){
-                if( $(element).css('position') == 'fixed' )
-                {
-                    parent_fixed = true;
-                    return false;
-                }
-            });
-            return parent_fixed;
-        };
-        var fixed_offset = function( $element )
-        {
-            //$.offset() does not work with Safari 3 and 'position:fixed'
-            var offset = {
-                left: 0,
-                top: 0
-            };
-            var node = $element.get(0);
+            // Move $popup as high as possible in the DOM tree: offsetParent of $container
+            var $offsetparent = $container.offsetParent();
+            $offsetparent.append( $popup );
+            var offset = $container.position();
+            left += offset.left;
+            top += offset.top;
+            // Test parents
+            var offsetParent_offset = { left: 0, top: 0 },  //$.offset() does not work with Safari 3 and 'position:fixed'
+                offsetParent_fixed = false,
+                offsetParent_overflow = false,
+                popup_width = $popup.width();
+            var node = $offsetparent.get(0);
             while( node )
             {
-                offset.left += node.offsetLeft;
-                offset.top += node.offsetTop;
+                offsetParent_offset.left += node.offsetLeft;
+                offsetParent_offset.top += node.offsetTop;
+                var $node = $(node);
+                if( $node.css('position') == 'fixed' )
+                    offsetParent_fixed = true;
+                if( $node.css('overflow') != 'visible' )
+                    offsetParent_overflow = true;
                 node = node.offsetParent;
             }
-            return offset;
+            // Trim to offset-parent
+            if( offsetParent_fixed || offsetParent_overflow )
+            {
+                if( left + popup_width > $offsetparent.width() - 1 )
+                    left = $offsetparent.width() - popup_width - 1;
+                if( left < 1 )
+                    left = 1;
+            }
+            // Trim to viewport
+            var viewport_width = $(window).width();
+            if( offsetParent_offset.left + left + popup_width > viewport_width - 1 )
+                left = viewport_width - offsetParent_offset.left - popup_width - 1;
+            var scroll_left = offsetParent_fixed ? 0 : $(window).scrollLeft();
+            if( offsetParent_offset.left + left < scroll_left + 1 )
+                left = scroll_left - offsetParent_offset.left + 1;
+            // Set offset
+            $popup.css({ left: parseInt(left) + 'px',
+                         top: parseInt(top) + 'px' });
         };
 
 
@@ -511,72 +526,63 @@
                     },
                 onselection: function( collapsed, rect, nodes, rightclick )
                     {
-                        var show_toolbar = true,
-                            $special_toolbar = null;
+                        var show_popup = true,
+                            $special_popup = null;
                         // Fix type error - https://github.com/wysiwygjs/wysiwyg.js/issues/4
                         if( ! rect )
-                            show_toolbar = false;
+                            show_popup = false;
                         // Click on a link opens the link-popup
                         else if( nodes.length == 1 && $(nodes[0]).parents('a').length != 0 ) // nodes is not a sparse array
-                            $special_toolbar = content_insertlink( wysiwygeditor, $(nodes[0]).parents('a:first') );
-                        // A right-click always opens the toolbar
+                            $special_popup = content_insertlink( wysiwygeditor, $(nodes[0]).parents('a:first') );
+                        // A right-click always opens the popup
                         else if( rightclick )
                             ;
-                        // No selection-toolbar wanted?
+                        // No selection-popup wanted?
                         else if( toolbar_position != 'selection' && toolbar_position != 'top-selection' && toolbar_position != 'bottom-selection' )
-                            show_toolbar = false;
-                        // Selected toolbar wanted, but nothing selected (=selection collapsed)
+                            show_popup = false;
+                        // Selected popup wanted, but nothing selected (=selection collapsed)
                         else if( collapsed )
-                            show_toolbar = false;
-                        // Only one image? Better: Display a special image-toolbar
+                            show_popup = false;
+                        // Only one image? Better: Display a special image-popup
                         else if( nodes.length == 1 && nodes[0].nodeName == 'IMG' ) // nodes is not a sparse array
-                            show_toolbar = false;
-                        if( ! show_toolbar )
+                            show_popup = false;
+                        if( ! show_popup )
                         {
                             wysiwygeditor.closePopup();
                             return ;
                         }
-                        // Apply position
-                        var $toolbar;
-                        var apply_toolbar_position = function()
+                        // Popup position
+                        var $popup;
+                        var apply_popup_position = function()
                         {
-                            var offset = fixed_offset($(wysiwygeditor.getElement()));
-                            var toolbar_width = $toolbar.outerWidth();
-                            // Point is the center of the selection
-                            var left = offset.left + rect.left + parseInt(rect.width / 2) - parseInt(toolbar_width / 2);
-                            var top = offset.top + rect.top + rect.height;
-                            // Trim to viewport
-                            var viewport_width = $(window).width();
-                            if( left + toolbar_width > viewport_width - 1 )
-                                left = viewport_width - toolbar_width - 1;
-                            var scroll_left = fixed_parent() ? 0 : $(window).scrollLeft();
-                            if( left < scroll_left + 1 )
-                                left = scroll_left + 1;
-                            $toolbar.css({ left: left + 'px',
-                                           top: top + 'px',
-                                           overflow: 'visible' });
+                            var popup_width = $popup.outerWidth();
+                            // Point is the center of the selection - relative to $container not the element
+                            var container_offset = $container.offset(),
+                                editor_offset = $(wysiwygeditor.getElement()).offset();
+                            var left = rect.left + parseInt(rect.width / 2) - parseInt(popup_width / 2) + editor_offset.left - container_offset.left;
+                            var top = rect.top + rect.height + editor_offset.top - container_offset.top;
+                            popup_position( $popup, $container, left, top );
                         };
                         // Open popup
-                        $toolbar = $(wysiwygeditor.openPopup());
+                        $popup = $(wysiwygeditor.openPopup());
                         // if wrong popup -> create a new one
-                        if( $toolbar.hasClass('wysiwyg-popup') && ! $toolbar.hasClass('wysiwyg-popuphover') )
-                            $toolbar = $(wysiwygeditor.closePopup().openPopup());
-                        if( ! $toolbar.hasClass('wysiwyg-popup') )
+                        if( $popup.hasClass('wysiwyg-popup') && ! $popup.hasClass('wysiwyg-popuphover') )
+                            $popup = $(wysiwygeditor.closePopup().openPopup());
+                        if( ! $popup.hasClass('wysiwyg-popup') )
                         {
                             // add classes + buttons
-                            $toolbar.addClass( 'wysiwyg-popup wysiwyg-popuphover' )
-                                    .css('position', fixed_parent() ? 'fixed' : 'absolute' );
-                            if( $special_toolbar )
-                                $toolbar.empty().append( $special_toolbar );
+                            $popup.addClass( 'wysiwyg-popup wysiwyg-popuphover' );
+                            if( $special_popup )
+                                $popup.empty().append( $special_popup );
                             else
-                                add_buttons_to_toolbar( $toolbar, true,
+                                add_buttons_to_toolbar( $popup, true,
                                     function() {
-                                        return $toolbar.empty();
+                                        return $popup.empty();
                                     },
-                                    apply_toolbar_position );
+                                    apply_popup_position );
                         }
-                        // Toolbar position
-                        apply_toolbar_position();
+                        // Apply position
+                        apply_popup_position();
                     },
                 hijackcontextmenu: (toolbar_position == 'selection')
             };
@@ -655,36 +661,27 @@
                     if( $popup.hasClass('wysiwyg-popup') && $popup.hasClass('wysiwyg-popuphover') )
                         $popup = $(wysiwygeditor.closePopup().openPopup());
                     if( ! $popup.hasClass('wysiwyg-popup') )
-                    {
                         // add classes + content
-                        $popup.addClass( 'wysiwyg-popup' )
-                              .css('position', fixed_parent() ? 'fixed' : 'absolute' );
-                    }
+                        $popup.addClass( 'wysiwyg-popup' );
                     return $popup;
                 },
-                function( $popup, target ) {
+                function( $popup, target, overwrite_offset ) {
                     // Popup position
                     var $button = $(target);
                     var popup_width = $popup.outerWidth();
                     // Point is the top/bottom-center of the button
-                    var offset = fixed_offset($button);
-                    var left = offset.left + parseInt($button.width() / 2) - parseInt(popup_width / 2);
-                    var top = offset.top;
+                    var left = $button.offset().left - $container.offset().left + parseInt($button.width() / 2) - parseInt(popup_width / 2);
+                    var top = $button.offset().top - $container.offset().top;
                     if( toolbar_top )
                         top += $button.outerHeight();
                     else
-                        top -= $popup.height();
-                    // Trim left to viewport
-                    var viewport_width = $(window).width();
-                    if( left + popup_width > viewport_width - 1 )
-                        left = viewport_width - popup_width - 1;
-                    var scroll_left = fixed_parent() ? 0 : $(window).scrollLeft();
-                    if( left < scroll_left + 1 )
-                        left = scroll_left + 1;
-                    $popup.css({ left: left + 'px',
-                                 top: top + 'px',
-                                 overflow: 'visible'
-                               });
+                        top -= $popup.outerHeight();
+                    if( overwrite_offset )
+                    {
+                        left = overwrite_offset.left;
+                        top = overwrite_offset.top;
+                    }
+                    popup_position( $popup, $container, left, top );
                 });
             if( toolbar_top )
                 $container.prepend( $toolbar );

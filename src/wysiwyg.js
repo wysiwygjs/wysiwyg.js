@@ -666,7 +666,12 @@
             // Contenteditable
             node_wysiwyg = document.createElement( 'DIV' );
             node_wysiwyg.innerHTML = node_textarea.value;
-            node_textarea.parentNode.insertBefore( node_wysiwyg, node_textarea.nextSibling );
+            var parent = node_textarea.parentNode,
+                next = node_textarea.nextSibling;
+            if( next )
+                parent.insertBefore( node_wysiwyg, next );
+            else
+                parent.appendChild( node_wysiwyg );
         }
         else
             node_wysiwyg = option_element;
@@ -846,7 +851,12 @@
 
             // Create popup element
             node_popup = document.createElement( 'DIV' );
-            document.body.appendChild( node_popup );
+            var parent = node_wysiwyg.parentNode,
+                next = node_wysiwyg.nextSibling;
+            if( next )
+                parent.insertBefore( node_popup, next );
+            else
+                parent.appendChild( node_popup );
             return node_popup;
         };
         var popupClose = function()
