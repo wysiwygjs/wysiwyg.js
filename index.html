@@ -416,15 +416,24 @@ $(document).ready(function(){
                             //        });
                         },*/
             videoFromUrl: function( url ) {
-                // Contributions will be placed here.
-                
-                // Get <embed code> from youtube-url - http://stackoverflow.com/questions/3392993/php-regex-to-get-youtube-video-id
+                // Contributions are welcome :-)
+
+                // youtube - http://stackoverflow.com/questions/3392993/php-regex-to-get-youtube-video-id
                 var youtube_match = url.match( /^(?:http(?:s)?:\/\/)?(?:[a-z0-9.]+\.)?(?:youtu\.be|youtube\.com)\/(?:(?:watch)?\?(?:.*&)?v(?:i)?=|(?:embed|v|vi|user)\/)([^\?&\"'>]+)/ );
                 if( youtube_match && youtube_match[1].length == 11 )
-                    return '<iframe width="640" height="360" src="//www.youtube.com/embed/' + youtube_match[1] + '" frameborder="0" allowfullscreen></iframe>';
+                    return '<iframe src="//www.youtube.com/embed/' + youtube_match[1] + '" width="640" height="360" frameborder="0" allowfullscreen></iframe>';
 
-                // Default: create '<video/>' tag
-                return null;
+                // vimeo - http://embedresponsively.com/
+                var vimeo_match = url.match( /^(?:http(?:s)?:\/\/)?(?:[a-z0-9.]+\.)?vimeo\.com\/([0-9]+)$/ );
+                if( vimeo_match )
+                    return '<iframe src="http://player.vimeo.com/video/' + vimeo_match[1] + '" width="640" height="360" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+
+                // dailymotion - http://embedresponsively.com/
+                var dailymotion_match = url.match( /^(?:http(?:s)?:\/\/)?(?:[a-z0-9.]+\.)?dailymotion\.com\/video\/([0-9a-z]+)$/ );
+                if( dailymotion_match )
+                    return '<iframe src="http://www.dailymotion.com/embed/video/' + dailymotion_match[1] + '" width="640" height="360" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+
+                // undefined -> create '<video/>' tag
             },
             onKeyPress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) {
                             // E.g.: submit form on enter-key:
