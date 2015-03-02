@@ -117,10 +117,20 @@
     height: 16px;*/
     padding: 8px 12px;
     font: 16px FontAwesome;
+    -moz-transition: color 0.1s, background 0.1s;
+    -webkit-transition: color 0.1s, background 0.1s;
+    -ms-transition: color 0.1s, background 0.1s;
+    -o-transition: color 0.1s, background 0.1s;
+    transition: color 0.1s, background 0.1s;
 }
 .wysiwyg-toolbar-icon:hover {
     color: HighlightText;
     background-color: Highlight;
+    -moz-transition: color 0.1s, background 0.1s;
+    -webkit-transition: color 0.1s, background 0.1s;
+    -ms-transition: color 0.1s, background 0.1s;
+    -o-transition: color 0.1s, background 0.1s;
+    transition: color 0.1s, background 0.1s;
 }
 .wysiwyg-toolbar-form {
     padding: 10px;
