@@ -464,31 +464,32 @@
         };
         var popup_position = function( $popup, $container, left, top )  // left+top relative to $container
         {
+            // Test parents
+            var offsetparent = $container.get(0).offsetParent,
+                offsetparent_offset = { left: 0, top: 0 },  //$.offset() does not work with Safari 3 and 'position:fixed'
+                offsetparent_fixed = false,
+                offsetparent_overflow = false,
+                popup_width = $popup.width(),
+                node = offsetparent;
+            while( node )
+            {
+                offsetparent_offset.left += node.offsetLeft;
+                offsetparent_offset.top += node.offsetTop;
+                var $node = $(node);
+                if( $node.css('position') == 'fixed' )
+                    offsetparent_fixed = true;
+                if( $node.css('overflow') != 'visible' )
+                    offsetparent_overflow = true;
+                node = node.offsetParent;
+            }
             // Move $popup as high as possible in the DOM tree: offsetParent of $container
-            var $offsetparent = $container.offsetParent();
+            var $offsetparent = $(offsetparent || document.body);
             $offsetparent.append( $popup );
             var offset = $container.position();
             left += offset.left;
             top += offset.top;
-            // Test parents
-            var offsetParent_offset = { left: 0, top: 0 },  //$.offset() does not work with Safari 3 and 'position:fixed'
-                offsetParent_fixed = false,
-                offsetParent_overflow = false,
-                popup_width = $popup.width();
-            var node = $offsetparent.get(0);
-            while( node )
-            {
-                offsetParent_offset.left += node.offsetLeft;
-                offsetParent_offset.top += node.offsetTop;
-                var $node = $(node);
-                if( $node.css('position') == 'fixed' )
-                    offsetParent_fixed = true;
-                if( $node.css('overflow') != 'visible' )
-                    offsetParent_overflow = true;
-                node = node.offsetParent;
-            }
             // Trim to offset-parent
-            if( offsetParent_fixed || offsetParent_overflow )
+            if( offsetparent_fixed || offsetparent_overflow )
             {
                 if( left + popup_width > $offsetparent.width() - 1 )
                     left = $offsetparent.width() - popup_width - 1;
@@ -497,11 +498,11 @@
             }
             // Trim to viewport
             var viewport_width = $(window).width();
-            if( offsetParent_offset.left + left + popup_width > viewport_width - 1 )
-                left = viewport_width - offsetParent_offset.left - popup_width - 1;
-            var scroll_left = offsetParent_fixed ? 0 : $(window).scrollLeft();
-            if( offsetParent_offset.left + left < scroll_left + 1 )
-                left = scroll_left - offsetParent_offset.left + 1;
+            if( offsetparent_offset.left + left + popup_width > viewport_width - 1 )
+                left = viewport_width - offsetparent_offset.left - popup_width - 1;
+            var scroll_left = offsetparent_fixed ? 0 : $(window).scrollLeft();
+            if( offsetparent_offset.left + left < scroll_left + 1 )
+                left = scroll_left - offsetparent_offset.left + 1;
             // Set offset
             $popup.css({ left: parseInt(left) + 'px',
                          top: parseInt(top) + 'px' });
