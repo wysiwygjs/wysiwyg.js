@@ -79,9 +79,9 @@
 }
 .wysiwyg-popup.wysiwyg-popuphover {
     margin-top: 9px;
-    -moz-box-shadow: 0 0 5px #333333;
-    -webkit-box-shadow: 0 0 5px #333333;
-    box-shadow: 0 0 5px #333333;
+    -moz-box-shadow: 0 3px 10px rgba(50,50,50,0.3);
+    -webkit-box-shadow: 0 3px 10px rgba(50,50,50,0.3);
+    box-shadow: 0 3px 10px rgba(50,50,50,0.3);
 }
 .wysiwyg-popup.wysiwyg-popuphover:after {
     position: absolute;
