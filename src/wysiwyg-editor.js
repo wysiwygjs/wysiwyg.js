@@ -219,13 +219,18 @@
             // Add video to editor
             var insert_video_wysiwyg = function( url, html )
             {
-                if( url && ! html )
-                {
-                    if( video_from_url )
-                        html = video_from_url( url );
-                    if( ! html )
-                        html = '<video src="' + url.replace(/"/,'&quot;') + '" />';
-                }
+                url = $.trim(url||'');
+                html = $.trim(html||'');
+                var website_url = false;
+                if( url.length && ! html.length )
+                    website_url = url;
+                else if( html.indexOf('<') == -1 && html.indexOf('>') == -1 && 
+                         html.match(/^(?:https?:\/)?\/?(?:[^:\/\s]+)(?:(?:\/\w+)*\/)(?:[\w\-\.]+[^#?\s]+)(?:.*)?(?:#[\w\-]+)?$/) )
+                    website_url = html;
+                if( website_url && video_from_url )
+                    html = video_from_url( website_url ) || '';
+                if( ! html.length && website_url )
+                    html = '<video src="' + website_url.replace(/"/,'&quot;') + '" />';
                 wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
             };
             // Create popup
