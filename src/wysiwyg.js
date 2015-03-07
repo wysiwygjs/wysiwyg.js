@@ -25,10 +25,10 @@
     };
 
     // http://stackoverflow.com/questions/12949590/how-to-detach-event-in-ie-6-7-8-9-using-javascript
-    var addEvent = function( element, type, handler )
+    var addEvent = function( element, type, handler, useCapture )
     {
         if( element.addEventListener ) {
-            element.addEventListener( type, handler, false );
+            element.addEventListener( type, handler, useCapture ? true : false );
         }
         else if( element.attachEvent ) {
             element.attachEvent( 'on' + type, handler );
@@ -36,10 +36,10 @@
         else if( element != window )
             element['on' + type] = handler;
     };
-    var removeEvent = function( element, type, handler )
+    var removeEvent = function( element, type, handler, useCapture )
     {
         if( element.removeEventListener ) {
-            element.removeEventListener( type, handler, false );
+            element.removeEventListener( type, handler, useCapture ? true : false );
         }
         else if( element.detachEvent) {
             element.detachEvent( 'on' + type, handler );
@@ -847,7 +847,7 @@
                 return node_popup;
 
             // Global click closes popup
-            addEvent( window_ie8, 'mousedown', popupClickClose );
+            addEvent( window_ie8, 'mousedown', popupClickClose, true );
 
             // Create popup element
             node_popup = document.createElement( 'DIV' );
@@ -865,7 +865,7 @@
                 return ;
             node_popup.parentNode.removeChild( node_popup );
             node_popup = null;
-            removeEvent( window_ie8, 'mousedown', popupClickClose );
+            removeEvent( window_ie8, 'mousedown', popupClickClose, true );
         };
 
         // Focus/Blur events
