@@ -136,6 +136,12 @@
     padding: 10px;
     white-space: nowrap;
 }
+.wysiwyg-toolbar-form .wysiwyg-toolbar-icon {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -o-border-radius: 5px;
+    border-radius: 5px;
+}
 .wysiwyg-toolbar-color {
     width: 12px;
     height: 12px;
