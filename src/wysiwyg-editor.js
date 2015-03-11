@@ -28,7 +28,7 @@
     };
 
     // Create the Editor
-    var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_dropfileclick,
+    var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_selectImage,
                                   placeholder_url, placeholder_embed, max_imagesize, on_imageupload, video_from_url, on_keypress )
     {
         // Content: Insert link
@@ -191,7 +191,7 @@
             }
             if( $fileuploader )
                 $('<div/>').addClass( 'wysiwyg-browse' )
-                           .html( label_dropfileclick )
+                           .html( label_selectImage )
                            .append( $fileuploader )
                            .appendTo( $content );
             // Add image via 'URL'
@@ -720,7 +720,7 @@
                     toolbar_position = (option.toolbar && (option.toolbar == 'top' || option.toolbar == 'top-selection' || option.toolbar == 'bottom' || option.toolbar == 'bottom-selection' || option.toolbar == 'selection')) ? option.toolbar : 'top-selection',
                     toolbar_buttons = option.buttons,
                     toolbar_submit = option.submit,
-                    label_dropfileclick = option.dropfileClick,
+                    label_selectImage = option.selectImage,
                     placeholder_url = option.placeholderUrl || null,
                     placeholder_embed = option.placeholderEmbed || null,
                     max_imagesize = option.maxImageSize || null,
@@ -729,7 +729,7 @@
                     on_keypress = option.onKeyPress;
 
                 // Create the WYSIWYG Editor
-                var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_dropfileclick,
+                var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_selectImage,
                                           placeholder_url, placeholder_embed, max_imagesize, on_imageupload, video_from_url, on_keypress );
                 $that.data( 'wysiwyg', data );
             });

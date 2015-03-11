@@ -90,7 +90,7 @@ var $editor = $('#editor').wysiwyg({
     buttons = { ... },
     submit = { ... },
     placeholder: 'Type your text here...',
-    dropfileClick: 'Click or drop image',
+    selectImage: 'Click or drop image',
     placeholderUrl: 'www.example.com',
     placeholderEmbed: '<embed/>',
     maxImageSize: [width,height],
