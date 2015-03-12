@@ -210,34 +210,6 @@ $(document).ready(function(){
                     title: 'Size',
                     image: '\uf034', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     popup: function( $popup, $button ) {
-                            /*
-                            var list_fontsizes = {
-                                // Name : Size
-                                'Huge'    : 7,
-                                'Larger'  : 6,
-                                'Large'   : 5,
-                                'Normal'  : 4,
-                                'Small'   : 3,
-                                'Smaller' : 2,
-                                'Tiny'    : 1
-                            };
-                            var $list = $('<div/>').addClass('wysiwyg-toolbar-list')
-                                                   .attr('unselectable','on');
-                            $.each( list_fontsizes, function( name, size ){
-                                var $link = $('<a/>').attr('href','#')
-                                                    .css( 'font-size', (8 + (size * 3)) + 'px' )
-                                                    .html( name )
-                                                    .click(function(event){
-                                                        $(element).wysiwyg('shell').fontSize(size).closePopup();
-                                                        // prevent link-href-#
-                                                        event.stopPropagation();
-                                                        event.preventDefault();
-                                                        return false;
-                                                    });
-                                $list.append( $link );
-                            });
-                            $popup.append( $list );
-                            */
                             // Hack: http://stackoverflow.com/questions/5868295/document-execcommand-fontsize-in-pixels/5870603#5870603
                             var list_fontsizes = [];
                             for( var i=8; i <= 11; ++i )
@@ -266,6 +238,34 @@ $(document).ready(function(){
                                 $list.append( $link );
                             });
                             $popup.append( $list );
+                            /*
+                            var list_fontsizes = {
+                                // Name : Size
+                                'Huge'    : 7,
+                                'Larger'  : 6,
+                                'Large'   : 5,
+                                'Normal'  : 4,
+                                'Small'   : 3,
+                                'Smaller' : 2,
+                                'Tiny'    : 1
+                            };
+                            var $list = $('<div/>').addClass('wysiwyg-toolbar-list')
+                                                   .attr('unselectable','on');
+                            $.each( list_fontsizes, function( name, size ){
+                                var $link = $('<a/>').attr('href','#')
+                                                    .css( 'font-size', (8 + (size * 3)) + 'px' )
+                                                    .html( name )
+                                                    .click(function(event){
+                                                        $(element).wysiwyg('shell').fontSize(size).closePopup();
+                                                        // prevent link-href-#
+                                                        event.stopPropagation();
+                                                        event.preventDefault();
+                                                        return false;
+                                                    });
+                                $list.append( $link );
+                            });
+                            $popup.append( $list );
+                            */
                            }
                     //showstatic: true,    // wanted on the toolbar
                     //showselection: true    // wanted on selection
@@ -637,7 +637,46 @@ It is used on a website with 300M page impressions a month.
   </div>
 </div>
 
-<h1><center>API:</center></h1>
+<h1><center>$.wysiwyg() API:</center></h1>
+
+<pre style="width:860px; margin: 30px auto;">
+$(element).wysiwyg({
+    classes: 'some-more-classes',
+    toolbar: 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection',
+    buttons: {
+        insertimage: { ... },
+        insertvideo: { ... },
+        insertlink: { ... },
+        bold: { ... },
+        italic: { ... },
+        underline: { ... },
+        strikethrough: { ... },
+        forecolor: { ... },
+        highlight: { ... },
+        alignleft: { ... },
+        aligncenter: { ... },
+        alignright: { ... },
+        alignjustify: { ... },
+        subscript: { ... },
+        superscript: { ... },
+        indent: { ... },
+        outdent: { ... },
+        orderedList: { ... },
+        unorderedList: { ... },
+        removeformat: { ... }
+    },
+    submit: { ... },
+    selectImage: 'Click or drop image',
+    placeholderUrl: 'www.example.com',
+    placeholderEmbed: '&lt;embed/&gt;',
+    maxImageSize: [600,200],
+    onImageUpload: function( insert_image ) { ... }
+    videoFromUrl: function( url ) {
+    onKeyPress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) { ... }
+});
+</pre>
+
+<h1><center>Raw wysiwyg.js API:</center></h1>
 
 <pre style="width:860px; margin: 30px auto;">
 // create wysiwyg:
