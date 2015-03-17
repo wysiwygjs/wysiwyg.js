@@ -95,6 +95,7 @@ var $editor = $('#editor').wysiwyg({
     placeholderEmbed: '<embed/>',
     maxImageSize: [width,height],
     onImageUpload: function( insert_image ){},
+    forceImageUpload: false,
     videoFromUrl: function( url ){}
     onKeyPress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ){}
 })

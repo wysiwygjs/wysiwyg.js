@@ -29,7 +29,7 @@
 
     // Create the Editor
     var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_selectImage,
-                                  placeholder_url, placeholder_embed, max_imagesize, on_imageupload, video_from_url, on_keypress )
+                                  placeholder_url, placeholder_embed, max_imagesize, on_imageupload, force_imageupload, video_from_url, on_keypress )
     {
         // Content: Insert link
         var wysiwygeditor_insertLink = function( wysiwygeditor, url )
@@ -127,8 +127,16 @@
             var $content = $('<div/>').addClass('wysiwyg-toolbar-form')
                                       .attr('unselectable','on');
             // Add image via 'Browse...'
-            var $fileuploader = null;
-            if( window.File && window.FileReader && window.FileList )
+            var $fileuploader = null,
+                $fileuploader_input = $('<input type="file" />')
+                                        .css({position: 'absolute',
+                                              left: 0,
+                                              top: 0,
+                                              width: '100%',
+                                              height: '100%',
+                                              opacity: 0,
+                                              cursor: 'pointer'});
+            if( ! force_imageupload && window.File && window.FileReader && window.FileList )
             {
                 // File-API
                 var loadImageFromFile = function( file )
@@ -144,15 +152,8 @@
                     // Read in the image file as a data URL
                     reader.readAsDataURL( file );
                 };
-                $fileuploader = $('<input type="file" />')
+                $fileuploader = $fileuploader_input
                                     .attr('draggable','true')
-                                    .css({position: 'absolute',
-                                          left: 0,
-                                          top: 0,
-                                          width: '100%',
-                                          height: '100%',
-                                          opacity: 0,
-                                          cursor: 'pointer'})
                                     .change(function(event){
                                         var files = event.target.files; // FileList object
                                         for(var i=0; i < files.length; ++i)
@@ -176,17 +177,10 @@
             else if( on_imageupload )
             {
                 // Upload image to a server
-                var $input = $('<input type="file" />')
-                                        .css({position: 'absolute',
-                                              left: 0,
-                                              top: 0,
-                                              width: '100%',
-                                              height: '100%',
-                                              opacity: 0,
-                                              cursor: 'pointer'})
-                                        .change(function(event){
-                                            on_imageupload.call( this, insert_image_wysiwyg );
-                                        });
+                var $input = $fileuploader_input
+                                    .change(function(event){
+                                        on_imageupload.call( this, insert_image_wysiwyg );
+                                    });
                 $fileuploader = $('<form/>').append($input);
             }
             if( $fileuploader )
@@ -725,12 +719,13 @@
                     placeholder_embed = option.placeholderEmbed || null,
                     max_imagesize = option.maxImageSize || null,
                     on_imageupload = option.onImageUpload || null,
+                    force_imageupload = (option.forceImageUpload && on_imageupload) || false,
                     video_from_url = option.videoFromUrl || null,
                     on_keypress = option.onKeyPress;
 
                 // Create the WYSIWYG Editor
                 var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_selectImage,
-                                          placeholder_url, placeholder_embed, max_imagesize, on_imageupload, video_from_url, on_keypress );
+                                          placeholder_url, placeholder_embed, max_imagesize, on_imageupload, force_imageupload, video_from_url, on_keypress );
                 $that.data( 'wysiwyg', data );
             });
         }
