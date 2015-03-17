@@ -719,7 +719,7 @@
                     placeholder_embed = option.placeholderEmbed || null,
                     max_imagesize = option.maxImageSize || null,
                     on_imageupload = option.onImageUpload || null,
-                    force_imageupload = (option.forceImageUpload && on_imageupload) || false,
+                    force_imageupload = option.forceImageUpload && on_imageupload,
                     video_from_url = option.videoFromUrl || null,
                     on_keypress = option.onKeyPress;
 
