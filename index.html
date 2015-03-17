@@ -439,6 +439,7 @@ $(document).ready(function(){
                                             var iframebody = iframedoc.getElementsByTagName('body')[0];
                                             var image_url = iframebody.innerHTML;
                                             insert_image( image_url );
+                                            $(iframe).remove();
                                          })
                                          .appendTo(document.body);
                             $(this).attr('name','upload-filename')
