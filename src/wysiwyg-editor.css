@@ -137,6 +137,7 @@
     white-space: nowrap;
 }
 .wysiwyg-toolbar-form .wysiwyg-toolbar-icon {
+    margin-left: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     -o-border-radius: 5px;
