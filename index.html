@@ -662,6 +662,7 @@ It is used on a website with 300M page impressions a month.
 <h1><center>$.wysiwyg() API:</center></h1>
 
 <pre style="width:860px; margin: 30px auto;">
+// create editor:
 $(element).wysiwyg({
     classes: 'some-more-classes',
     toolbar: 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection',
@@ -697,6 +698,14 @@ $(element).wysiwyg({
     videoFromUrl: function( url ) { ... },
     onKeyPress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) { ... }
 });
+
+// surrounding div:
+$(element).wysiwyg('container');
+
+// accessing 'wysiwyg.js':
+$(element).wysiwyg('shell').bold();
+$(element).wysiwyg('shell').forecolor( '#ff0000' );
+$(element).wysiwyg('shell').insertHTML( '&lt;b&gt;some text&lt;/b&gt;' );
 </pre>
 
 <h1><center>Raw wysiwyg.js API:</center></h1>
