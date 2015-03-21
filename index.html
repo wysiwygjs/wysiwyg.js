@@ -238,34 +238,6 @@ $(document).ready(function(){
                                 $list.append( $link );
                             });
                             $popup.append( $list );
-                            /*
-                            var list_fontsizes = {
-                                // Name : Size
-                                'Huge'    : 7,
-                                'Larger'  : 6,
-                                'Large'   : 5,
-                                'Normal'  : 4,
-                                'Small'   : 3,
-                                'Smaller' : 2,
-                                'Tiny'    : 1
-                            };
-                            var $list = $('<div/>').addClass('wysiwyg-toolbar-list')
-                                                   .attr('unselectable','on');
-                            $.each( list_fontsizes, function( name, size ){
-                                var $link = $('<a/>').attr('href','#')
-                                                    .css( 'font-size', (8 + (size * 3)) + 'px' )
-                                                    .html( name )
-                                                    .click(function(event){
-                                                        $(element).wysiwyg('shell').fontSize(size).closePopup();
-                                                        // prevent link-href-#
-                                                        event.stopPropagation();
-                                                        event.preventDefault();
-                                                        return false;
-                                                    });
-                                $list.append( $link );
-                            });
-                            $popup.append( $list );
-                            */
                            }
                     //showstatic: true,    // wanted on the toolbar
                     //showselection: true    // wanted on selection
