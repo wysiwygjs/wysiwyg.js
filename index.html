@@ -639,6 +639,19 @@ $(element).wysiwyg({
     classes: 'some-more-classes',
     toolbar: 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection',
     buttons: {
+        buttonname: {
+            title: 'tooltip text',
+            // How should the button look like?
+            image: '\u1234' | '&lt;img src="path/to/image.jpg"&gt;',
+            html: '&lt;raw html&gt;',
+            // What should the button do?
+            popup: function( $popup, $button ) { ... }
+            click: function( $button ) { ... }
+            // Where should the button be placed?
+            showstatic: true, // on the static toolbar
+            showselection: true // on selection toolbar
+        },
+        // build-in:
         insertimage: { ... },
         insertvideo: { ... },
         insertlink: { ... },
