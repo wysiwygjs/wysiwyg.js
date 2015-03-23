@@ -1,0 +1,202 @@
+/*
+ * If you prefer to host 'FontAwesome' on your server
+@font-face {
+    font-family: 'FontAwesome';
+    src: url('fonts/fontawesome-webfont.eot?v=4.2.0');
+    src: url('fonts/fontawesome-webfont.eot?#iefix&v=4.2.0') format('embedded-opentype'), url('fonts/fontawesome-webfont.woff?v=4.2.0') format('woff'), url('fonts/fontawesome-webfont.ttf?v=4.2.0') format('truetype'), url('fonts/fontawesome-webfont.svg?v=4.2.0#fontawesomeregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+*/
+.wysiwyg-container {
+    overflow: visible;
+    border: 1px solid #cccccc;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+}
+.wysiwyg-textarea {
+    display: block;
+    width: 100%;
+    height: 10em;
+    padding: 0;
+}
+.wysiwyg-wrapper {
+    position: relative;
+}
+.wysiwyg-editor {
+    position: relative;
+    min-height: 5em;
+    /*max-height: 25em;*/
+    padding: 10px;
+    overflow: auto;
+    outline: none;
+    -ms-word-wrap: break-word;
+    word-wrap: break-word;
+}
+.wysiwyg-toolbar {
+    overflow: hidden;
+    white-space: nowrap;
+}
+.wysiwyg-toolbar-top {
+    border-bottom: 1px solid #cccccc;
+    padding: 0;
+}
+.wysiwyg-toolbar-bottom {
+    border-top: 1px solid #cccccc;
+    padding: 0 5px;
+}
+.wysiwyg-toolbar a {
+    vertical-align: top;
+}
+.wysiwyg-placeholder {
+    position: absolute;
+    top: 10px;  /* same as padding in .wysiwyg-editor */
+    left: 10px;
+    color: #cccccc;
+    background: transparent;
+}
+.wysiwyg-popup {
+    position: absolute;
+    z-index: 9999;
+    color: black;
+    background: white;
+    background: rgba(255,255,255,0.9);
+    left: -50%;
+    white-space: nowrap;
+    border: 1px solid #aaaaaa;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+    -moz-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.wysiwyg-popup.wysiwyg-popuphover {
+    margin-top: 9px;
+    -moz-box-shadow: 0 3px 10px rgba(50,50,50,0.3);
+    -webkit-box-shadow: 0 3px 10px rgba(50,50,50,0.3);
+    box-shadow: 0 3px 10px rgba(50,50,50,0.3);
+}
+.wysiwyg-popup.wysiwyg-popuphover:after {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    border: solid transparent;
+    content: '';
+    width: 0;
+    height: 0;
+    margin-left: -8px;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-bottom: 8px solid #aaaaaa;
+}
+.wysiwyg-toolbar-icon {
+    display: -moz-inline-stack;
+    display: inline-block;
+    *display: inline;
+    margin: 0;
+    padding: 0;
+    color: #333333;
+    text-decoration: none;
+    *zoom: 1;
+    vertical-align: top;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /*width: 16px;
+    height: 16px;*/
+    padding: 8px 12px;
+    font: 16px FontAwesome;
+    -moz-transition: color 0.2s, background 0.2s;
+    -webkit-transition: color 0.2s, background 0.2s;
+    -ms-transition: color 0.2s, background 0.2s;
+    -o-transition: color 0.2s, background 0.2s;
+    transition: color 0.2s, background 0.2s;
+}
+.wysiwyg-toolbar-icon:hover {
+    color: HighlightText;
+    background-color: Highlight;
+    -moz-transition: color 0.2s, background 0.2s;
+    -webkit-transition: color 0.2s, background 0.2s;
+    -ms-transition: color 0.2s, background 0.2s;
+    -o-transition: color 0.2s, background 0.2s;
+    transition: color 0.2s, background 0.2s;
+}
+.wysiwyg-toolbar-form {
+    padding: 10px;
+    white-space: nowrap;
+}
+.wysiwyg-toolbar-form .wysiwyg-toolbar-icon {
+    margin-left: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -o-border-radius: 5px;
+    border-radius: 5px;
+}
+.wysiwyg-toolbar-color {
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+}
+.wysiwyg-input {
+    display: -moz-inline-stack;
+    display: inline-block;
+    *display: inline;
+    color: black;
+    background: none white;
+    border: 1px solid #aaaaaa;
+    width: 20em;
+    height: 20px;
+    padding: 5px 4px;  /* 8 - extraheight(2) - border(1) = 5 */
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+    outline: none;
+}
+.wysiwyg-input.wysiwyg-inputtextarea {
+    width: 100%;
+    height: 5em;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    resize: none;
+}
+.wysiwyg-input:hover,
+.wysiwyg-input:active,
+.wysiwyg-input:focus {
+    border-color: #777777;
+}
+.wysiwyg-browse {
+    position: relative;
+    left: 0;
+    top: 0;
+    height: 3em;
+    line-height: 3em;
+    border: 2px dashed #aaaaaa;
+    padding: 10px;
+    color: #aaaaaa;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+.wysiwyg-browse:hover,
+.wysiwyg-browse:active,
+.wysiwyg-browse:focus {
+    color: black;
+    border-color: #777777;
+}
+.wysiwyg-embedcode {
+    margin-bottom: 10px;
+}
