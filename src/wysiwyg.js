@@ -588,7 +588,8 @@
     };
 
     // Interface: Create wysiwyg
-    window.wysiwyg = function( option )
+    module = module || {};
+    module.exports  = window.wysiwyg = function( option )
     {
         // Options
         option = option || {};
