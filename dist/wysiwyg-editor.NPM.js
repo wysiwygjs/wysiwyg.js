@@ -601,7 +601,7 @@
     };
 
     // Interface: Create wysiwyg
-    window.wysiwyg = function( option )
+    var wysiwyg = function( option )
     {
         // Options
         option = option || {};
