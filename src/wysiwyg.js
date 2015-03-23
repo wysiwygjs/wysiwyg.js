@@ -266,8 +266,9 @@
                             for( var i=0; i < sel.rangeCount; ++i )
                             {
                                 var range = sel.getRangeAt(i);
-                                if( range.compareBoundaryPoints(range.START_TO_START, noderange) <= 0 &&
-                                    range.compareBoundaryPoints(range.END_TO_END, noderange) >= 0 )
+                                // start after or end before -> skip node
+                                if( range.compareBoundaryPoints(range.END_TO_START,noderange) >= 0 &&
+                                    range.compareBoundaryPoints(range.START_TO_END,noderange) <= 0 )
                                 {
                                     node_inside_selection = true;
                                     break;
@@ -280,6 +281,7 @@
                     node = nextNode( node, node == endNode ? endNode : containerNode );
                 }
             }
+            // Fallback
             if( nodes.length == 0 && isOrContainsNode(containerNode,sel.focusNode) && sel.focusNode != containerNode )
                 nodes.push( sel.focusNode );
             return nodes;
@@ -290,22 +292,38 @@
             if( sel.type == 'Text' )
             {
                 var nodes = [];
-                var range = sel.createRange(),
-                    node = containerNode;
-                while( node )
+                var ranges = sel.createRangeCollection();
+                for( var i=0; i < ranges.length; ++i )
                 {
-                    // add this node?
-                    if( node != containerNode && node.nodeType == Node_ELEMENT_NODE )
+                    var range = ranges[i],
+                        parentNode = range.parentElement(),
+                        node = parentNode;
+                    while( node )
                     {
-                        // http://stackoverflow.com/questions/5884210/how-to-find-if-a-htmlelement-is-enclosed-in-selected-text
+                        // No clue how to detect whether a TextNode is within the selection...
+                        // ElementNode is easy: http://stackoverflow.com/questions/5884210/how-to-find-if-a-htmlelement-is-enclosed-in-selected-text
                         var noderange = range.duplicate();
-                        noderange.moveToElementText( node );
-                        if( range.inRange(noderange) )
-                            nodes.push( node );
+                        noderange.moveToElementText( node.nodeType != Node_ELEMENT_NODE ? node.parentNode : node );
+                        // start after or end before -> skip node
+                        if( noderange.compareEndPoints('EndToStart',range) >= 0 &&
+                            noderange.compareEndPoints('StartToEnd',range) <= 0 )
+                        {
+                            // no "Array.indexOf()" in IE8
+                            var in_array = false;
+                            for( var j=0; j < nodes.length; ++j )
+                            {
+                                if( nodes[j] !== node )
+                                    continue;
+                                in_array = true;
+                                break;
+                            }
+                            if( ! in_array )
+                                nodes.push( node );
+                        }
+                        node = nextNode( node, parentNode );
                     }
-                    node = nextNode( node, containerNode );
                 }
-                // http://stackoverflow.com/questions/5100640/how-to-get-focus-node-for-ie
+                // Fallback
                 if( nodes.length == 0 && isOrContainsNode(containerNode,document.activeElement) && document.activeElement != containerNode )
                     nodes.push( document.activeElement );
                 return nodes;

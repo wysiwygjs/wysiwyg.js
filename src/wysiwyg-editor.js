@@ -35,12 +35,12 @@
         var wysiwygeditor_insertLink = function( wysiwygeditor, url )
         {
             if( ! url )
-                return wysiwygeditor;
-            var selectedhtml = wysiwygeditor.getSelectedHTML();
-            if( selectedhtml )
-                return wysiwygeditor.insertLink( url );
-            var html = '<a href="' + url.replace(/"/,'&quot;') + '">' + url + '</a>';
-            return wysiwygeditor.insertHTML( html );
+                ;
+            else if( wysiwygeditor.getSelectedHTML() )
+                wysiwygeditor.insertLink( url );
+            else
+                wysiwygeditor.insertHTML( '<a href="' + url.replace(/"/,'&quot;') + '">' + url + '</a>' );
+            wysiwygeditor.closePopup().collapseSelection();
         };
         var content_insertlink = function(wysiwygeditor, $modify_link)
         {
@@ -58,7 +58,7 @@
                                     {
                                         // Catch 'NS_ERROR_FAILURE' on Firefox 34
                                         try {
-                                            wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();
+                                            wysiwygeditor_insertLink( wysiwygeditor,$inputurl.val() );
                                         }
                                         catch( e ) {
                                             wysiwygeditor.closePopup();
@@ -74,7 +74,7 @@
                                         wysiwygeditor.closePopup().collapseSelection();
                                     }
                                     else
-                                        wysiwygeditor_insertLink(wysiwygeditor,$inputurl.val()).closePopup().collapseSelection();
+                                        wysiwygeditor_insertLink( wysiwygeditor, $inputurl.val() );
                                     event.stopPropagation();
                                     event.preventDefault();
                                     return false;
@@ -218,7 +218,7 @@
                 var website_url = false;
                 if( url.length && ! html.length )
                     website_url = url;
-                else if( html.indexOf('<') == -1 && html.indexOf('>') == -1 && 
+                else if( html.indexOf('<') == -1 && html.indexOf('>') == -1 &&
                          html.match(/^(?:https?:\/)?\/?(?:[^:\/\s]+)(?:(?:\/\w+)*\/)(?:[\w\-\.]+[^#?\s]+)(?:.*)?(?:#[\w\-]+)?$/) )
                     website_url = html;
                 if( website_url && video_from_url )
@@ -528,12 +528,20 @@
                     {
                         var show_popup = true,
                             $special_popup = null;
+                        // Click on a link opens the link-popup
+                        if( collapsed )
+                            $.each( nodes, function(index, node) {
+                                if( $(node).parents('a').length != 0 ) { // only clicks on text-nodes
+                                    $special_popup = content_insertlink( wysiwygeditor, $(node).parents('a:first') )
+                                    return false; // break
+                                }
+                            });
                         // Fix type error - https://github.com/wysiwygjs/wysiwyg.js/issues/4
                         if( ! rect )
                             show_popup = false;
-                        // Click on a link opens the link-popup
-                        else if( nodes.length == 1 && $(nodes[0]).parents('a').length != 0 ) // nodes is not a sparse array
-                            $special_popup = content_insertlink( wysiwygeditor, $(nodes[0]).parents('a:first') );
+                        // Force a special popup?
+                        else if( $special_popup )
+                            ;
                         // A right-click always opens the popup
                         else if( rightclick )
                             ;
@@ -566,14 +574,14 @@
                         // Open popup
                         $popup = $(wysiwygeditor.openPopup());
                         // if wrong popup -> create a new one
-                        if( $popup.hasClass('wysiwyg-popup') && ! $popup.hasClass('wysiwyg-popuphover') )
+                        if( $popup.hasClass('wysiwyg-popup') && ! $popup.hasClass('wysiwyg-popuphover') || $popup.data('special') != (!!$special_popup) )
                             $popup = $(wysiwygeditor.closePopup().openPopup());
                         if( ! $popup.hasClass('wysiwyg-popup') )
                         {
                             // add classes + buttons
                             $popup.addClass( 'wysiwyg-popup wysiwyg-popuphover' );
                             if( $special_popup )
-                                $popup.empty().append( $special_popup );
+                                $popup.empty().append( $special_popup ).data('special',true);
                             else
                                 add_buttons_to_toolbar( $popup, true,
                                     function() {
