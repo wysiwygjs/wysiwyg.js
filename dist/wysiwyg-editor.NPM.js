@@ -2,14 +2,14 @@
     'use strict';
     if (typeof define === 'function' && define.amd) {
         define(['jquery'], function($){
-            return factory(window, document, $);
+            return factory(window, document, navigator, $);
         });
     } else if (typeof exports !== 'undefined') {
-        module.exports = factory(window, document, require('jquery'));
+        module.exports = factory(window, document, navigator, require('jquery'));
     } else {
-        return factory(window, document, jQuery);
+        return factory(window, document, navigator, jQuery);
     }
-}(function(window, document, $, undefined) {
+}(function(window, document, navigator, $, undefined) {
     'use strict';
 
     // wysiwyg.js
