@@ -1106,8 +1106,26 @@
         };
 
         // Command structure
+        var trailingDiv = null;
+        var IEtrailingDIV = function()
+        {
+            // Detect IE - http://stackoverflow.com/questions/17907445/how-to-detect-ie11
+            if( 'ActiveXObject' in window )
+            {
+                // Workaround IE11 - https://github.com/wysiwygjs/wysiwyg.js/issues/14
+                trailingDiv = document.createElement( 'DIV' );
+                node_wysiwyg.appendChild( trailingDiv );
+            }
+        };
         var callUpdates = function( selection_destroyed )
         {
+            // Remove IE11 workaround
+            if( trailingDiv )
+            {
+                node_wysiwyg.removeChild( trailingDiv );
+                trailingDiv = null;
+            }
+            // change-handler
             if( debounced_changeHandler )
                 debounced_changeHandler();
             // handle saved selection
@@ -1237,6 +1255,7 @@
             },
             align: function( align )
             {
+                IEtrailingDIV();
                 if( align == 'left' )
                     execCommand( 'justifyLeft' );
                 else if( align == 'center' )
@@ -1250,12 +1269,14 @@
             },
             format: function( tagname )
             {
+                IEtrailingDIV();
                 execCommand( 'formatBlock', tagname );
                 callUpdates();
                 return this;
             },
             indent: function( outdent )
             {
+                IEtrailingDIV();
                 execCommand( outdent ? 'outdent' : 'indent' );
                 callUpdates();
                 return this;
@@ -1286,6 +1307,7 @@
             },
             insertList: function( ordered )
             {
+                IEtrailingDIV();
                 execCommand( ordered ? 'insertOrderedList' : 'insertUnorderedList' );
                 callUpdates();
                 return this;
