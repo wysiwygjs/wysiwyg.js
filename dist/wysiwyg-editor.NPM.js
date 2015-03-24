@@ -1123,7 +1123,7 @@
         var IEtrailingDIV = function()
         {
             // Detect IE - http://stackoverflow.com/questions/17907445/how-to-detect-ie11
-            if( 'ActiveXObject' in window )
+            if( document.all || !!window.MSInputMethodContext )
             {
                 // Workaround IE11 - https://github.com/wysiwygjs/wysiwyg.js/issues/14
                 trailingDiv = document.createElement( 'DIV' );
