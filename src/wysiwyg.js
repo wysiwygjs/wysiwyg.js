@@ -348,7 +348,14 @@
         {
             var sel = window.getSelection();
             if( ! sel.isCollapsed )
-                sel.collapseToEnd();
+            {
+                // Form-submits via Enter throw 'NS_ERROR_FAILURE' on Firefox 34
+                try {
+                    sel.collapseToEnd();
+                }
+                catch( e ) {
+                }
+            }
         }
         else if( document.selection )
         {

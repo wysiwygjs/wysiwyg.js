@@ -361,7 +361,14 @@
         {
             var sel = window.getSelection();
             if( ! sel.isCollapsed )
-                sel.collapseToEnd();
+            {
+                // Form-submits via Enter throw 'NS_ERROR_FAILURE' on Firefox 34
+                try {
+                    sel.collapseToEnd();
+                }
+                catch( e ) {
+                }
+            }
         }
         else if( document.selection )
         {
@@ -1356,6 +1363,21 @@
                      (hb.length < 2 ? '0' : '') + hb;
     };
 
+    // Encode htmlentities() - http://stackoverflow.com/questions/5499078/fastest-method-to-escape-html-tags-as-html-entities
+    var html_encode = function( string )
+    {
+        return string.replace(/[&<>"]/g, function(tag)
+        {
+            var charsToReplace = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;'
+            };
+            return charsToReplace[tag] || tag;
+        });
+    };
+
     // Create the Editor
     var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_selectImage,
                                   placeholder_url, placeholder_embed, max_imagesize, on_imageupload, force_imageupload, video_from_url, on_keypress )
@@ -1368,7 +1390,7 @@
             else if( wysiwygeditor.getSelectedHTML() )
                 wysiwygeditor.insertLink( url );
             else
-                wysiwygeditor.insertHTML( '<a href="' + url.replace(/"/,'&quot;') + '">' + url + '</a>' );
+                wysiwygeditor.insertHTML( '<a href="' + html_encode(url) + '">' + html_encode(url) + '</a>' );
             wysiwygeditor.closePopup().collapseSelection();
         };
         var content_insertlink = function(wysiwygeditor, $modify_link)
@@ -1384,15 +1406,7 @@
                                         wysiwygeditor.closePopup().collapseSelection();
                                     }
                                     else
-                                    {
-                                        // Catch 'NS_ERROR_FAILURE' on Firefox 34
-                                        try {
-                                            wysiwygeditor_insertLink( wysiwygeditor,$inputurl.val() );
-                                        }
-                                        catch( e ) {
-                                            wysiwygeditor.closePopup();
-                                        }
-                                    }
+                                        wysiwygeditor_insertLink( wysiwygeditor,$inputurl.val() );
                                 });
             if( placeholder_url )
                 $inputurl.attr( 'placeholder', placeholder_url );
@@ -1420,7 +1434,7 @@
             // Add image to editor
             var insert_image_wysiwyg = function( url, filename )
             {
-                var html = '<img id="wysiwyg-insert-image" src="" alt=""' + (filename ? ' title="'+filename.replace(/"/,'&quot;')+'"' : '') + ' />';
+                var html = '<img id="wysiwyg-insert-image" src="" alt=""' + (filename ? ' title="'+html_encode(filename)+'"' : '') + ' />';
                 wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
                 var $image = $('#wysiwyg-insert-image').removeAttr('id');
                 if( max_imagesize )
@@ -1553,7 +1567,7 @@
                 if( website_url && video_from_url )
                     html = video_from_url( website_url ) || '';
                 if( ! html.length && website_url )
-                    html = '<video src="' + website_url.replace(/"/,'&quot;') + '" />';
+                    html = '<video src="' + html_encode(website_url) + '" />';
                 wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
             };
             // Create popup
