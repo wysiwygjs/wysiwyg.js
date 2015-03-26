@@ -486,7 +486,7 @@ $(document).ready(function(){
 
     // Raw editor
     var option = {
-        element: $('#editor0').get(0),
+        element: 'editor0', // or: document.getElementById('editor0')
         onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) {
                         if( typeof console != 'undefined' )
                             console.log( 'RAW: '+character+' key pressed' );
@@ -698,7 +698,7 @@ $(element).wysiwyg('shell').insertHTML( '&lt;b&gt;some text&lt;/b&gt;' );
 <pre style="width:860px; margin: 30px auto;">
 // create wysiwyg:
 var wysiwygeditor = wysiwyg({
-    element: document.getElmentById('editor-id'),
+    element: 'editor-id' || document.getElementById('editor-id'),
     onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) {
         },
     onselection: function( collapsed, rect, nodes, rightclick ) {

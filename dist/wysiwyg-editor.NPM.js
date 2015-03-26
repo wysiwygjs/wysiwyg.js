@@ -613,6 +613,8 @@
         // Options
         option = option || {};
         var option_element = option.element || null;
+        if( typeof(option_element) == 'string' )
+            option_element = document.getElementById( option_element );
         var option_onkeypress = option.onkeypress || null;
         var option_onselection = option.onselection || null;
         var option_onplaceholder = option.onplaceholder || null;
