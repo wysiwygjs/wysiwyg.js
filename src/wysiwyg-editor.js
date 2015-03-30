@@ -44,7 +44,8 @@
 
     // Create the Editor
     var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_selectImage,
-                                  placeholder_url, placeholder_embed, max_imagesize, on_imageupload, force_imageupload, video_from_url, on_keypress )
+                                  placeholder_url, placeholder_embed, max_imagesize, on_imageupload, force_imageupload, video_from_url,
+                                  on_keydown, on_keypress, on_keyup, on_autocomplete )
     {
         // Content: Insert link
         var wysiwygeditor_insertLink = function( wysiwygeditor, url )
@@ -511,17 +512,66 @@
 
 
         // Transform the textarea to contenteditable
-        var hotkeys = {};
+        var hotkeys = {},
+            autocomplete = null;
         var create_wysiwyg = function( $textarea, $container, placeholder )
         {
+            var handle_autocomplete = function( keypress, key, character, shiftKey, altKey, ctrlKey, metaKey )
+            {
+                if( ! on_autocomplete )
+                    return ;
+                var typed = autocomplete || '';
+                switch( key )
+                {
+                    case  8: // backspace
+                        typed = typed.substring( 0, typed.length - 1 );
+                        // fall through
+                    case 13: // enter
+                    case 27: // escape
+                    case 33: // pageUp
+                    case 34: // pageDown
+                    case 35: // end
+                    case 36: // home
+                    case 37: // left
+                    case 38: // up
+                    case 39: // right
+                    case 40: // down
+                        if( keypress )
+                            return ;
+                        break;
+                    default:
+                        if( ! keypress )
+                            return ;
+                        typed += character;
+                        break;
+                }
+                var rc = on_autocomplete( typed, key, character, shiftKey, altKey, ctrlKey, metaKey );
+                if( typeof(rc) == 'object' && rc.length )
+                {
+                    // Show autocomplete
+                    var $popup = $(wysiwygeditor.openPopup());
+                    $popup.hide().addClass( 'wysiwyg-popup wysiwyg-popuphover' ) // show later
+                          .empty().append( rc );
+                    autocomplete = typed;
+                }
+                else
+                {
+                    // Hide autocomplete
+                    wysiwygeditor.closePopup();
+                    autocomplete = null;
+                    return rc; // swallow key if 'false'
+                }
+            };
+
+            // Options to wysiwyg.js
             var option = {
                 element: $textarea.get(0),
-                onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey )
+                onKeyDown: function( key, character, shiftKey, altKey, ctrlKey, metaKey )
                     {
                         // Ask master
-                        if( on_keypress && on_keypress(code, character, shiftKey, altKey, ctrlKey, metaKey) === false )
+                        if( on_keydown && on_keydown(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
                             return false; // swallow key
-                        // Exec hotkey
+                        // Exec hotkey (onkeydown because e.g. CTRL+B would oben the bookmarks)
                         if( character && !shiftKey && !altKey && ctrlKey && !metaKey )
                         {
                             var hotkey = character.toLowerCase();
@@ -530,8 +580,24 @@
                             hotkeys[hotkey]();
                             return false; // prevent default
                         }
+                        // Handle autocomplete
+                        return handle_autocomplete( false, key, character, shiftKey, altKey, ctrlKey, metaKey );
                     },
-                onselection: function( collapsed, rect, nodes, rightclick )
+                onKeyPress: function( key, character, shiftKey, altKey, ctrlKey, metaKey )
+                    {
+                        // Ask master
+                        if( on_keypress && on_keypress(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
+                            return false; // swallow key
+                        // Handle autocomplete
+                        return handle_autocomplete( true, key, character, shiftKey, altKey, ctrlKey, metaKey );
+                    },
+                onKeyUp: function( key, character, shiftKey, altKey, ctrlKey, metaKey )
+                    {
+                        // Ask master
+                        if( on_keyup && on_keyup(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
+                            return false; // swallow key
+                    },
+                onSelection: function( collapsed, rect, nodes, rightclick )
                     {
                         var show_popup = true,
                             $special_popup = null;
@@ -551,6 +617,9 @@
                             ;
                         // A right-click always opens the popup
                         else if( rightclick )
+                            ;
+                        // Autocomplete popup?
+                        else if( autocomplete )
                             ;
                         // No selection-popup wanted?
                         else if( toolbar_position != 'selection' && toolbar_position != 'top-selection' && toolbar_position != 'bottom-selection' )
@@ -580,10 +649,12 @@
                         };
                         // Open popup
                         $popup = $(wysiwygeditor.openPopup());
-                        // if wrong popup -> create a new one
-                        if( $popup.hasClass('wysiwyg-popup') && ! $popup.hasClass('wysiwyg-popuphover') || $popup.data('special') != (!!$special_popup) )
+                        // if wrong popup -> close and open a new one
+                        if( ! $popup.hasClass('wysiwyg-popuphover') || (!$popup.data('special')) != (!$special_popup) )
                             $popup = $(wysiwygeditor.closePopup().openPopup());
-                        if( ! $popup.hasClass('wysiwyg-popup') )
+                        if( autocomplete )
+                            $popup.show();
+                        else if( ! $popup.hasClass('wysiwyg-popup') )
                         {
                             // add classes + buttons
                             $popup.addClass( 'wysiwyg-popup wysiwyg-popuphover' );
@@ -599,7 +670,10 @@
                         // Apply position
                         apply_popup_position();
                     },
-                hijackcontextmenu: (toolbar_position == 'selection')
+                onClosepopup: function() {
+                        autocomplete = null;
+                    },
+                hijackContextmenu: (toolbar_position == 'selection')
             };
             if( placeholder )
             {
@@ -607,7 +681,7 @@
                                               .html( placeholder )
                                               .hide();
                 $container.prepend( $placeholder );
-                option.onplaceholder = function( visible ) {
+                option.onPlaceholder = function( visible ) {
                     if( visible )
                         $placeholder.show();
                     else
@@ -736,11 +810,15 @@
                     on_imageupload = option.onImageUpload || null,
                     force_imageupload = option.forceImageUpload && on_imageupload,
                     video_from_url = option.videoFromUrl || null,
-                    on_keypress = option.onKeyPress;
+                    on_keydown = option.onKeyDown || null,
+                    on_keypress = option.onKeyPress || null,
+                    on_keyup = option.onKeyUp || null,
+                    on_autocomplete = option.onAutocomplete || null;
 
                 // Create the WYSIWYG Editor
                 var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_selectImage,
-                                          placeholder_url, placeholder_embed, max_imagesize, on_imageupload, force_imageupload, video_from_url, on_keypress );
+                                          placeholder_url, placeholder_embed, max_imagesize, on_imageupload, force_imageupload, video_from_url,
+                                          on_keydown, on_keypress, on_keyup, on_autocomplete );
                 $that.data( 'wysiwyg', data );
             });
         }

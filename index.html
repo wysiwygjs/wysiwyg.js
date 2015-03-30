@@ -10,8 +10,8 @@
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="src/wysiwyg-editor.css" />
 <script type="text/javascript">
-$(document).ready(function(){
-    // Full featured editor
+$(document).ready(function() {
+    // Featured editor
     $('#editor1,#editor2,#editor3').each( function(index, element)
     {
         $(element).wysiwyg({
@@ -21,7 +21,7 @@ $(document).ready(function(){
             buttons: {
                 // Dummy-HTML-Plugin
                 dummybutton1: index != 1 ? false : {
-                    html: $('<input id="submit" type="button" value="bold" />').click(function(){
+                    html: $('<input id="submit" type="button" value="bold" />').click(function() {
                                 // We simply make 'bold'
                                 if( $(element).wysiwyg('shell').getSelectedHTML() )
                                     $(element).wysiwyg('shell').bold();
@@ -128,7 +128,7 @@ $(document).ready(function(){
                             ];
                             var $smilies = $('<div/>').addClass('wysiwyg-toolbar-smilies')
                                                       .attr('unselectable','on');
-                            $.each( list_smilies, function(index,smiley){
+                            $.each( list_smilies, function(index,smiley) {
                                 if( index != 0 )
                                     $smilies.append(' ');
                                 var $image = $(smiley).attr('unselectable','on');
@@ -136,7 +136,7 @@ $(document).ready(function(){
                                 var imagehtml = ' '+$('<div/>').append($image.clone()).html()+' ';
                                 $image
                                     .css({ cursor: 'pointer' })
-                                    .click(function(event){
+                                    .click(function(event) {
                                         $(element).wysiwyg('shell').insertHTML(imagehtml); // .closePopup(); - do not close the popup
                                     })
                                     .appendTo( $smilies );
@@ -187,11 +187,11 @@ $(document).ready(function(){
                                 };
                             var $list = $('<div/>').addClass('wysiwyg-toolbar-list')
                                                    .attr('unselectable','on');
-                            $.each( list_fontnames, function( name, font ){
+                            $.each( list_fontnames, function( name, font ) {
                                 var $link = $('<a/>').attr('href','#')
                                                     .css( 'font-family', font )
                                                     .html( name )
-                                                    .click(function(event){
+                                                    .click(function(event) {
                                                         $(element).wysiwyg('shell').fontName(font).closePopup();
                                                         // prevent link-href-#
                                                         event.stopPropagation();
@@ -221,10 +221,10 @@ $(document).ready(function(){
                             list_fontsizes.push('72px');
                             var $list = $('<div/>').addClass('wysiwyg-toolbar-list')
                                                    .attr('unselectable','on');
-                            $.each( list_fontsizes, function( index, size ){
+                            $.each( list_fontsizes, function( index, size ) {
                                 var $link = $('<a/>').attr('href','#')
                                                     .html( size )
-                                                    .click(function(event){
+                                                    .click(function(event) {
                                                         $(element).wysiwyg('shell').fontSize(7).closePopup();
                                                         $(element).wysiwyg('container')
                                                                 .find('font[size=7]')
@@ -259,11 +259,11 @@ $(document).ready(function(){
                                 };
                             var $list = $('<div/>').addClass('wysiwyg-toolbar-list')
                                                    .attr('unselectable','on');
-                            $.each( list_headers, function( name, format ){
+                            $.each( list_headers, function( name, format ) {
                                 var $link = $('<a/>').attr('href','#')
                                                      .css( 'font-family', format )
                                                      .html( name )
-                                                     .click(function(event){
+                                                     .click(function(event) {
                                                         $(element).wysiwyg('shell').format(format).closePopup();
                                                         // prevent link-href-#
                                                         event.stopPropagation();
@@ -380,6 +380,66 @@ $(document).ready(function(){
             placeholderUrl: 'www.example.com',
             placeholderEmbed: '<embed/>',
             maxImageSize: [600,200],
+            onKeyDown: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) {
+                            // E.g.: submit form on enter-key:
+                            //if( (key == 10 || key == 13) && !shiftKey && !altKey && !ctrlKey && !metaKey ) {
+                            //    submit_form();
+                            //    return false; // swallow enter
+                            //}
+                        },
+            onKeyPress: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) {
+                        },
+            onKeyUp: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) {
+                        },
+            onAutocomplete: function( typed, key, character, shiftKey, altKey, ctrlKey, metaKey ) {
+                            if( typed.indexOf('@') == 0 ) // startswith '@'
+                            {
+                                var usernames = [
+                                        'Evelyn',
+                                        'Harry',
+                                        'Amelia',
+                                        'Oliver',
+                                        'Isabelle',
+                                        'Eddie',
+                                        'Editha',
+                                        'Jacob',
+                                        'Emily',
+                                        'George',
+                                        'Edison'
+                                    ];
+                                var $list = $('<div/>').addClass('wysiwyg-toolbar-list')
+                                                       .attr('unselectable','on');
+                                $.each( usernames, function( index, username ) {
+                                    if( username.toLowerCase().indexOf(typed.substring(1).toLowerCase()) !== 0 ) // don't count first character '@'
+                                        return;
+                                    var $link = $('<a/>').attr('href','#')
+                                                        .text( username )
+                                                        .click(function(event) {
+                                                            var url = 'http://example.com/user/' + username,
+                                                                html = '<a href="' + url + '">@' + username + '</a> ';
+                                                            var editor = $(element).wysiwyg('shell');
+                                                            // Expand selection and set inject HTML
+                                                            editor.expandSelection( typed.length, 0 ).insertHTML( html );
+                                                            editor.closePopup().getElement().focus();
+                                                            // prevent link-href-#
+                                                            event.stopPropagation();
+                                                            event.preventDefault();
+                                                            return false;
+                                                        });
+                                    $list.append( $link );
+                                });
+                                if( $list.children().length )
+                                {
+                                    if( key == 13 )
+                                    {
+                                        $list.children(':first').click();
+                                        return false; // swallow enter
+                                    }
+                                    // Show popup
+                                    return $list;
+                                }
+                            }
+                        },
             onImageUpload: function( insert_image ) {
                             // A bit tricky, because we can't easily upload a file via
                             // '$.ajax()' on a legacy browser without XMLHttpRequest2.
@@ -406,7 +466,7 @@ $(document).ready(function(){
                                          .load(function() {
                                             // <iframe> is ready - we will find the URL in the iframe-body
                                             var iframe = this;
-                                            var iframedoc = iframe.contentDocument ? iframe.contentDocument : 
+                                            var iframedoc = iframe.contentDocument ? iframe.contentDocument :
                                                            (iframe.contentWindow ? iframe.contentWindow.document : iframe.document);
                                             var iframebody = iframedoc.getElementsByTagName('body')[0];
                                             var image_url = iframebody.innerHTML;
@@ -443,43 +503,36 @@ $(document).ready(function(){
                     return '<iframe src="//www.dailymotion.com/embed/video/' + dailymotion_match[1] + '" width="640" height="360" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
 
                 // undefined -> create '<video/>' tag
-            },
-            onKeyPress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) {
-                            // E.g.: submit form on enter-key:
-                            //if( (code == 10 || code == 13) && !shiftKey && !altKey && !ctrlKey && !metaKey ) {
-                            //    submit_form();
-                            //    return false; // swallow enter
-                            //}
-                        }
+            }
         })
-        .change(function(){
+        .change(function() {
             if( typeof console != 'undefined' )
-                console.log( 'change' );
+                ;//console.log( 'change' );
         })
-        .focus(function(){
+        .focus(function() {
             if( typeof console != 'undefined' )
-                console.log( 'focus' );
+                ;//console.log( 'focus' );
         })
-        .blur(function(){
+        .blur(function() {
             if( typeof console != 'undefined' )
-                console.log( 'blur' );
+                ;//console.log( 'blur' );
         });
     });
 
     // Demo-Buttons
-    $('#editor3-bold').click(function(){
+    $('#editor3-bold').click(function() {
         $('#editor3').wysiwyg('shell').bold();
         return false;
     });
-    $('#editor3-red').click(function(){
+    $('#editor3-red').click(function() {
         $('#editor3').wysiwyg('shell').highlight('#ff0000');
         return false;
     });
-    $('#editor3-sethtml').click(function(){
+    $('#editor3-sethtml').click(function() {
         $('#editor3').wysiwyg('shell').setHTML('This is the new text.');
         return false;
     });
-    $('#editor3-inserthtml').click(function(){
+    $('#editor3-inserthtml').click(function() {
         $('#editor3').wysiwyg('shell').insertHTML('Insert some text.');
         return false;
     });
@@ -487,15 +540,15 @@ $(document).ready(function(){
     // Raw editor
     var option = {
         element: 'editor0', // or: document.getElementById('editor0')
-        onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) {
+        onKeyPress: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) {
                         if( typeof console != 'undefined' )
                             console.log( 'RAW: '+character+' key pressed' );
                     },
-        onselection: function( collapsed, rect, nodes, rightclick ) {
+        onSelection: function( collapsed, rect, nodes, rightclick ) {
                         if( typeof console != 'undefined' && rect )
                             console.log( 'RAW: selection rect('+rect.left+','+rect.top+','+rect.width+','+rect.height+'), '+nodes.length+' nodes' );
                     },
-        onplaceholder: function( visible ) {
+        onPlaceholder: function( visible ) {
                         if( typeof console != 'undefined' )
                             console.log( 'RAW: placeholder ' + (visible ? 'visible' : 'hidden') );
                     }
@@ -563,9 +616,9 @@ p {
 'wysiwyg.js' is a (minified) 12k contenteditable-editor with no dependencies.
 It does only:
     * Transforms any HTML-element into contenteditable
-    * onselection-event: e.g. to open a toolbar
-    * onkeypress-event: e.g. to handle hotkeys
-    * onplaceholder-event: show/hide a placeholder
+    * onSelection-event: e.g. to open a toolbar
+    * onKeyDown/Press/Up-events: e.g. to handle hotkeys
+    * onPlaceholder-event: show/hide a placeholder
     * handle popups
     * .bold(), .forecolor(), .inserthtml(), ... functions
 
@@ -581,11 +634,12 @@ If a &lt;textarea&gt; was used as 'element', the library:
     * Old iOS and Android 2.3- also degrade to &lt;textarea&gt;
 
 There is also a (minified) 10k jQuery-plugin '$.wysiwyg()' - plus (minified) 2k CSS -
-to create a full-featured editor which depends on:
+to create a featured editor which depends on:
     * wysiwyg.js
     * jQuery
     * FontAwesome (or JPG/PNG/GIF/SVG images)
 The toolbar is easy to extend - e.g. smiley, fontname and fontsize buttons below.
+To enable autocomplete set an onAutcomplete() callback (try '@' in the examples).
 It is used on a website with 300M page impressions a month.
 </pre>
 
@@ -678,10 +732,13 @@ $(element).wysiwyg({
     placeholderUrl: 'www.example.com',
     placeholderEmbed: '&lt;embed/&gt;',
     maxImageSize: [600,200],
+    onKeyDown: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) { ... },
+    onKeyPress: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) { ... },
+    onKeyUp: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) { ... },
+    onAutocomplete: function( tyed, key, character, shiftKey, altKey, ctrlKey, metaKey ) { ... },
     onImageUpload: function( insert_image ) { ... },
     forceImageUpload: false,
-    videoFromUrl: function( url ) { ... },
-    onKeyPress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) { ... }
+    videoFromUrl: function( url ) { ... }
 });
 
 // surrounding div:
@@ -699,13 +756,19 @@ $(element).wysiwyg('shell').insertHTML( '&lt;b&gt;some text&lt;/b&gt;' );
 // create wysiwyg:
 var wysiwygeditor = wysiwyg({
     element: 'editor-id' || document.getElementById('editor-id'),
-    onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) {
+    onKeyDown: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) {
         },
-    onselection: function( collapsed, rect, nodes, rightclick ) {
+    onKeyPress: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) {
         },
-    onplaceholder: function( visible ) {
+    onKeyUp: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) {
         },
-    hijackcontextmenu: false
+    onSelection: function( collapsed, rect, nodes, rightclick ) {
+        },
+    onPlaceholder: function( visible ) {
+        },
+    onClosepopup: function() {
+        },
+    hijackContextmenu: false
 });
 
 // properties:
@@ -717,6 +780,7 @@ wysiwygeditor.sync();
 
 // selection and popup:
 wysiwygeditor.collapseSelection();
+wysiwygeditor.expandSelection( preceding, following );
 wysiwygeditor.openPopup(); -> popup-handle
 wysiwygeditor.closePopup();
 

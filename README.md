@@ -2,6 +2,12 @@ Example:
 ==========
 **http://wysiwygjs.github.io/**
 
+API changed:
+==========
+
+* Mar 30, 2015: camelcase wysiwyg.js: onkeypress-&gt;onKeyDown, onselection-&gt;onSelection, onplaceholder-&gt;onPlaceholder, hijackcontextmenu-&gt;hijackContextmenu'
+* Mar 11, 2015: dropfileClick-&gt;selectImage
+
 wysiwyg.js
 ==========
 
@@ -26,7 +32,7 @@ If a &lt;textarea&gt; was used as 'element', the library:
 * Old iOS and Android 2.3- also degrade to &lt;textarea&gt;
 
 There is also a (minified) 10k jQuery-plugin '$.wysiwyg()' - plus (minified) 2k CSS -
-to create a full-featured editor which depends on:
+to create a featured editor which depends on:
 * wysiwyg.js
 * jQuery
 * FontAwesome (or JPG/PNG/GIF/SVG images)
@@ -34,19 +40,90 @@ to create a full-featured editor which depends on:
 The toolbar is easy to extend - e.g. smiley, fontname and fontsize buttons below.
 It is used on a website with 300M page impressions a month.
 
+$.wysiwyg()-API:
+==========
+````
+// create editor:
+$(element).wysiwyg({
+    classes: 'some-more-classes',
+    toolbar: 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection',
+    buttons: {
+        buttonname: {
+            title: 'tooltip text',
+            // How should the button look like?
+            image: '\u1234' | '&lt;img src="path/to/image.jpg"&gt;',
+            html: '&lt;raw html&gt;',
+            // What should the button do?
+            popup: function( $popup, $button ) { ... },
+            click: function( $button ) { ... },
+            // Where should the button be placed?
+            showstatic: true, // on the static toolbar
+            showselection: true // on selection toolbar
+        },
+        // build-in:
+        insertimage: { ... },
+        insertvideo: { ... },
+        insertlink: { ... },
+        bold: { ... },
+        italic: { ... },
+        underline: { ... },
+        strikethrough: { ... },
+        forecolor: { ... },
+        highlight: { ... },
+        alignleft: { ... },
+        aligncenter: { ... },
+        alignright: { ... },
+        alignjustify: { ... },
+        subscript: { ... },
+        superscript: { ... },
+        indent: { ... },
+        outdent: { ... },
+        orderedList: { ... },
+        unorderedList: { ... },
+        removeformat: { ... }
+    },
+    submit: { ... },
+    selectImage: 'Click or drop image',
+    placeholderUrl: 'www.example.com',
+    placeholderEmbed: '&lt;embed/&gt;',
+    maxImageSize: [600,200],
+    onKeyDown: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) { ... },
+    onKeyPress: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) { ... },
+    onKeyUp: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) { ... },
+    onAutocomplete: function( tyed, key, character, shiftKey, altKey, ctrlKey, metaKey ) { ... },
+    onImageUpload: function( insert_image ) { ... },
+    forceImageUpload: false,
+    videoFromUrl: function( url ) { ... }
+});
+
+// surrounding div:
+$(element).wysiwyg('container');
+
+// accessing 'wysiwyg.js':
+$(element).wysiwyg('shell').bold();
+$(element).wysiwyg('shell').forecolor( '#ff0000' );
+$(element).wysiwyg('shell').insertHTML( '&lt;b&gt;some text&lt;/b&gt;' );
+````
+
 wysiwyg.js-API:
 ==========
 ````
 // create wysiwyg:
 var wysiwygeditor = wysiwyg({
-    element: document.getElementById('editor-id'),
-    onkeypress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ) {
+    element: 'editor-id' || document.getElementById('editor-id'),
+    onKeyDown: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) {
         },
-    onselection: function( collapsed, rect, nodes, rightclick ) {
+    onKeyPress: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) {
         },
-    onplaceholder: function( visible ) {
+    onKeyUp: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) {
         },
-    hijackcontextmenu: false
+    onSelection: function( collapsed, rect, nodes, rightclick ) {
+        },
+    onPlaceholder: function( visible ) {
+        },
+    onClosepopup: function() {
+        },
+    hijackContextmenu: false
 });
 
 // properties:
@@ -58,6 +135,7 @@ wysiwygeditor.sync();
 
 // selection and popup:
 wysiwygeditor.collapseSelection();
+wysiwygeditor.expandSelection( preceding, following );
 wysiwygeditor.openPopup(); -> popup-handle
 wysiwygeditor.closePopup();
 
@@ -67,43 +145,17 @@ wysiwygeditor.bold();
 wysiwygeditor.italic();
 wysiwygeditor.underline();
 wysiwygeditor.strikethrough();
-wysiwygeditor.forecolor( '#color' );
-wysiwygeditor.highlight( '#color' );
+wysiwygeditor.forecolor( color );
+wysiwygeditor.highlight( color );
 wysiwygeditor.fontName( fontname );
 wysiwygeditor.fontSize( fontsize );
 wysiwygeditor.subscript();
 wysiwygeditor.superscript();
 wysiwygeditor.align( 'left'|'center'|'right'|'justify' );
 wysiwygeditor.format( tagname );
-wysiwygeditor.insertLink( 'http://url.com/' );
-wysiwygeditor.insertImage( 'http://url.com/' );
-wysiwygeditor.insertHTML( 'html' );
+wysiwygeditor.indent( outdent );
+wysiwygeditor.insertLink( url );
+wysiwygeditor.insertImage( url );
+wysiwygeditor.insertHTML( html );
 wysiwygeditor.insertList( ordered );
-````
-
-$.wysiwyg()-API:
-==========
-````
-var $editor = $('#editor').wysiwyg({
-    classes: 'some-more-classes',
-    toolbar: 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection',
-    buttons = { ... },
-    submit = { ... },
-    placeholder: 'Type your text here...',
-    selectImage: 'Click or drop image',
-    placeholderUrl: 'www.example.com',
-    placeholderEmbed: '<embed/>',
-    maxImageSize: [width,height],
-    onImageUpload: function( insert_image ){},
-    forceImageUpload: false,
-    videoFromUrl: function( url ){}
-    onKeyPress: function( code, character, shiftKey, altKey, ctrlKey, metaKey ){}
-})
-Properties:
-    $editor.wysiwyg('container'); -> $(container-div)
-    $editor.wysiwyg('shell'); -> wysiwyg.js API
-Events:
-    .focus(function(){})
-    .blur(function(){})
-    .change(function(){});
 ````

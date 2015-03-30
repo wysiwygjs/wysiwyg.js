@@ -156,15 +156,28 @@
             {
                 var rect = range.getBoundingClientRect();
                 // Safari 5.1 returns null, IE9 returns 0/0/0/0 if image selected
-                if( ! rect || (rect.left == 0 && rect.top == 0 && rect.right == 0 && rect.bottom == 0) )
-                    return false;
-                return {
-                    // Firefox returns floating-point numbers
-                    left: parseInt(rect.left),
-                    top: parseInt(rect.top),
-                    width: parseInt(rect.right - rect.left),
-                    height: parseInt(rect.bottom - rect.top)
-                };
+                if( rect && rect.left && rect.top && rect.right && rect.bottom )
+                    return {
+                        // Modern browsers return floating-point numbers
+                        left: parseInt(rect.left),
+                        top: parseInt(rect.top),
+                        width: parseInt(rect.right - rect.left),
+                        height: parseInt(rect.bottom - rect.top)
+                    };
+                // on Webkit 'range.getBoundingClientRect()' sometimes return 0/0/0/0 - but 'range.getClientRects()' works
+                var rects = range.getClientRects ? range.getClientRects() : [];
+                for( var i=0; i < rects.length; ++i )
+                {
+                    var rect = rects[i];
+                    if( rect.left && rect.top && rect.right && rect.bottom )
+                        return {
+                            // Modern browsers return floating-point numbers
+                            left: parseInt(rect.left),
+                            top: parseInt(rect.top),
+                            width: parseInt(rect.right - rect.left),
+                            height: parseInt(rect.bottom - rect.top)
+                        };
+                }
             }
             /*
             // Fall back to inserting a temporary element (only for Firefox 3.5 and 3.6)
@@ -195,15 +208,14 @@
             if( sel.type != 'Control' )
             {
                 var range = sel.createRange();
-                // http://javascript.info/tutorial/coordinates
-                // http://www.softcomplex.com/docs/get_window_size_and_scrollbar_position.html
-                // http://www.howtocreate.co.uk/tutorials/javascript/browserwindow
-                return {
-                    left: range.boundingLeft,
-                    top: range.boundingTop,
-                    width: range.boundingWidth,
-                    height: range.boundingHeight
-                };
+                // IE8 return 0/0/0/0 if caret right before newline
+                if( range.boundingLeft || range.boundingTop || range.boundingWidth || range.boundingHeight )
+                    return {
+                        left: range.boundingLeft,
+                        top: range.boundingTop,
+                        width: range.boundingWidth,
+                        height: range.boundingHeight
+                    };
             }
         }
         return false;
@@ -364,6 +376,44 @@
             {
                 var range = sel.createRange();
                 range.collapse(false);
+                range.select();
+            }
+        }
+    };
+
+    // http://stackoverflow.com/questions/15157435/get-last-character-before-caret-position-in-javascript
+    // http://stackoverflow.com/questions/11247737/how-can-i-get-the-word-that-the-caret-is-upon-inside-a-contenteditable-div
+    var expandSelectionCaret = function( containerNode, preceding, following )
+    {
+        if( window.getSelection )
+        {
+            var sel = window.getSelection();
+            if( sel.modify )
+            {
+                for( var i=0; i < preceding; ++i )
+                    sel.modify('extend', 'backward', 'character');
+                for( var i=0; i < following; ++i )
+                    sel.modify('extend', 'forward', 'character');
+            }
+            else
+            {
+                // not so easy if the steps would cover multiple nodes ...
+                var range = sel.getRangeAt(0);
+                range.setStart( range.startContainer, range.startOffset - preceding );
+                range.setEnd( range.endContainer, range.endOffset + following );
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        }
+        else if( document.selection )
+        {
+            var sel = document.selection;
+            if( sel.type != 'Control' )
+            {
+                var range = sel.createRange();
+                range.collapse(true);
+                range.moveStart('character', -preceding);
+                range.moveEnd('character', following);
                 range.select();
             }
         }
@@ -602,10 +652,13 @@
         var option_element = option.element || null;
         if( typeof(option_element) == 'string' )
             option_element = document.getElementById( option_element );
-        var option_onkeypress = option.onkeypress || null;
-        var option_onselection = option.onselection || null;
-        var option_onplaceholder = option.onplaceholder || null;
-        var option_hijackcontextmenu = option.hijackcontextmenu || false;
+        var option_onkeydown = option.onKeyDown || null;
+        var option_onkeypress = option.onKeyPress || null;
+        var option_onkeyup = option.onKeyUp || null;
+        var option_onselection = option.onSelection || null;
+        var option_onplaceholder = option.onPlaceholder || null;
+        var option_onclosepopup = option.onClosepopup || null;
+        var option_hijackcontextmenu = option.hijackContextmenu || false;
 
         // Keep textarea if browser can't handle content-editable
         var is_textarea = option_element.nodeName == 'TEXTAREA' || option_element.nodeName == 'INPUT';
@@ -656,6 +709,7 @@
                     sync: dummy_this,
                     // selection and popup
                     collapseSelection: dummy_this,
+                    expandSelection: dummy_this,
                     openPopup: dummy_null,
                     closePopup: dummy_this,
                     // exec commands
@@ -893,6 +947,8 @@
             node_popup.parentNode.removeChild( node_popup );
             node_popup = null;
             removeEvent( window_ie8, 'mousedown', popupClickClose, true );
+            if( option_onclosepopup )
+                option_onclosepopup();
         };
 
         // Focus/Blur events
@@ -951,21 +1007,35 @@
             // http://www.quirksmode.org/js/events_properties.html
             if( !e )
                 var e = window.event;
-            var code = 0;
-            if( e.keyCode )
-                code = e.keyCode;
-            else if( e.which )
-                code = e.which;
             // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
-            var character = e.charCode;
-
-            // Callback
-            if( phase == 1 && option_onkeypress )
+            // http://stackoverflow.com/questions/1444477/keycode-and-charcode
+            // http://stackoverflow.com/questions/4285627/javascript-keycode-vs-charcode-utter-confusion
+            // http://unixpapa.com/js/key.html
+            var key = e.which || e.keyCode,
+                character = String.fromCharCode(key || e.charCode),
+                shiftKey = e.shiftKey || false,
+                altKey = e.altKey || false,
+                ctrlKey = e.ctrlKey || false,
+                metaKey = e.metaKey || false;
+             if( phase == 1 )
             {
-                var rv = option_onkeypress( code, character?String(String):String.fromCharCode(code), e.shiftKey||false, e.altKey||false, e.ctrlKey||false, e.metaKey||false );
-                if( rv === false ) // dismiss key
-                    return cancelEvent( e );
+                // Callback
+                if( option_onkeydown && option_onkeydown(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
+                    return cancelEvent( e ); // dismiss key
             }
+            else if( phase == 2 )
+            {
+                // Callback
+                if( option_onkeypress && option_onkeypress(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
+                    return cancelEvent( e ); // dismiss key
+            }
+            else if( phase == 3 )
+            {
+                // Callback
+                if( option_onkeyup && option_onkeyup(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
+                    return cancelEvent( e ); // dismiss key
+            }
+
             // Keys can change the selection
             if( phase == 2 || phase == 3 )
             {
@@ -973,10 +1043,10 @@
                 if( debounced_handleSelection )
                     debounced_handleSelection( null, null, false );
             }
-            // Most keys can cause changes
+            // Most keys can cause text-changes
             if( phase == 2 && debounced_changeHandler )
             {
-                switch( code )
+                switch( key )
                 {
                     case 33: // pageUp
                     case 34: // pageDown
@@ -1180,6 +1250,15 @@
             {
                 collapseSelectionEnd();
                 popup_saved_selection = null; // selection destroyed
+                return this;
+            },
+            expandSelection: function( preceding, following )
+            {
+                restoreSelection( node_wysiwyg, popup_saved_selection );
+                if( ! selectionInside(node_wysiwyg) )
+                    return this;
+                expandSelectionCaret( node_wysiwyg, preceding, following );
+                popup_saved_selection = saveSelection( node_wysiwyg ); // save new selection
                 return this;
             },
             openPopup: function()
