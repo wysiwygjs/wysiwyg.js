@@ -538,6 +538,7 @@
                     case 40: // down
                         if( keypress )
                             return ;
+                        character = false;
                         break;
                     default:
                         if( ! keypress )
