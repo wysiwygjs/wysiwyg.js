@@ -436,7 +436,7 @@ $(document).ready(function() {
                                         return false; // swallow enter
                                     }
                                     // Show popup
-                                    else if( character )
+                                    else if( character || key == 8 )
                                         return $list;
                                 }
                             }
