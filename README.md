@@ -11,7 +11,7 @@ API changed:
 wysiwyg.js
 ==========
 
-'wysiwyg.js' is a (minified) 13k contenteditable-editor with no dependencies.
+'wysiwyg.js' is a (uglified) 12k contenteditable-editor with no dependencies.
 It does only:
 * Transforms any HTML-element into contenteditable
 * onselection-event: e.g. to open a toolbar
@@ -31,7 +31,7 @@ If a &lt;textarea&gt; was used as 'element', the library:
 * falls back to the &lt;textarea&gt; if the browser does not support 'contenteditable'
 * Old iOS and Android 2.3- also degrade to &lt;textarea&gt;
 
-There is also a (minified) 11k jQuery-plugin '$.wysiwyg()' - plus (minified) 2k CSS -
+There is also a (uglified) 10k jQuery-plugin '$.wysiwyg()' - plus (minified) 2k CSS -
 to create a featured editor which depends on:
 * wysiwyg.js
 * jQuery
