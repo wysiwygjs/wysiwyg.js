@@ -126,7 +126,7 @@ $(document).ready(function() {
                                     '<img src="smiley/typing.png" width="16" height="16" alt="" />',
                                     '<img src="smiley/writing.png" width="16" height="16" alt="" />'
                             ];
-                            var $smilies = $('<div/>').addClass('wysiwyg-toolbar-smilies')
+                            var $smilies = $('<div/>').addClass('wysiwyg-plugin-smilies')
                                                       .attr('unselectable','on');
                             $.each( list_smilies, function(index,smiley) {
                                 if( index != 0 )
@@ -150,7 +150,7 @@ $(document).ready(function() {
                                 return ;
                             return { // this prevents applying default position
                                 left: parseInt( ($toolbar.outerWidth() - $popup.outerWidth()) / 2 ),
-                                top: $toolbar.hasClass('wysiwyg-toolbar-bottom') ? ($container.outerHeight() - parseInt($button.outerHeight()/4)) : (parseInt($button.outerHeight()/4) - $popup.height())
+                                top: $toolbar.hasClass('wysiwyg-plugin-bottom') ? ($container.outerHeight() - parseInt($button.outerHeight()/4)) : (parseInt($button.outerHeight()/4) - $popup.height())
                             };
                            },
                     //showstatic: true,    // wanted on the toolbar
@@ -185,7 +185,7 @@ $(document).ready(function() {
                                     'Courier New'      : 'Courier New,Courier',
                                     'Times New Roman'  : 'Times New Roman,Times'
                                 };
-                            var $list = $('<div/>').addClass('wysiwyg-toolbar-list')
+                            var $list = $('<div/>').addClass('wysiwyg-plugin-list')
                                                    .attr('unselectable','on');
                             $.each( list_fontnames, function( name, font ) {
                                 var $link = $('<a/>').attr('href','#')
@@ -219,7 +219,7 @@ $(document).ready(function() {
                             list_fontsizes.push('36px');
                             list_fontsizes.push('48px');
                             list_fontsizes.push('72px');
-                            var $list = $('<div/>').addClass('wysiwyg-toolbar-list')
+                            var $list = $('<div/>').addClass('wysiwyg-plugin-list')
                                                    .attr('unselectable','on');
                             $.each( list_fontsizes, function( index, size ) {
                                 var $link = $('<a/>').attr('href','#')
@@ -257,7 +257,7 @@ $(document).ready(function() {
                                     'Header 6' : '<h6>',
                                     'Code'     : '<pre>'
                                 };
-                            var $list = $('<div/>').addClass('wysiwyg-toolbar-list')
+                            var $list = $('<div/>').addClass('wysiwyg-plugin-list')
                                                    .attr('unselectable','on');
                             $.each( list_headers, function( name, format ) {
                                 var $link = $('<a/>').attr('href','#')
@@ -407,7 +407,7 @@ $(document).ready(function() {
                                         'George',
                                         'Edison'
                                     ];
-                                var $list = $('<div/>').addClass('wysiwyg-toolbar-list')
+                                var $list = $('<div/>').addClass('wysiwyg-plugin-list')
                                                        .attr('unselectable','on');
                                 $.each( usernames, function( index, username ) {
                                     if( username.toLowerCase().indexOf(typed.substring(1).toLowerCase()) !== 0 ) // don't count first character '@'
@@ -575,32 +575,32 @@ p {
     user-select: none;
 }
 /* CSS for the font-name + font-size plugin */
-.wysiwyg-toolbar-list {
+.wysiwyg-plugin-list {
     max-height: 16em;
     overflow: auto;
     overflow-x: hidden;
     overflow-y: scroll;
 }
-.wysiwyg-toolbar-list a,
-.wysiwyg-toolbar-list a:link,
-.wysiwyg-toolbar-list a:visited {
+.wysiwyg-plugin-list a,
+.wysiwyg-plugin-list a:link,
+.wysiwyg-plugin-list a:visited {
     display: block;
     color: black;
     padding: 5px 10px;
     text-decoration: none;
     cursor: pointer;
 }
-.wysiwyg-toolbar-list a:hover {
+.wysiwyg-plugin-list a:hover {
     color: HighlightText;
     background-color: Highlight;
 }
 /* CSS for the smiley plugin */
-.wysiwyg-toolbar-smilies {
+.wysiwyg-plugin-smilies {
     padding: 10px;
     text-align: center;
     white-space: normal;
 }
-.wysiwyg-toolbar-smilies img {
+.wysiwyg-plugin-smilies img {
     display: -moz-inline-stack; /* inline-block: http://blog.mozilla.org/webdev/2009/02/20/cross-browser-inline-block/ */
     display: inline-block;
     *display: inline;
