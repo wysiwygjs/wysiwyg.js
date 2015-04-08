@@ -1884,7 +1884,8 @@
         var popup_position = function( $popup, $container, left, top )  // left+top relative to $container
         {
             // Test parents
-            var offsetparent = $container.get(0).offsetParent,
+            var container_node = $container.get(0),
+                offsetparent = container_node.offsetParent,
                 offsetparent_offset = { left: 0, top: 0 },  //$.offset() does not work with Safari 3 and 'position:fixed'
                 offsetparent_fixed = false,
                 offsetparent_overflow = false,
@@ -1904,9 +1905,8 @@
             // Move $popup as high as possible in the DOM tree: offsetParent of $container
             var $offsetparent = $(offsetparent || document.body);
             $offsetparent.append( $popup );
-            var offset = $container.position();
-            left += offset.left;
-            top += offset.top;
+            left += container_node.offsetLeft; // $container.position() does not work with Safari 3
+            top += container_node.offsetTop;
             // Trim to offset-parent
             if( offsetparent_fixed || offsetparent_overflow )
             {
