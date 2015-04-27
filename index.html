@@ -150,7 +150,7 @@ $(document).ready(function() {
                                 return ;
                             return { // this prevents applying default position
                                 left: parseInt( ($toolbar.outerWidth() - $popup.outerWidth()) / 2 ),
-                                top: $toolbar.hasClass('wysiwyg-plugin-bottom') ? ($container.outerHeight() - parseInt($button.outerHeight()/4)) : (parseInt($button.outerHeight()/4) - $popup.height())
+                                top: $toolbar.hasClass('wysiwyg-toolbar-bottom') ? ($container.outerHeight() - parseInt($button.outerHeight()/4)) : (parseInt($button.outerHeight()/4) - $popup.height())
                             };
                            },
                     //showstatic: true,    // wanted on the toolbar
