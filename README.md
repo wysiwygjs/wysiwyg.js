@@ -42,7 +42,8 @@ It is used on a website with 300M page impressions a month.
 
 $.wysiwyg()-API:
 ==========
-````
+
+````javascript
 // create editor:
 $(element).wysiwyg({
     classes: 'some-more-classes',
@@ -107,7 +108,8 @@ $(element).wysiwyg('shell').insertHTML( '&lt;b&gt;some text&lt;/b&gt;' );
 
 wysiwyg.js-API:
 ==========
-````
+
+````javascript
 // create wysiwyg:
 var wysiwygeditor = wysiwyg({
     element: 'editor-id' || document.getElementById('editor-id'),
