@@ -12,8 +12,9 @@
     "javascript"
   ],
   "main": [
-    "dist/wysiwyg-editor.NPM.min.js",
-    "dist/wysiwyg-editor.css"
+    "dist/wysiwyg.min.js",
+    "dist/wysiwyg-editor.min.js",
+    "dist/wysiwyg-editor.min.css"
   ],
   "repository": {
     "type" : "git",

@@ -1,4 +1,15 @@
-(function(window, document, navigator, undefined){
+(function(factory) {
+    'use strict';
+    if (typeof define === 'function' && define.amd) {
+        define([], function(){
+            return factory();
+        });
+    } else if (typeof exports !== 'undefined') {
+        module.exports = factory();
+    } else {
+        window.wysiwyg = factory();
+    }
+})(function(){
     'use strict';
 
     // http://stackoverflow.com/questions/97962/debounce-clicks-when-submitting-a-web-form
@@ -645,7 +656,7 @@
     };
 
     // Interface: Create wysiwyg
-    window.wysiwyg = function( option )
+    var wysiwyg = function( option )
     {
         // Options
         option = option || {};
@@ -1402,4 +1413,6 @@
             }
         };
     };
-})(window, document, navigator);
+
+    return wysiwyg;
+});
