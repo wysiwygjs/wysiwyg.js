@@ -1195,18 +1195,18 @@
             return false;
         };
 
-        // Command structure
+        // Workaround IE11 - https://github.com/wysiwygjs/wysiwyg.js/issues/14
         var trailingDiv = null;
         var IEtrailingDIV = function()
         {
             // Detect IE - http://stackoverflow.com/questions/17907445/how-to-detect-ie11
             if( document.all || !!window.MSInputMethodContext )
             {
-                // Workaround IE11 - https://github.com/wysiwygjs/wysiwyg.js/issues/14
                 trailingDiv = document.createElement( 'DIV' );
                 node_wysiwyg.appendChild( trailingDiv );
             }
         };
+        // Command structure
         var callUpdates = function( selection_destroyed )
         {
             // Remove IE11 workaround
