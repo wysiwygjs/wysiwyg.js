@@ -2,14 +2,14 @@
     'use strict';
     if (typeof define === 'function' && define.amd) {
         define([], function(){
-            return factory();
+            return factory(window, document);
         });
     } else if (typeof exports !== 'undefined') {
-        module.exports = factory();
+        module.exports = factory(window, document);
     } else {
-        window.wysiwyg = factory();
+        window.wysiwyg = factory(window, document);
     }
-})(function(){
+})(function(window, document){
     'use strict';
 
     // http://stackoverflow.com/questions/97962/debounce-clicks-when-submitting-a-web-form
