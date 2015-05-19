@@ -1,5 +1,5 @@
-UGLIFYJS = uglifyjs
-CLEANCSS = cleancss
+UGLIFYJS = ./node_modules/.bin/uglifyjs
+CLEANCSS = ./node_modules/.bin/cleancss
 
 build: compress-js compress-css
 
