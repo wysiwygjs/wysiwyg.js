@@ -670,6 +670,7 @@
         var option_onplaceholder = option.onPlaceholder || null;
         var option_onclosepopup = option.onClosepopup || null;
         var option_hijackcontextmenu = option.hijackContextmenu || false;
+        var option_readonly = option.readOnly || false;
 
         // Keep textarea if browser can't handle content-editable
         var is_textarea = option_element.nodeName == 'TEXTAREA' || option_element.nodeName == 'INPUT';
@@ -718,6 +719,19 @@
                     },
                     getSelectedHTML: dummy_null,
                     sync: dummy_this,
+                    readOnly: function( readonly )
+                    {
+                        // query read-only
+                        if( readonly === undefined )
+                            return node_textarea.hasAttribute ? node_textarea.hasAttribute('readonly') : 
+                                                                !!node_textarea.getAttribute('readonly'); // IE7
+                        // set read-only
+                        if( readonly )
+                            node_textarea.setAttribute( 'readonly', 'readonly' );
+                        else
+                            node_textarea.removeAttribute( 'readonly' );
+                        return this;
+                    },
                     // selection and popup
                     collapseSelection: dummy_this,
                     expandSelection: dummy_this,
@@ -767,7 +781,9 @@
         }
         else
             node_wysiwyg = option_element;
-        node_wysiwyg.setAttribute( 'contentEditable', 'true' ); // IE7 is case sensitive
+        // If not read-only
+        if( ! option_readonly )
+            node_wysiwyg.setAttribute( 'contentEditable', 'true' ); // IE7 is case sensitive
 
         // IE8 uses 'document' instead of 'window'
         // http://tanalin.com/en/articles/ie-version-js/
@@ -1254,6 +1270,19 @@
             {
                 if( syncTextarea )
                     syncTextarea();
+                return this;
+            },
+            readOnly: function( readonly )
+            {
+                // query read-only
+                if( readonly === undefined )
+                    return node_wysiwyg.hasAttribute ? !node_wysiwyg.hasAttribute('contentEditable') : 
+                                                       !node_wysiwyg.getAttribute('contentEditable'); // IE7
+                // set read-only
+                if( readonly )
+                    node_wysiwyg.removeAttribute( 'contentEditable' );
+                else
+                    node_wysiwyg.setAttribute( 'contentEditable', 'true' ); // IE7 is case sensitive
                 return this;
             },
             // selection and popup

@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>WYSIWYG</title>
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="../dist/wysiwyg.min.js"></script>
-<script type="text/javascript" src="../dist/wysiwyg-editor.min.js"></script>
+<script type="text/javascript" src="../src/wysiwyg.js"></script>
+<script type="text/javascript" src="../src/wysiwyg-editor.js"></script>
 <!-- github.io delivers wrong content-type - but you may want to include FontAwesome in 'wysiwyg-editor.css' -->
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="../src/wysiwyg-editor.css" />
@@ -521,6 +521,11 @@ $(document).ready(function() {
     });
 
     // Demo-Buttons
+    $('#editor3-readonly').click(function() {
+        var isReadOnly = $('#editor3').wysiwyg('shell').readOnly();
+        $('#editor3').wysiwyg('shell').readOnly( ! isReadOnly );
+        return false;
+    });
     $('#editor3-bold').click(function() {
         $('#editor3').wysiwyg('shell').bold();
         return false;
@@ -657,7 +662,7 @@ It is used on a website with 300M page impressions a month.
 
 <div style="width:860px; margin: 30px auto;">
   <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Toolbar on bottom, no selection-toolbar, custom buttons and smiley+header+fontsize plugin:</div>
-  <textarea id="editor1" name="editor" placeholder="Type your text here...">
+  <textarea id="editor2" name="editor" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
     Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
@@ -665,12 +670,13 @@ It is used on a website with 300M page impressions a month.
 </div>
 
 <div style="width:860px; margin: 30px auto;">
-  <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Toolbar on selection, hijack right-click, smiley plugin:</div>
-  <textarea id="editor3" name="editor" placeholder="Type your text here...">
+  <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Readonly, toolbar on selection, hijack right-click, smiley plugin:</div>
+  <textarea id="editor3" name="editor" readonly="readonly" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
     Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
   </textarea>
+  <a id="editor3-readonly" class="button" href="#" unselectable="on">toggle readonly</a> |
   <a id="editor3-bold" class="button" href="#" unselectable="on">bold</a> |
   <a id="editor3-red" class="button" href="#" unselectable="on">red background</a> |
   <a id="editor3-sethtml" class="button" href="#" unselectable="on">set html</a> |
@@ -778,6 +784,8 @@ wysiwygeditor.getHTML(); -> 'html'
 wysiwygeditor.setHTML( html );
 wysiwygeditor.getSelectedHTML(); -> 'html'|false
 wysiwygeditor.sync();
+wysiwygeditor.readOnly(); // -> query
+wysiwygeditor.readOnly( true|false );
 
 // selection and popup:
 wysiwygeditor.collapseSelection();

@@ -134,6 +134,8 @@ wysiwygeditor.getHTML(); -> 'html'
 wysiwygeditor.setHTML( html );
 wysiwygeditor.getSelectedHTML(); -> 'html'|false
 wysiwygeditor.sync();
+wysiwygeditor.readOnly(); // -> query
+wysiwygeditor.readOnly( true|false );
 
 // selection and popup:
 wysiwygeditor.collapseSelection();

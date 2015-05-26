@@ -621,8 +621,11 @@
                                     return false; // break
                                 }
                             });
+                        // Read-Only?
+                        if( wysiwygeditor.readOnly() )
+                            show_popup = false;
                         // Fix type error - https://github.com/wysiwygjs/wysiwyg.js/issues/4
-                        if( ! rect )
+                        else if( ! rect )
                             show_popup = false;
                         // Force a special popup?
                         else if( $special_popup )
@@ -685,7 +688,8 @@
                 onClosepopup: function() {
                         autocomplete = null;
                     },
-                hijackContextmenu: (toolbar_position == 'selection')
+                hijackContextmenu: (toolbar_position == 'selection'),
+                readOnly: !!$textarea.attr( 'readonly' )
             };
             if( placeholder )
             {
