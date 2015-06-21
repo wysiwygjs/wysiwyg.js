@@ -754,7 +754,7 @@
         });
 
         // Toolbar on top or bottom
-        if( toolbar_position != 'selection' )
+        if( toolbar_buttons.length && toolbar_position != 'selection' )
         {
             var toolbar_top = toolbar_position == 'top' || toolbar_position == 'top-selection';
             var $toolbar = $('<div/>').addClass( 'wysiwyg-toolbar' ).addClass( toolbar_top ? 'wysiwyg-toolbar-top' : 'wysiwyg-toolbar-bottom' );
@@ -817,7 +817,7 @@
                 var classes = option.classes,
                     placeholder = option.placeholder || $that.attr('placeholder'),
                     toolbar_position = (option.toolbar && (option.toolbar == 'top' || option.toolbar == 'top-selection' || option.toolbar == 'bottom' || option.toolbar == 'bottom-selection' || option.toolbar == 'selection')) ? option.toolbar : 'top-selection',
-                    toolbar_buttons = option.buttons,
+                    toolbar_buttons = option.buttons || {},
                     toolbar_submit = option.submit,
                     label_selectImage = option.selectImage,
                     placeholder_url = option.placeholderUrl || null,
