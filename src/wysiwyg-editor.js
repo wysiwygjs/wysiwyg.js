@@ -754,7 +754,7 @@
         });
 
         // Toolbar on top or bottom
-        if( toolbar_buttons.length && toolbar_position != 'selection' )
+        if( ! $.isEmptyObject(toolbar_buttons) && toolbar_position != 'selection' )
         {
             var toolbar_top = toolbar_position == 'top' || toolbar_position == 'top-selection';
             var $toolbar = $('<div/>').addClass( 'wysiwyg-toolbar' ).addClass( toolbar_top ? 'wysiwyg-toolbar-top' : 'wysiwyg-toolbar-bottom' );
