@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>WYSIWYG</title>
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="../src/wysiwyg.js"></script>
-<script type="text/javascript" src="../src/wysiwyg-editor.js"></script>
+<script type="text/javascript" src="../dist/wysiwyg.min.js"></script>
+<script type="text/javascript" src="../dist/wysiwyg-editor.min.js"></script>
 <!-- github.io delivers wrong content-type - but you may want to include FontAwesome in 'wysiwyg-editor.css' -->
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="../src/wysiwyg-editor.css" />
@@ -17,7 +17,7 @@ $(document).ready(function() {
         $(element).wysiwyg({
             classes: 'some-more-classes',
             // 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection'
-            toolbar: index == 0 ? 'top-selection' : (index == 1 ? 'bottom' : 'selection'),
+            toolbar: index == 0 ? 'top-selection' : (index == 1 ? 'bottom-focus' : 'selection'),
             buttons: {
                 // Dummy-HTML-Plugin
                 dummybutton1: index != 1 ? false : {
@@ -661,12 +661,8 @@ It is used on a website with 300M page impressions a month.
 </div>
 
 <div style="width:860px; margin: 30px auto;">
-  <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Toolbar on bottom, no selection-toolbar, custom buttons and smiley+header+fontsize plugin:</div>
-  <textarea id="editor2" name="editor" placeholder="Type your text here...">
-    Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
-    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-    Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  </textarea>
+  <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Toolbar - if active - on bottom, custom buttons and smiley+header+fontsize plugin:</div>
+  <textarea id="editor2" name="editor" placeholder="Type your text here..."></textarea>
 </div>
 
 <div style="width:860px; margin: 30px auto;">
@@ -698,7 +694,7 @@ It is used on a website with 300M page impressions a month.
 // create editor:
 $(element).wysiwyg({
     classes: 'some-more-classes',
-    toolbar: 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection',
+    toolbar: 'selection'|'top'|'top-focus'|'top-selection'|'top-focus-selection'|'bottom'|'bottom-focus'|'bottom-selection'|'bottom-focus-selection',
     buttons: {
         buttonname: {
             title: 'tooltip text',
@@ -772,6 +768,8 @@ var wysiwygeditor = wysiwyg({
     onSelection: function( collapsed, rect, nodes, rightclick ) {
         },
     onPlaceholder: function( visible ) {
+        },
+    onOpenpopup: function() {
         },
     onClosepopup: function() {
         },

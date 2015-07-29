@@ -16,6 +16,11 @@
     -o-border-radius: 3px;
     border-radius: 3px;
 }
+.wysiwyg-container.wysiwyg-active {
+    /* colors shamelessly stolen from bootstrap.form-control:focus */
+    border-color: #66afe9;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6);
+}
 .wysiwyg-textarea {
     display: block;
     width: 100%;
@@ -27,7 +32,7 @@
 }
 .wysiwyg-editor {
     position: relative;
-    min-height: 5em;
+    min-height: 1em;
     /*max-height: 25em;*/
     padding: 10px;
     overflow: auto;

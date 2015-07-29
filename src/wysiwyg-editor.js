@@ -525,7 +525,7 @@
         // Transform the textarea to contenteditable
         var hotkeys = {},
             autocomplete = null;
-        var create_wysiwyg = function( $textarea, $container, placeholder )
+        var create_wysiwyg = function( $textarea, $container, $parent, placeholder )
         {
             var handle_autocomplete = function( keypress, key, character, shiftKey, altKey, ctrlKey, metaKey )
             {
@@ -637,7 +637,7 @@
                         else if( autocomplete )
                             ;
                         // No selection-popup wanted?
-                        else if( toolbar_position != 'selection' && toolbar_position != 'top-selection' && toolbar_position != 'bottom-selection' )
+                        else if( $.inArray('selection',toolbar_position.split('-')) == -1 )
                             show_popup = false;
                         // Selected popup wanted, but nothing selected (=selection collapsed)
                         else if( collapsed )
@@ -655,12 +655,12 @@
                         var apply_popup_position = function()
                         {
                             var popup_width = $popup.outerWidth();
-                            // Point is the center of the selection - relative to $container not the element
-                            var container_offset = $container.offset(),
+                            // Point is the center of the selection - relative to $parent not the element
+                            var container_offset = $parent.offset(),
                                 editor_offset = $(wysiwygeditor.getElement()).offset();
                             var left = rect.left + parseInt(rect.width / 2) - parseInt(popup_width / 2) + editor_offset.left - container_offset.left;
                             var top = rect.top + rect.height + editor_offset.top - container_offset.top;
-                            popup_position( $popup, $container, left, top );
+                            popup_position( $popup, $parent, left, top );
                         };
                         // Open popup
                         $popup = $(wysiwygeditor.openPopup());
@@ -685,8 +685,12 @@
                         // Apply position
                         apply_popup_position();
                     },
+                onOpenpopup: function() {
+                        add_class_active();
+                    },
                 onClosepopup: function() {
                         autocomplete = null;
+                        remove_class_active();
                     },
                 hijackContextmenu: (toolbar_position == 'selection'),
                 readOnly: !!$textarea.attr( 'readonly' )
@@ -696,7 +700,7 @@
                 var $placeholder = $('<div/>').addClass( 'wysiwyg-placeholder' )
                                               .html( placeholder )
                                               .hide();
-                $container.prepend( $placeholder );
+                $parent.prepend( $placeholder );
                 option.onPlaceholder = function( visible ) {
                     if( visible )
                         $placeholder.show();
@@ -730,7 +734,7 @@
         }
 
         // Create the WYSIWYG Editor
-        var wysiwygeditor = create_wysiwyg( $textarea, placeholder ? $wrapper : $container, placeholder );
+        var wysiwygeditor = create_wysiwyg( $textarea, $container, placeholder ? $wrapper : $container, placeholder );
         if( wysiwygeditor.legacy )
         {
             var $textarea = $(wysiwygeditor.getElement());
@@ -740,6 +744,26 @@
         }
         else
             $(wysiwygeditor.getElement()).addClass( 'wysiwyg-editor' );
+
+        // Support ':active'-class
+        var remove_active_timeout = null;
+        var add_class_active = function() {
+            if( remove_active_timeout )
+                clearTimeout( remove_active_timeout );
+            remove_active_timeout = null;
+            $container.addClass( 'wysiwyg-active' );
+            $container.find( '.wysiwyg-toolbar-focus' ).slideDown();
+        };
+        var remove_class_active = function() {
+            if( remove_active_timeout || document.activeElement == wysiwygeditor.getElement() )
+                return ;
+            remove_active_timeout = setTimeout( function() {
+                $container.removeClass( 'wysiwyg-active' );
+                if( $.trim(wysiwygeditor.getHTML().replace(/<br\s*[\/]?>/gi,'')).length == 0 )
+                    $container.find( '.wysiwyg-toolbar-focus' ).slideUp();
+            }, 100 );
+        };
+        $(wysiwygeditor.getElement()).focus( add_class_active ).blur( remove_class_active );
 
         // Hotkey+Commands-List
         var commands = {};
@@ -756,8 +780,12 @@
         // Toolbar on top or bottom
         if( ! $.isEmptyObject(toolbar_buttons) && toolbar_position != 'selection' )
         {
-            var toolbar_top = toolbar_position == 'top' || toolbar_position == 'top-selection';
+            var toolbar_top = $.inArray( 'top', toolbar_position.split('-') ) != -1;
+            var toolbar_focus = $.inArray( 'focus', toolbar_position.split('-') ) != -1;
             var $toolbar = $('<div/>').addClass( 'wysiwyg-toolbar' ).addClass( toolbar_top ? 'wysiwyg-toolbar-top' : 'wysiwyg-toolbar-bottom' );
+            if( toolbar_focus )
+                $toolbar.hide().addClass( 'wysiwyg-toolbar-focus' );
+            // Add buttons to the toolbar
             add_buttons_to_toolbar( $toolbar, false,
                 function() {
                     // Open a popup from the toolbar
@@ -816,7 +844,7 @@
                 // Two modes: toolbar on top and on bottom
                 var classes = option.classes,
                     placeholder = option.placeholder || $that.attr('placeholder'),
-                    toolbar_position = (option.toolbar && (option.toolbar == 'top' || option.toolbar == 'top-selection' || option.toolbar == 'bottom' || option.toolbar == 'bottom-selection' || option.toolbar == 'selection')) ? option.toolbar : 'top-selection',
+                    toolbar_position = option.toolbar || 'top',
                     toolbar_buttons = option.buttons || {},
                     toolbar_submit = option.submit,
                     label_selectImage = option.selectImage,

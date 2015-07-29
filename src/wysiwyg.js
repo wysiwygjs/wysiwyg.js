@@ -668,6 +668,7 @@
         var option_onkeyup = option.onKeyUp || null;
         var option_onselection = option.onSelection || null;
         var option_onplaceholder = option.onPlaceholder || null;
+        var option_onopenpopup = option.onOpenpopup || null;
         var option_onclosepopup = option.onClosepopup || null;
         var option_hijackcontextmenu = option.hijackContextmenu || false;
         var option_readonly = option.readOnly || false;
@@ -965,6 +966,8 @@
                 parent.insertBefore( node_popup, next );
             else
                 parent.appendChild( node_popup );
+            if( option_onopenpopup )
+                option_onopenpopup();
             return node_popup;
         };
         var popupClose = function()
