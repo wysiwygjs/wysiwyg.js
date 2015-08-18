@@ -1503,7 +1503,6 @@
         };
         var content_insertlink = function(wysiwygeditor, $modify_link)
         {
-            var $button = toolbar_button( toolbar_submit );
             var $inputurl = $('<input type="text" value="' + ($modify_link ? $modify_link.attr('href') : '') + '" />').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which != 10 && event.which != 13 )
@@ -1518,7 +1517,9 @@
                                 });
             if( placeholder_url )
                 $inputurl.attr( 'placeholder', placeholder_url );
-            var $okaybutton = $button.click(function(event){
+            var $okaybutton = $();
+            if( toolbar_submit )
+                $okaybutton = toolbar_button(toolbar_submit).click(function(event){
                                     if( $modify_link )
                                     {
                                         $modify_link.attr( 'href', $inputurl.val() );
@@ -1640,7 +1641,6 @@
                            .append( $fileuploader )
                            .appendTo( $content );
             // Add image via 'URL'
-            var $button = toolbar_button( toolbar_submit );
             var $inputurl = $('<input type="text" value="" />').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which == 10 || event.which == 13 )
@@ -1648,7 +1648,9 @@
                                 });
             if( placeholder_url )
                 $inputurl.attr( 'placeholder', placeholder_url );
-            var $okaybutton = $button.click(function(event){
+            var $okaybutton = $();
+            if( toolbar_submit )
+                $okaybutton = toolbar_button(toolbar_submit).click(function(event){
                                     insert_image_wysiwyg( $inputurl.val() );
                                     event.stopPropagation();
                                     event.preventDefault();
@@ -1689,7 +1691,6 @@
                        .append( $textareaembed )
                        .appendTo( $content );
             // Add video via 'URL'
-            var $button = toolbar_button( toolbar_submit );
             var $inputurl = $('<input type="text" value="" />').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which == 10 || event.which == 13 )
@@ -1697,7 +1698,9 @@
                                 });
             if( placeholder_url )
                 $inputurl.attr( 'placeholder', placeholder_url );
-            var $okaybutton = $button.click(function(event){
+            var $okaybutton = $();
+            if( toolbar_submit )
+                $okaybutton = toolbar_button(toolbar_submit).click(function(event){
                                     insert_video_wysiwyg( $inputurl.val(), $textareaembed.val() );
                                     event.stopPropagation();
                                     event.preventDefault();
