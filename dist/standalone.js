@@ -1,4 +1,4 @@
-(function(factory) {
+﻿(function(factory) {
         window.wysiwyg = factory(window, document);
 })(function(window, document){
     'use strict';
@@ -1856,7 +1856,7 @@
 
         // Create the toolbar
         var toolbar_button = function( button ) {
-            return $('<a/>').addClass( 'wysiwyg-toolbar-icon' )
+            return $('<a/>').addClass( 'wysiwyg-toolbar-icon ' + button.classes )
                             .attr('href','#')
                             .attr('title', button.title)
                             .attr('unselectable','on')
