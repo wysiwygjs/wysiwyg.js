@@ -791,7 +791,8 @@
         var window_ie8 = (document.all && !document.addEventListener) ? document : window;
 
         // Sync Editor with Textarea
-        var syncTextarea = null;
+        var syncTextarea = null,
+            callUpdates;
         if( is_textarea )
         {
             var previous_html = node_wysiwyg.innerHTML;
@@ -806,6 +807,16 @@
                 // Event Handler
                 fireEvent( node_textarea, 'change', false );
             };
+
+            // handle reset event
+            var form = node_textarea.form;
+            if( form )
+            {
+                addEvent( form, 'reset', function() {
+                    node_wysiwyg.innerHTML = '';
+                    callUpdates( true );
+                });
+            }
         }
 
         // Show placeholder
@@ -1226,7 +1237,7 @@
             }
         };
         // Command structure
-        var callUpdates = function( selection_destroyed )
+        callUpdates = function( selection_destroyed )
         {
             // Remove IE11 workaround
             if( trailingDiv )

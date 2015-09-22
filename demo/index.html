@@ -21,12 +21,8 @@ $(document).ready(function() {
             buttons: {
                 // Dummy-HTML-Plugin
                 dummybutton1: index != 1 ? false : {
-                    html: $('<input id="submit" type="button" value="bold" />').click(function() {
-                                // We simply make 'bold'
-                                if( $(element).wysiwyg('shell').getSelectedHTML() )
-                                    $(element).wysiwyg('shell').bold();
-                                else
-                                    alert( 'Please selection some text' );
+                    html: $('<input id="submit" type="button" value="Submit" />').click(function() {
+                                alert( 'Submit form' );
                             }),
                     //showstatic: true,    // wanted on the toolbar
                     showselection: false    // wanted on selection
@@ -36,7 +32,11 @@ $(document).ready(function() {
                     title: 'Dummy',
                     image: '\uf1e7',
                     click: function( $button ) {
-                            alert('Do something');
+                                // We simply make 'bold'
+                                if( $(element).wysiwyg('shell').getSelectedHTML() )
+                                    $(element).wysiwyg('shell').bold();
+                                else
+                                    alert( 'No text selected' );
                            },
                     //showstatic: true,    // wanted on the toolbar
                     showselection: false    // wanted on selection
@@ -521,26 +521,30 @@ $(document).ready(function() {
     });
 
     // Demo-Buttons
-    $('#editor3-readonly').click(function() {
+    $('#editor3-readonly').click(function(e) {
+        e.preventDefault()
         var isReadOnly = $('#editor3').wysiwyg('shell').readOnly();
         $('#editor3').wysiwyg('shell').readOnly( ! isReadOnly );
-        return false;
     });
-    $('#editor3-bold').click(function() {
+    $('#editor3-bold').click(function(e) {
+        e.preventDefault()
         $('#editor3').wysiwyg('shell').bold();
-        return false;
     });
-    $('#editor3-red').click(function() {
+    $('#editor3-red').click(function(e) {
+        e.preventDefault()
         $('#editor3').wysiwyg('shell').highlight('#ff0000');
-        return false;
     });
-    $('#editor3-sethtml').click(function() {
+    $('#editor3-sethtml').click(function(e) {
+        e.preventDefault()
         $('#editor3').wysiwyg('shell').setHTML('This is the new text.');
-        return false;
     });
-    $('#editor3-inserthtml').click(function() {
+    $('#editor3-inserthtml').click(function(e) {
+        e.preventDefault()
         $('#editor3').wysiwyg('shell').insertHTML('Insert some text.');
-        return false;
+    });
+    $('#editor3-reset').click(function(e) {
+        e.preventDefault()
+        $('#editor3').closest('form').trigger('reset');
     });
 
     // Raw editor
@@ -667,16 +671,19 @@ It is used on a website with 300M page impressions a month.
 
 <div style="width:860px; margin: 30px auto;">
   <div style="color:#aa0000;font-weight:bold">$.wysiwyg(): Readonly, toolbar on selection, hijack right-click, smiley plugin:</div>
-  <textarea id="editor3" name="editor" readonly="readonly" placeholder="Type your text here...">
+  <form method="POST" action="/">
+   <textarea id="editor3" name="editor" readonly="readonly" placeholder="Type your text here...">
     Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
     Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  </textarea>
+   </textarea>
+  </form> 
   <a id="editor3-readonly" class="button" href="#" unselectable="on">toggle readonly</a> |
   <a id="editor3-bold" class="button" href="#" unselectable="on">bold</a> |
   <a id="editor3-red" class="button" href="#" unselectable="on">red background</a> |
   <a id="editor3-sethtml" class="button" href="#" unselectable="on">set html</a> |
   <a id="editor3-inserthtml" class="button" href="#" unselectable="on">insert html</a>
+  <a id="editor3-reset" class="button" href="#" unselectable="on">reset form</a>
 </div>
 
 <div style="width:860px; margin: 30px auto;">
