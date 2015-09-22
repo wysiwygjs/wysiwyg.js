@@ -71,7 +71,7 @@
         };
         var content_insertlink = function(wysiwygeditor, $modify_link)
         {
-            var $inputurl = $('<input type="text" value="' + ($modify_link ? $modify_link.attr('href') : '') + '" />').addClass('wysiwyg-input')
+            var $inputurl = $('<input type="text" value="' + ($modify_link ? $modify_link.attr('href') : '') + '">').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which != 10 && event.which != 13 )
                                         return ;
@@ -111,7 +111,7 @@
             // Add image to editor
             var insert_image_wysiwyg = function( url, filename )
             {
-                var html = '<img id="wysiwyg-insert-image" src="" alt=""' + (filename ? ' title="'+html_encode(filename)+'"' : '') + ' />';
+                var html = '<img id="wysiwyg-insert-image" src="" alt=""' + (filename ? ' title="'+html_encode(filename)+'"' : '') + '>';
                 wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
                 var $image = $('#wysiwyg-insert-image').removeAttr('id');
                 if( max_imagesize )
@@ -148,7 +148,7 @@
                                       .attr('unselectable','on');
             // Add image via 'Browse...'
             var $fileuploader = null,
-                $fileuploader_input = $('<input type="file" />')
+                $fileuploader_input = $('<input type="file">')
                                         .css({position: 'absolute',
                                               left: 0,
                                               top: 0,
@@ -209,7 +209,7 @@
                            .append( $fileuploader )
                            .appendTo( $content );
             // Add image via 'URL'
-            var $inputurl = $('<input type="text" value="" />').addClass('wysiwyg-input')
+            var $inputurl = $('<input type="text" value="">').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which == 10 || event.which == 13 )
                                         insert_image_wysiwyg( $inputurl.val() );
@@ -245,7 +245,7 @@
                 if( website_url && video_from_url )
                     html = video_from_url( website_url ) || '';
                 if( ! html.length && website_url )
-                    html = '<video src="' + html_encode(website_url) + '" />';
+                    html = '<video src="' + html_encode(website_url) + '">';
                 wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
             };
             // Create popup
@@ -259,7 +259,7 @@
                        .append( $textareaembed )
                        .appendTo( $content );
             // Add video via 'URL'
-            var $inputurl = $('<input type="text" value="" />').addClass('wysiwyg-input')
+            var $inputurl = $('<input type="text" value="">').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which == 10 || event.which == 13 )
                                         insert_video_wysiwyg( $inputurl.val() );
