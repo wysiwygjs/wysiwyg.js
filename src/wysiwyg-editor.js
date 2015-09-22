@@ -424,7 +424,7 @@
 
         // Create the toolbar
         var toolbar_button = function( button ) {
-            return $('<a/>').addClass( 'wysiwyg-toolbar-icon ' + button.classes )
+            return $('<a/>').addClass( 'wysiwyg-toolbar-icon ' + (button.classes||'') )
                             .attr('href','#')
                             .attr('title', button.title)
                             .attr('unselectable','on')
@@ -619,8 +619,9 @@
                         // Click on a link opens the link-popup
                         if( collapsed )
                             $.each( nodes, function(index, node) {
-                                if( $(node).parents('a').length != 0 ) { // only clicks on text-nodes
-                                    $special_popup = content_insertlink( wysiwygeditor, $(node).parents('a:first') )
+                                var $link = $(node).closest('a');
+                                if( $link.length != 0 ) { // only clicks on text-nodes
+                                    $special_popup = content_insertlink( wysiwygeditor, $link )
                                     return false; // break
                                 }
                             });
@@ -767,6 +768,7 @@
             }, 100 );
         };
         $(wysiwygeditor.getElement()).focus( add_class_active ).blur( remove_class_active );
+        $textarea.closest( 'form' ).on( 'reset', remove_class_active );
 
         // Hotkey+Commands-List
         var commands = {};

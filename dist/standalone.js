@@ -763,7 +763,8 @@
 
             // Contenteditable
             node_wysiwyg = document.createElement( 'DIV' );
-            node_wysiwyg.innerHTML = node_textarea.value;
+            var textarea_value = node_textarea.value;
+            node_wysiwyg.innerHTML = textarea_value.length ? textarea_value : '<br>';
             var parent = node_textarea.parentNode,
                 next = node_textarea.nextSibling;
             if( next )
@@ -804,7 +805,8 @@
             if( form )
             {
                 addEvent( form, 'reset', function() {
-                    node_wysiwyg.innerHTML = '';
+                    node_wysiwyg.innerHTML = '<br>';
+                    syncTextarea();
                     callUpdates( true );
                 });
             }
@@ -1867,7 +1869,7 @@
 
         // Create the toolbar
         var toolbar_button = function( button ) {
-            return $('<a/>').addClass( 'wysiwyg-toolbar-icon ' + button.classes )
+            return $('<a/>').addClass( 'wysiwyg-toolbar-icon ' + (button.classes||'') )
                             .attr('href','#')
                             .attr('title', button.title)
                             .attr('unselectable','on')
@@ -2062,8 +2064,9 @@
                         // Click on a link opens the link-popup
                         if( collapsed )
                             $.each( nodes, function(index, node) {
-                                if( $(node).parents('a').length != 0 ) { // only clicks on text-nodes
-                                    $special_popup = content_insertlink( wysiwygeditor, $(node).parents('a:first') )
+                                var $link = $(node).closest('a');
+                                if( $link.length != 0 ) { // only clicks on text-nodes
+                                    $special_popup = content_insertlink( wysiwygeditor, $link )
                                     return false; // break
                                 }
                             });
@@ -2210,6 +2213,7 @@
             }, 100 );
         };
         $(wysiwygeditor.getElement()).focus( add_class_active ).blur( remove_class_active );
+        $textarea.closest( 'form' ).on( 'reset', remove_class_active );
 
         // Hotkey+Commands-List
         var commands = {};
