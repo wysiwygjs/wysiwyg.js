@@ -762,6 +762,7 @@
             if( remove_active_timeout || document.activeElement == wysiwygeditor.getElement() )
                 return ;
             remove_active_timeout = setTimeout( function() {
+                remove_active_timeout = null;
                 $container.removeClass( 'wysiwyg-active' );
                 if( $.trim(wysiwygeditor.getHTML().replace(/<br\s*[\/]?>/gi,'')).length == 0 )
                     $container.find( '.wysiwyg-toolbar-focus' ).slideUp();

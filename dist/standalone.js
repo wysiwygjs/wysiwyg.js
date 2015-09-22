@@ -763,8 +763,7 @@
 
             // Contenteditable
             node_wysiwyg = document.createElement( 'DIV' );
-            var textarea_value = node_textarea.value;
-            node_wysiwyg.innerHTML = textarea_value.length ? textarea_value : '<br>';
+            node_wysiwyg.innerHTML = node_textarea.value || '<br>';
             var parent = node_textarea.parentNode,
                 next = node_textarea.nextSibling;
             if( next )
@@ -1262,7 +1261,7 @@
             },
             setHTML: function( html )
             {
-                node_wysiwyg.innerHTML = html;
+                node_wysiwyg.innerHTML = html || '<br>';
                 callUpdates( true ); // selection destroyed
                 return this;
             },
@@ -2207,6 +2206,7 @@
             if( remove_active_timeout || document.activeElement == wysiwygeditor.getElement() )
                 return ;
             remove_active_timeout = setTimeout( function() {
+                remove_active_timeout = null;
                 $container.removeClass( 'wysiwyg-active' );
                 if( $.trim(wysiwygeditor.getHTML().replace(/<br\s*[\/]?>/gi,'')).length == 0 )
                     $container.find( '.wysiwyg-toolbar-focus' ).slideUp();

@@ -772,8 +772,7 @@
 
             // Contenteditable
             node_wysiwyg = document.createElement( 'DIV' );
-            var textarea_value = node_textarea.value;
-            node_wysiwyg.innerHTML = textarea_value.length ? textarea_value : '<br>';
+            node_wysiwyg.innerHTML = node_textarea.value || '<br>';
             var parent = node_textarea.parentNode,
                 next = node_textarea.nextSibling;
             if( next )
@@ -1271,7 +1270,7 @@
             },
             setHTML: function( html )
             {
-                node_wysiwyg.innerHTML = html;
+                node_wysiwyg.innerHTML = html || '<br>';
                 callUpdates( true ); // selection destroyed
                 return this;
             },
