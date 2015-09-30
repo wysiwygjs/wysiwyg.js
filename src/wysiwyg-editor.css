@@ -10,16 +10,17 @@
 */
 .wysiwyg-container {
     overflow: visible;
-    border: 1px solid #cccccc;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -o-border-radius: 3px;
-    border-radius: 3px;
+    color: black;
+    background: none white;
+    border: 1px solid #e5e5e5;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
 }
 .wysiwyg-container.wysiwyg-active {
-    /* colors shamelessly stolen from bootstrap.form-control:focus */
-    border-color: #66afe9;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6);
+    border-color: #99baca !important;
+    background: #f5fbfe !important;
 }
 .wysiwyg-textarea {
     display: block;
@@ -33,33 +34,32 @@
 .wysiwyg-editor {
     position: relative;
     min-height: 1em;
-    /*max-height: 25em;*/
-    padding: 10px;
+    padding: 4px 6px;
     overflow: auto;
     outline: none;
+    color: #444444;
     -ms-word-wrap: break-word;
     word-wrap: break-word;
 }
 .wysiwyg-toolbar {
     overflow: hidden;
     white-space: nowrap;
-}
-.wysiwyg-toolbar-top {
-    border-bottom: 1px solid #cccccc;
     padding: 0;
 }
+.wysiwyg-toolbar-top {
+    border-bottom: 1px solid #e5e5e5;
+}
 .wysiwyg-toolbar-bottom {
-    border-top: 1px solid #cccccc;
-    padding: 0 5px;
+    border-top: 1px solid #e5e5e5;
 }
 .wysiwyg-toolbar a {
     vertical-align: top;
 }
 .wysiwyg-placeholder {
     position: absolute;
-    top: 10px;  /* same as padding in .wysiwyg-editor */
-    left: 10px;
-    color: #cccccc;
+    top: 4px;  /* same as padding in .wysiwyg-editor */
+    left: 6px;
+    color: #e5e5e5;
     background: transparent;
 }
 .wysiwyg-popup {
@@ -70,11 +70,11 @@
     background: rgba(255,255,255,0.9);
     left: -50%;
     white-space: nowrap;
-    border: 1px solid #aaaaaa;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -o-border-radius: 3px;
-    border-radius: 3px;
+    border: 1px solid #d3d3d3;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
     -moz-user-select: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -99,7 +99,7 @@
     margin-left: -8px;
     border-left: 9px solid transparent;
     border-right: 9px solid transparent;
-    border-bottom: 8px solid #aaaaaa;
+    border-bottom: 8px solid #d3d3d3;
 }
 .wysiwyg-toolbar-icon {
     display: -moz-inline-stack;
@@ -107,7 +107,7 @@
     *display: inline;
     margin: 0;
     padding: 0;
-    color: #333333;
+    color: #999999;
     text-decoration: none;
     *zoom: 1;
     vertical-align: top;
@@ -131,6 +131,7 @@
 .wysiwyg-toolbar-icon:hover {
     color: HighlightText;
     background-color: Highlight;
+    text-decoration: none;
     -moz-transition: color 0.2s, background 0.2s;
     -webkit-transition: color 0.2s, background 0.2s;
     -ms-transition: color 0.2s, background 0.2s;
@@ -157,16 +158,16 @@
     display: -moz-inline-stack;
     display: inline-block;
     *display: inline;
-    color: black;
+    color: #444444;
     background: none white;
-    border: 1px solid #aaaaaa;
+    border: 1px solid #d3d3d3;
     width: 20em;
     height: 20px;
-    padding: 5px 4px;  /* 8 - extraheight(2) - border(1) = 5 */
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -o-border-radius: 3px;
-    border-radius: 3px;
+    padding: 5px 6px;  /* 8 - extraheight(2) - border(1) = 5 */
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
     outline: none;
 }
 .wysiwyg-input.wysiwyg-inputtextarea {
@@ -180,7 +181,7 @@
 .wysiwyg-input:hover,
 .wysiwyg-input:active,
 .wysiwyg-input:focus {
-    border-color: #777777;
+    border-color: #d3d3d3;
 }
 .wysiwyg-browse {
     position: relative;
@@ -188,9 +189,10 @@
     top: 0;
     height: 3em;
     line-height: 3em;
-    border: 2px dashed #aaaaaa;
+    color: #666666;
+    border: 2px dashed #e5e5e5;
+    background-color: #fafafa;
     padding: 10px;
-    color: #aaaaaa;
     text-align: center;
     font-weight: bold;
     margin-bottom: 10px;
@@ -199,8 +201,8 @@
 .wysiwyg-browse:hover,
 .wysiwyg-browse:active,
 .wysiwyg-browse:focus {
-    color: black;
-    border-color: #777777;
+    color: #444444;
+    border-color: #d3d3d3;
 }
 .wysiwyg-embedcode {
     margin-bottom: 10px;

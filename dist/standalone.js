@@ -1927,17 +1927,29 @@
             // Test parents
             var container_node = $container.get(0),
                 offsetparent = container_node.offsetParent,
-                offsetparent_offset = { left: 0, top: 0 },  //$.offset() does not work with Safari 3 and 'position:fixed'
+                offsetparent_left = 0,
+                offsetparent_top = 0,
+                offsetparent_break = false,
+                offsetparent_window_left = 0,     //$.offset() does not work with Safari 3 and 'position:fixed'
+                offsetparent_window_top = 0,
                 offsetparent_fixed = false,
                 offsetparent_overflow = false,
                 popup_width = $popup.width(),
                 node = offsetparent;
             while( node )
             {
-                offsetparent_offset.left += node.offsetLeft;
-                offsetparent_offset.top += node.offsetTop;
-                var $node = $(node);
-                if( $node.css('position') == 'fixed' )
+                offsetparent_window_left += node.offsetLeft;
+                offsetparent_window_top += node.offsetTop;
+                var $node = $(node),
+                    node_position = $node.css('position');
+                if( node_position != 'static' )
+                    offsetparent_break = true;
+                else if( ! offsetparent_break )
+                {
+                    offsetparent_left += node.offsetLeft;
+                    offsetparent_top += node.offsetTop;
+                }
+                if( node_position == 'fixed' )
                     offsetparent_fixed = true;
                 if( $node.css('overflow') != 'visible' )
                     offsetparent_overflow = true;
@@ -1946,8 +1958,8 @@
             // Move $popup as high as possible in the DOM tree: offsetParent of $container
             var $offsetparent = $(offsetparent || document.body);
             $offsetparent.append( $popup );
-            left += container_node.offsetLeft; // $container.position() does not work with Safari 3
-            top += container_node.offsetTop;
+            left += offsetparent_left + container_node.offsetLeft; // $container.position() does not work with Safari 3
+            top += offsetparent_top + container_node.offsetTop;
             // Trim to offset-parent
             if( offsetparent_fixed || offsetparent_overflow )
             {
@@ -1958,11 +1970,11 @@
             }
             // Trim to viewport
             var viewport_width = $(window).width();
-            if( offsetparent_offset.left + left + popup_width > viewport_width - 1 )
-                left = viewport_width - offsetparent_offset.left - popup_width - 1;
+            if( offsetparent_window_left + left + popup_width > viewport_width - 1 )
+                left = viewport_width - offsetparent_window_left - popup_width - 1;
             var scroll_left = offsetparent_fixed ? 0 : $(window).scrollLeft();
-            if( offsetparent_offset.left + left < scroll_left + 1 )
-                left = scroll_left - offsetparent_offset.left + 1;
+            if( offsetparent_window_top + left < scroll_left + 1 )
+                left = scroll_left - offsetparent_window_top + 1;
             // Set offset
             $popup.css({ left: parseInt(left) + 'px',
                          top: parseInt(top) + 'px' });
@@ -2200,7 +2212,7 @@
                 clearTimeout( remove_active_timeout );
             remove_active_timeout = null;
             $container.addClass( 'wysiwyg-active' );
-            $container.find( '.wysiwyg-toolbar-focus' ).slideDown();
+            $container.find( '.wysiwyg-toolbar-focus' ).slideDown(200);
         };
         var remove_class_active = function() {
             if( remove_active_timeout || document.activeElement == wysiwygeditor.getElement() )
@@ -2209,7 +2221,7 @@
                 remove_active_timeout = null;
                 $container.removeClass( 'wysiwyg-active' );
                 if( $.trim(wysiwygeditor.getHTML().replace(/<br\s*[\/]?>/gi,'')).length == 0 )
-                    $container.find( '.wysiwyg-toolbar-focus' ).slideUp();
+                    $container.find( '.wysiwyg-toolbar-focus' ).slideUp(200);
             }, 100 );
         };
         $(wysiwygeditor.getElement()).focus( add_class_active ).blur( remove_class_active );
