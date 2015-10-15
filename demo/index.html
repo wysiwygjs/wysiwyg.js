@@ -15,7 +15,7 @@ $(document).ready(function() {
     $('#editor1,#editor2,#editor3').each( function(index, element)
     {
         $(element).wysiwyg({
-            classes: 'some-more-classes',
+            classes: index == 0 ? 'fake-bootstrap' : (index == 1 ? 'fake-uikit' : 'some-more-classes'),
             // 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection'
             toolbar: index == 0 ? 'top-selection' : (index == 1 ? 'bottom-focus' : 'selection'),
             buttons: {
@@ -613,6 +613,16 @@ p {
     display: -moz-inline-stack; /* inline-block: http://blog.mozilla.org/webdev/2009/02/20/cross-browser-inline-block/ */
     display: inline-block;
     *display: inline;
+}
+/* Fake bootstrap + uikit */
+.fake-bootstrap.wysiwyg-container.wysiwyg-active {
+    /* colors shamelessly stolen from bootstrap.form-control:focus */
+    border-color: #66afe9;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6)
+}
+.fake-uikit.wysiwyg-container.wysiwyg-active {
+    border-color: #99baca !important;
+    background: #f5fbfe !important;
 }
 </style>
 </head>
