@@ -47,7 +47,7 @@ $.wysiwyg()-API:
 // create editor:
 $(element).wysiwyg({
     classes: 'some-more-classes',
-    toolbar: 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection',
+    toolbar: 'selection'|'top'|'top-focus'|'top-selection'|'top-focus-selection'|'bottom'|'bottom-focus'|'bottom-selection'|'bottom-focus-selection',
     buttons: {
         buttonname: {
             title: 'tooltip text',
@@ -122,6 +122,8 @@ var wysiwygeditor = wysiwyg({
     onSelection: function( collapsed, rect, nodes, rightclick ) {
         },
     onPlaceholder: function( visible ) {
+        },
+    onOpenpopup: function() {
         },
     onClosepopup: function() {
         },
