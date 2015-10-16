@@ -71,26 +71,26 @@
         };
         var content_insertlink = function(wysiwygeditor, $modify_link)
         {
-            var $inputurl = $('<input type="text" value="' + ($modify_link ? $modify_link.attr('href') : '') + '">').addClass('wysiwyg-input')
+            var $inputurl = $('<input type="text" value="' + ($modify_link ? $modify_link.prop('href') : '') + '">').addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which != 10 && event.which != 13 )
                                         return ;
                                     if( $modify_link )
                                     {
-                                        $modify_link.attr( 'href', $inputurl.val() );
+                                        $modify_link.prop( 'href', $inputurl.val() );
                                         wysiwygeditor.closePopup().collapseSelection();
                                     }
                                     else
                                         wysiwygeditor_insertLink( wysiwygeditor,$inputurl.val() );
                                 });
             if( placeholder_url )
-                $inputurl.attr( 'placeholder', placeholder_url );
+                $inputurl.prop( 'placeholder', placeholder_url );
             var $okaybutton = $();
             if( toolbar_submit )
                 $okaybutton = toolbar_button(toolbar_submit).click(function(event){
                                     if( $modify_link )
                                     {
-                                        $modify_link.attr( 'href', $inputurl.val() );
+                                        $modify_link.prop( 'href', $inputurl.val() );
                                         wysiwygeditor.closePopup().collapseSelection();
                                     }
                                     else
@@ -100,7 +100,7 @@
                                     return false;
                                 });
             var $content = $('<div/>').addClass('wysiwyg-toolbar-form')
-                                      .attr('unselectable','on');
+                                      .prop('unselectable','on');
             $content.append($inputurl).append($okaybutton);
             return $content;
         };
@@ -113,7 +113,7 @@
             {
                 var html = '<img id="wysiwyg-insert-image" src="" alt=""' + (filename ? ' title="'+html_encode(filename)+'"' : '') + '>';
                 wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
-                var $image = $('#wysiwyg-insert-image').removeAttr('id');
+                var $image = $('#wysiwyg-insert-image').removeProp('id');
                 if( max_imagesize )
                 {
                     $image.css({maxWidth: max_imagesize[0]+'px',
@@ -136,16 +136,16 @@
                                         image_width = parseInt(image_width / image_height * max_imagesize[1]);
                                         image_height = max_imagesize[1];
                                     }
-                                    $image.attr('width',image_width)
-                                          .attr('height',image_height);
+                                    $image.prop('width',image_width)
+                                          .prop('height',image_height);
                                 }
                             });
                 }
-                $image.attr('src', url);
+                $image.prop('src', url);
             };
             // Create popup
             var $content = $('<div/>').addClass('wysiwyg-toolbar-form')
-                                      .attr('unselectable','on');
+                                      .prop('unselectable','on');
             // Add image via 'Browse...'
             var $fileuploader = null,
                 $fileuploader_input = $('<input type="file">')
@@ -173,7 +173,7 @@
                     reader.readAsDataURL( file );
                 };
                 $fileuploader = $fileuploader_input
-                                    .attr('draggable','true')
+                                    .prop('draggable','true')
                                     .change(function(event){
                                         var files = event.target.files; // FileList object
                                         for(var i=0; i < files.length; ++i)
@@ -215,7 +215,7 @@
                                         insert_image_wysiwyg( $inputurl.val() );
                                 });
             if( placeholder_url )
-                $inputurl.attr( 'placeholder', placeholder_url );
+                $inputurl.prop( 'placeholder', placeholder_url );
             var $okaybutton = $();
             if( toolbar_submit )
                 $okaybutton = toolbar_button(toolbar_submit).click(function(event){
@@ -250,11 +250,11 @@
             };
             // Create popup
             var $content = $('<div/>').addClass('wysiwyg-toolbar-form')
-                                      .attr('unselectable','on');
+                                      .prop('unselectable','on');
             // Add video via '<embed/>'
             var $textareaembed = $('<textarea>').addClass('wysiwyg-input wysiwyg-inputtextarea');
             if( placeholder_embed )
-                $textareaembed.attr( 'placeholder', placeholder_embed );
+                $textareaembed.prop( 'placeholder', placeholder_embed );
             $('<div/>').addClass( 'wysiwyg-embedcode' )
                        .append( $textareaembed )
                        .appendTo( $content );
@@ -265,7 +265,7 @@
                                         insert_video_wysiwyg( $inputurl.val() );
                                 });
             if( placeholder_url )
-                $inputurl.attr( 'placeholder', placeholder_url );
+                $inputurl.prop( 'placeholder', placeholder_url );
             var $okaybutton = $();
             if( toolbar_submit )
                 $okaybutton = toolbar_button(toolbar_submit).click(function(event){
@@ -282,9 +282,9 @@
         var content_colorpalette = function( wysiwygeditor, forecolor )
         {
             var $content = $('<table/>')
-                            .attr('cellpadding','0')
-                            .attr('cellspacing','0')
-                            .attr('unselectable','on');
+                            .prop('cellpadding','0')
+                            .prop('cellspacing','0')
+                            .prop('unselectable','on');
             for( var row=1; row < 15; ++row ) // should be '16' - but last line looks so dark
             {
                 var $rows = $('<tr/>');
@@ -305,8 +305,8 @@
                         color = HSVtoRGB( hue, saturation, value );
                     }
                     $('<td/>').addClass('wysiwyg-toolbar-color')
-                              .attr('title', color)
-                              .attr('unselectable','on')
+                              .prop('title', color)
+                              .prop('unselectable','on')
                               .css({backgroundColor: color})
                               .click(function(){
                                   var color = this.title;
@@ -425,9 +425,9 @@
         // Create the toolbar
         var toolbar_button = function( button ) {
             return $('<a/>').addClass( 'wysiwyg-toolbar-icon ' + (button.classes||'') )
-                            .attr('href','#')
-                            .attr('title', button.title)
-                            .attr('unselectable','on')
+                            .prop('href','#')
+                            .prop('title', button.title)
+                            .prop('unselectable','on')
                             .append(button.image);
         };
         var add_buttons_to_toolbar = function( $toolbar, selection, popup_open_callback, popup_position_callback )
@@ -709,7 +709,7 @@
                         remove_class_active();
                     },
                 hijackContextmenu: (toolbar_position == 'selection'),
-                readOnly: !!$textarea.attr( 'readonly' )
+                readOnly: !!$textarea.prop( 'readonly' )
             };
             if( placeholder )
             {
@@ -861,7 +861,7 @@
 
                 // Two modes: toolbar on top and on bottom
                 var classes = option.classes,
-                    placeholder = option.placeholder || $that.attr('placeholder'),
+                    placeholder = option.placeholder || $that.prop('placeholder'),
                     toolbar_position = option.toolbar || 'top',
                     toolbar_buttons = option.buttons || {},
                     toolbar_submit = option.submit,
