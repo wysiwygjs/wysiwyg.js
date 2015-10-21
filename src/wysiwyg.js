@@ -1194,6 +1194,8 @@
             restoreSelection( node_wysiwyg, popup_saved_selection );
             if( ! selectionInside(node_wysiwyg, force_selection) ) // returns 'selection inside editor'
                 return false;
+            // tried to avoid forcing focus(), but ... - https://github.com/wysiwygjs/wysiwyg.js/issues/51
+            node_wysiwyg.focus();
             // for webkit, mozilla, opera
             if( window.getSelection )
             {
