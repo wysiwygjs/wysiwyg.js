@@ -787,8 +787,8 @@
             node_wysiwyg.setAttribute( 'contentEditable', 'true' ); // IE7 is case sensitive
 
         // IE8 uses 'document' instead of 'window'
-        // http://tanalin.com/en/articles/ie-version-js/
-        var window_ie8 = (document.all && !document.addEventListener) ? document : window;
+        // http://tanalin.com/en/articles/ie-version-js/ - http://www.javascriptkit.com/javatutors/objdetect3.shtml
+        var window_ie8 = (document.all && ! window.msPerformance && ! window.matchMedia) ? document : window;
 
         // Sync Editor with Textarea
         var syncTextarea = null,
