@@ -763,7 +763,7 @@
 
             // Contenteditable
             node_wysiwyg = document.createElement( 'DIV' );
-            node_wysiwyg.innerHTML = node_textarea.value || '<br>';
+            node_wysiwyg.innerHTML = node_textarea.value || '';
             var parent = node_textarea.parentNode,
                 next = node_textarea.nextSibling;
             if( next )
@@ -804,7 +804,7 @@
             if( form )
             {
                 addEvent( form, 'reset', function() {
-                    node_wysiwyg.innerHTML = '<br>';
+                    node_wysiwyg.innerHTML = '';
                     syncTextarea();
                     callUpdates( true );
                 });
