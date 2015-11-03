@@ -5,6 +5,7 @@ Example:
 API changed:
 ==========
 
+* Nov  3, 2015: classes-&gt;class + buttons take any propery
 * Mar 30, 2015: camelcase wysiwyg.js: onkeypress-&gt;onKeyDown, onselection-&gt;onSelection, onplaceholder-&gt;onPlaceholder, hijackcontextmenu-&gt;hijackContextmenu'
 * Mar 11, 2015: dropfileClick-&gt;selectImage
 
@@ -46,7 +47,7 @@ $.wysiwyg()-API:
 ````javascript
 // create editor:
 $(element).wysiwyg({
-    classes: 'some-more-classes',
+    class: 'some-more-classes',
     toolbar: 'selection'|'top'|'top-focus'|'top-selection'|'top-focus-selection'|'bottom'|'bottom-focus'|'bottom-selection'|'bottom-focus-selection',
     buttons: {
         buttonname: {
@@ -60,6 +61,7 @@ $(element).wysiwyg({
             // Where should the button be placed?
             showstatic: true, // on the static toolbar
             showselection: true // on selection toolbar
+            // anything else passed as "prop()" ...
         },
         // build-in:
         insertimage: { ... },

@@ -15,7 +15,7 @@ $(document).ready(function() {
     $('#editor1,#editor2,#editor3').each( function(index, element)
     {
         $(element).wysiwyg({
-            classes: index == 0 ? 'fake-bootstrap' : (index == 1 ? 'fake-uikit' : 'some-more-classes'),
+            'class': index == 0 ? 'fake-bootstrap' : (index == 1 ? 'fake-uikit' : 'some-more-classes'),
             // 'selection'|'top'|'top-selection'|'bottom'|'bottom-selection'
             toolbar: index == 0 ? 'top-selection' : (index == 1 ? 'bottom-focus' : 'selection'),
             buttons: {
@@ -208,6 +208,7 @@ $(document).ready(function() {
                 // Fontsize plugin
                 fontsize: index != 1 ? false : {
                     title: 'Size',
+                    style: 'color:white;background:red',      // you can pass any property - example: "style"
                     image: '\uf034', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     popup: function( $popup, $button ) {
                             // Hack: http://stackoverflow.com/questions/5868295/document-execcommand-fontsize-in-pixels/5870603#5870603
@@ -245,6 +246,7 @@ $(document).ready(function() {
                 // Header plugin
                 header: index != 1 ? false : {
                     title: 'Header',
+                    style: 'color:white;background:blue',      // you can pass any property - example: "style"
                     image: '\uf1dc', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     popup: function( $popup, $button ) {
                             var list_headers = {
@@ -710,7 +712,7 @@ It is used on a website with 300M page impressions a month.
 <pre style="width:860px; margin: 30px auto;">
 // create editor:
 $(element).wysiwyg({
-    classes: 'some-more-classes',
+    class: 'some-more-classes',
     toolbar: 'selection'|'top'|'top-focus'|'top-selection'|'top-focus-selection'|'bottom'|'bottom-focus'|'bottom-selection'|'bottom-focus-selection',
     buttons: {
         buttonname: {
@@ -724,6 +726,7 @@ $(element).wysiwyg({
             // Where should the button be placed?
             showstatic: true, // on the static toolbar
             showselection: true // on selection toolbar
+            // anything else passed as "prop()" ...
         },
         // build-in:
         insertimage: { ... },

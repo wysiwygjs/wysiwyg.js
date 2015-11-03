@@ -71,7 +71,8 @@
         };
         var content_insertlink = function(wysiwygeditor, $modify_link)
         {
-            var $inputurl = $('<input type="text" value="' + ($modify_link ? $modify_link.prop('href') : '') + '">').addClass('wysiwyg-input')
+            var $inputurl = $('<input type="text" value="">').val( $modify_link ? $modify_link.attr('href') : '' )  // prop('href') does not reflect real value
+                                .addClass('wysiwyg-input')
                                 .keypress(function(event){
                                     if( event.which != 10 && event.which != 13 )
                                         return ;
@@ -424,11 +425,33 @@
 
         // Create the toolbar
         var toolbar_button = function( button ) {
-            return $('<a/>').addClass( 'wysiwyg-toolbar-icon ' + (button.classes||'') )
-                            .prop('href','#')
-                            .prop('title', button.title)
-                            .prop('unselectable','on')
-                            .append(button.image);
+            var $element = $('<a/>').addClass( 'wysiwyg-toolbar-icon' )
+                                    .prop('href','#')
+                                    .prop('unselectable','on')
+                                    .append(button.image);
+            // pass other properties as "prop()"
+            $.each( button, function( name, value )
+            {
+                switch( name )
+                {
+                    // classes
+                    case 'class':
+                        $element.addClass( value );
+                        break;
+                    // special meaning
+                    case 'image':
+                    case 'html':                    
+                    case 'popup':
+                    case 'click':
+                    case 'showstatic':
+                    case 'showselection':
+                        break;
+                    default: // button.title, ...
+                        $element.prop( name, value );
+                        break;
+                }
+            });
+            return $element;
         };
         var add_buttons_to_toolbar = function( $toolbar, selection, popup_open_callback, popup_position_callback )
         {
@@ -860,7 +883,7 @@
                     return ;
 
                 // Two modes: toolbar on top and on bottom
-                var classes = option.classes,
+                var classes = option['class'],
                     placeholder = option.placeholder || $that.prop('placeholder'),
                     toolbar_position = option.toolbar || 'top',
                     toolbar_buttons = option.buttons || {},
