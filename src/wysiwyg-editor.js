@@ -447,7 +447,7 @@
                     case 'showselection':
                         break;
                     default: // button.title, ...
-                        $element.prop( name, value );
+                        $element.attr( name, value );
                         break;
                 }
             });
