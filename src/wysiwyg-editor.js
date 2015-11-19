@@ -114,7 +114,7 @@
             {
                 var html = '<img id="wysiwyg-insert-image" src="" alt=""' + (filename ? ' title="'+html_encode(filename)+'"' : '') + '>';
                 wysiwygeditor.insertHTML( html ).closePopup().collapseSelection();
-                var $image = $('#wysiwyg-insert-image').removeProp('id');
+                var $image = $('#wysiwyg-insert-image').removeAttr('id');
                 if( max_imagesize )
                 {
                     $image.css({maxWidth: max_imagesize[0]+'px',
