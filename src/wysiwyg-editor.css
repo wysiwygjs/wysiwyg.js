@@ -204,3 +204,23 @@
 .wysiwyg-embedcode {
     margin-bottom: 10px;
 }
+/* CSS for the font-name + font-size plugin */
+.wysiwyg-plugin-list {
+    max-height: 16em;
+    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+.wysiwyg-plugin-list a,
+.wysiwyg-plugin-list a:link,
+.wysiwyg-plugin-list a:visited {
+    display: block;
+    color: black;
+    padding: 5px 10px;
+    text-decoration: none;
+    cursor: pointer;
+}
+.wysiwyg-plugin-list a:hover {
+    color: HighlightText;
+    background-color: Highlight;
+}

@@ -56,7 +56,7 @@
     // Create the Editor
     var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_selectImage,
                                   placeholder_url, placeholder_embed, max_imagesize, on_imageupload, force_imageupload, video_from_url,
-                                  on_keydown, on_keypress, on_keyup, on_autocomplete )
+                                  on_keydown, on_keypress, on_keyup, on_autocomplete, is_valid_uploaded_image )
     {
         // Content: Insert link
         var wysiwygeditor_insertLink = function( wysiwygeditor, url )
@@ -163,7 +163,10 @@
                 var loadImageFromFile = function( file )
                 {
                     // Only process image files
-                    if( ! file.type.match('image.*') )
+                    if (typeof is_valid_uploaded_image === 'function')
+                        if (!is_valid_uploaded_image(file))
+                            return;
+                    else if( ! file.type.match('image.*') )
                         return;
                     var reader = new FileReader();
                     reader.onload = function(event) {
@@ -898,12 +901,13 @@
                     on_keydown = option.onKeyDown || null,
                     on_keypress = option.onKeyPress || null,
                     on_keyup = option.onKeyUp || null,
-                    on_autocomplete = option.onAutocomplete || null;
+                    on_autocomplete = option.onAutocomplete || null,
+                    is_valid_uploaded_image = option.is_valid_uploaded_image;
 
                 // Create the WYSIWYG Editor
                 var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_selectImage,
                                           placeholder_url, placeholder_embed, max_imagesize, on_imageupload, force_imageupload, video_from_url,
-                                          on_keydown, on_keypress, on_keyup, on_autocomplete );
+                                          on_keydown, on_keypress, on_keyup, on_autocomplete, is_valid_uploaded_image);
                 $that.data( 'wysiwyg', data );
             });
         }
