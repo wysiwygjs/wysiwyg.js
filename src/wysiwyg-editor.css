@@ -56,8 +56,7 @@
     position: absolute;
     top: 4px;  /* same as padding in .wysiwyg-editor */
     left: 6px;
-    color: #dddddd;
-    background: transparent;
+    opacity: 0.54;  /* https://developer.mozilla.org/de/docs/Web/CSS/%3A%3A-moz-placeholder */
 }
 .wysiwyg-popup {
     position: absolute;

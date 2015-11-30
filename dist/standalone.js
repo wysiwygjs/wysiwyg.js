@@ -1502,7 +1502,7 @@
 
     // Create the Editor
     var create_editor = function( $textarea, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_selectImage,
-                                  placeholder_url, placeholder_embed, max_imagesize, on_imageupload, force_imageupload, video_from_url,
+                                  placeholder_url, placeholder_embed, max_imagesize, filter_imageType, on_imageupload, force_imageupload, video_from_url,
                                   on_keydown, on_keypress, on_keyup, on_autocomplete )
     {
         // Content: Insert link
@@ -1610,7 +1610,9 @@
                 var loadImageFromFile = function( file )
                 {
                     // Only process image files
-                    if( ! file.type.match('image.*') )
+                    if( typeof(filter_imageType) === 'function' && ! filter_imageType(file.type) )
+                        return;
+                    else if( ! file.type.match(filter_imageType) )
                         return;
                     var reader = new FileReader();
                     reader.onload = function(event) {
@@ -2339,6 +2341,7 @@
                     placeholder_url = option.placeholderUrl || null,
                     placeholder_embed = option.placeholderEmbed || null,
                     max_imagesize = option.maxImageSize || null,
+                    filter_imageType = option.filterImageType || '^image/',
                     on_imageupload = option.onImageUpload || null,
                     force_imageupload = option.forceImageUpload && on_imageupload,
                     video_from_url = option.videoFromUrl || null,
@@ -2349,7 +2352,7 @@
 
                 // Create the WYSIWYG Editor
                 var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_selectImage,
-                                          placeholder_url, placeholder_embed, max_imagesize, on_imageupload, force_imageupload, video_from_url,
+                                          placeholder_url, placeholder_embed, max_imagesize, filter_imageType, on_imageupload, force_imageupload, video_from_url,
                                           on_keydown, on_keypress, on_keyup, on_autocomplete );
                 $that.data( 'wysiwyg', data );
             });
