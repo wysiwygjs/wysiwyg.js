@@ -90,7 +90,7 @@ $(element).wysiwyg({
     placeholderUrl: 'www.example.com',
     placeholderEmbed: '&lt;embed/&gt;',
     maxImageSize: [600,200],
-    filterImageType: function( mimetype ) { ... },
+    filterImageType: function( file ) { ... },
     onKeyDown: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) { ... },
     onKeyPress: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) { ... },
     onKeyUp: function( key, character, shiftKey, altKey, ctrlKey, metaKey ) { ... },

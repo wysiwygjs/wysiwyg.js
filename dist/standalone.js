@@ -1610,7 +1610,7 @@
                 var loadImageFromFile = function( file )
                 {
                     // Only process image files
-                    if( typeof(filter_imageType) === 'function' && ! filter_imageType(file.type) )
+                    if( typeof(filter_imageType) === 'function' && ! filter_imageType(file) )
                         return;
                     else if( ! file.type.match(filter_imageType) )
                         return;
