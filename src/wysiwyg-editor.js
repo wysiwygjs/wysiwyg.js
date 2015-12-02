@@ -554,8 +554,8 @@
             if( offsetparent_window_left + left + popup_width > viewport_width - 1 )
                 left = viewport_width - offsetparent_window_left - popup_width - 1;
             var scroll_left = offsetparent_fixed ? 0 : $(window).scrollLeft();
-            if( offsetparent_window_top + left < scroll_left + 1 )
-                left = scroll_left - offsetparent_window_top + 1;
+            if( offsetparent_window_left + left < scroll_left + 1 )
+                left = scroll_left - offsetparent_window_left + 1;
             // Set offset
             $popup.css({ left: parseInt(left) + 'px',
                          top: parseInt(top) + 'px' });
