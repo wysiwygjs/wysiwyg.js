@@ -654,6 +654,9 @@
         var option_element = option.element || null;
         if( typeof(option_element) == 'string' )
             option_element = document.getElementById( option_element );
+        var option_contenteditable = option.contenteditable || null;
+        if( typeof(option_contenteditable) == 'string' )
+            option_contenteditable = document.getElementById( option_contenteditable );
         var option_onkeydown = option.onKeyDown || null;
         var option_onkeypress = option.onKeyPress || null;
         var option_onkeyup = option.onKeyUp || null;
@@ -762,14 +765,19 @@
             node_textarea.style.display = 'none';
 
             // Contenteditable
-            node_wysiwyg = document.createElement( 'DIV' );
-            node_wysiwyg.innerHTML = node_textarea.value || '';
-            var parent = node_textarea.parentNode,
-                next = node_textarea.nextSibling;
-            if( next )
-                parent.insertBefore( node_wysiwyg, next );
+            if( option_contenteditable )
+                node_wysiwyg = option_contenteditable;
             else
-                parent.appendChild( node_wysiwyg );
+            {
+                node_wysiwyg = document.createElement( 'DIV' );
+                node_wysiwyg.innerHTML = node_textarea.value || '';
+                var parent = node_textarea.parentNode,
+                    next = node_textarea.nextSibling;
+                if( next )
+                    parent.insertBefore( node_wysiwyg, next );
+                else
+                    parent.appendChild( node_wysiwyg );
+            }
         }
         else
             node_wysiwyg = option_element;
@@ -1889,7 +1897,7 @@
                         break;
                     // special meaning
                     case 'image':
-                    case 'html':                    
+                    case 'html':
                     case 'popup':
                     case 'click':
                     case 'showstatic':
@@ -2012,7 +2020,7 @@
         // Transform the textarea to contenteditable
         var hotkeys = {},
             autocomplete = null;
-        var create_wysiwyg = function( $textarea, $container, $parent, placeholder )
+        var create_wysiwyg = function( $textarea, $editor, $container, $placeholder )
         {
             var handle_autocomplete = function( keypress, key, character, shiftKey, altKey, ctrlKey, metaKey )
             {
@@ -2065,6 +2073,7 @@
             // Options to wysiwyg.js
             var option = {
                 element: $textarea.get(0),
+                contenteditable: $editor ? $editor.get(0) : null,
                 onKeyDown: function( key, character, shiftKey, altKey, ctrlKey, metaKey )
                     {
                         // Ask master
@@ -2144,7 +2153,8 @@
                         {
                             var popup_width = $popup.outerWidth();
                             // Point is the center of the selection - relative to $parent not the element
-                            var container_offset = $parent.offset(),
+                            var $parent = $textarea.parent(),
+                                container_offset = $parent.offset(),
                                 editor_offset = $(wysiwygeditor.getElement()).offset();
                             var left = rect.left + parseInt(rect.width / 2) - parseInt(popup_width / 2) + editor_offset.left - container_offset.left;
                             var top = rect.top + rect.height + editor_offset.top - container_offset.top;
@@ -2183,12 +2193,8 @@
                 hijackContextmenu: (toolbar_position == 'selection'),
                 readOnly: !!$textarea.prop( 'readonly' )
             };
-            if( placeholder )
+            if( $placeholder )
             {
-                var $placeholder = $('<div/>').addClass( 'wysiwyg-placeholder' )
-                                              .html( placeholder )
-                                              .hide();
-                $parent.prepend( $placeholder );
                 option.onPlaceholder = function( visible ) {
                     if( visible )
                         $placeholder.show();
@@ -2202,114 +2208,154 @@
         }
 
 
-        // Create a container
-        var $container = $('<div/>').addClass('wysiwyg-container');
-        if( classes )
-            $container.addClass( classes );
-        $textarea.wrap( $container );
-        $container = $textarea.parent( '.wysiwyg-container' );
-
-        // Create the editor-wrapper if placeholder
-        var $wrapper = false;
-        if( placeholder )
+        // Create a container if it does not exist yet
+        var $container = $textarea.closest( '.wysiwyg-container' );
+        if( $container.length == 0 )
         {
-            $wrapper = $('<div/>').addClass('wysiwyg-wrapper')
-                                  .click(function(){     // Clicking the placeholder focus editor - fixes IE6-IE8
-                                     wysiwygeditor.getElement().focus();
-                                  });
+            $container = $('<div/>').addClass('wysiwyg-container');
+            if( classes )
+                $container.addClass( classes );
+            $textarea.wrap( $container );
+            $container = $textarea.closest( '.wysiwyg-container' );
+        }
+
+        // Create the placeholder if it does not exist yet and we want one
+        var $wrapper = $textarea.closest( '.wysiwyg-wrapper' );
+        if( placeholder && $wrapper.length == 0 )
+        {
+            $wrapper = $('<div/>').addClass('wysiwyg-wrapper');
             $textarea.wrap( $wrapper );
-            $wrapper = $textarea.parent( '.wysiwyg-wrapper' );
+            $wrapper = $textarea.closest( '.wysiwyg-wrapper' );
+        }
+        var $placeholder = null;
+        if( $wrapper.length != 0 )
+            $placeholder = $wrapper.find( '.wysiwyg-placeholder' );
+        if( placeholder && (! $placeholder || $placeholder.length == 0) )
+        {
+            $placeholder = $('<div/>').addClass( 'wysiwyg-placeholder' )
+                                      .html( placeholder )
+                                      .hide();
+            $wrapper.prepend( $placeholder );
         }
 
         // Create the WYSIWYG Editor
-        var wysiwygeditor = create_wysiwyg( $textarea, $container, placeholder ? $wrapper : $container, placeholder );
+        var $editor = $container.find( '.wysiwyg-editor' );
+        if( $editor.length == 0 )
+            $editor = null;
+        var wysiwygeditor = create_wysiwyg( $textarea, $editor, $container, $placeholder );
         if( wysiwygeditor.legacy )
         {
+            if( $editor )
+                $editor.hide();
+            if( $placeholder )
+                $placeholder.hide();
             var $textarea = $(wysiwygeditor.getElement());
-            $textarea.addClass( 'wysiwyg-textarea' );
+            $textarea.show().addClass( 'wysiwyg-textarea' );
             if( $textarea.is(':visible') ) // inside the DOM
                 $textarea.width( $container.width() - ($textarea.outerWidth() - $textarea.width()) );
         }
         else
-            $(wysiwygeditor.getElement()).addClass( 'wysiwyg-editor' );
-
-        // Support ':active'-class
-        var remove_active_timeout = null;
-        var add_class_active = function() {
-            if( remove_active_timeout )
-                clearTimeout( remove_active_timeout );
-            remove_active_timeout = null;
-            $container.addClass( 'wysiwyg-active' );
-            $container.find( '.wysiwyg-toolbar-focus' ).slideDown(200);
-        };
-        var remove_class_active = function() {
-            if( remove_active_timeout || document.activeElement == wysiwygeditor.getElement() )
-                return ;
-            remove_active_timeout = setTimeout( function() {
-                remove_active_timeout = null;
-                $container.removeClass( 'wysiwyg-active' );
-                if( $.trim(wysiwygeditor.getHTML().replace(/<br\s*[\/]?>/gi,'')).length == 0 )
-                    $container.find( '.wysiwyg-toolbar-focus' ).slideUp(200);
-            }, 100 );
-        };
-        $(wysiwygeditor.getElement()).focus( add_class_active ).blur( remove_class_active );
-        $textarea.closest( 'form' ).on( 'reset', remove_class_active );
-
-        // Hotkey+Commands-List
-        var commands = {};
-        $.each( toolbar_buttons, function(key, value) {
-            if( ! value || ! value.hotkey )
-                return ;
-            var toolbar_handler = get_toolbar_handler( key );
-            if( ! toolbar_handler )
-                return ;
-            hotkeys[value.hotkey.toLowerCase()] = toolbar_handler;
-            commands[key] = toolbar_handler;
-        });
-
-        // Toolbar on top or bottom
-        if( ! $.isEmptyObject(toolbar_buttons) && toolbar_position != 'selection' )
         {
-            var toolbar_top = $.inArray( 'top', toolbar_position.split('-') ) != -1;
-            var toolbar_focus = $.inArray( 'focus', toolbar_position.split('-') ) != -1;
-            var $toolbar = $('<div/>').addClass( 'wysiwyg-toolbar' ).addClass( toolbar_top ? 'wysiwyg-toolbar-top' : 'wysiwyg-toolbar-bottom' );
-            if( toolbar_focus )
-                $toolbar.hide().addClass( 'wysiwyg-toolbar-focus' );
-            // Add buttons to the toolbar
-            add_buttons_to_toolbar( $toolbar, false,
-                function() {
-                    // Open a popup from the toolbar
-                    var $popup = $(wysiwygeditor.openPopup());
-                    // if wrong popup -> create a new one
-                    if( $popup.hasClass('wysiwyg-popup') && $popup.hasClass('wysiwyg-popuphover') )
-                        $popup = $(wysiwygeditor.closePopup().openPopup());
-                    if( ! $popup.hasClass('wysiwyg-popup') )
-                        // add classes + content
-                        $popup.addClass( 'wysiwyg-popup' );
-                    return $popup;
-                },
-                function( $popup, target, overwrite_offset ) {
-                    // Popup position
-                    var $button = $(target);
-                    var popup_width = $popup.outerWidth();
-                    // Point is the top/bottom-center of the button
-                    var left = $button.offset().left - $container.offset().left + parseInt($button.width() / 2) - parseInt(popup_width / 2);
-                    var top = $button.offset().top - $container.offset().top;
+            if( ! $editor )
+                $(wysiwygeditor.getElement()).addClass( 'wysiwyg-editor' );
+
+            // Clicking the placeholder -> focus editor - fixes IE6-IE8
+            $wrapper.click(function(){
+                wysiwygeditor.getElement().focus();
+            });
+
+            // Support ':active'-class
+            var remove_active_timeout = null,
+                initialize_toolbar = null;
+            var add_class_active = function() {
+                if( remove_active_timeout )
+                    clearTimeout( remove_active_timeout );
+                remove_active_timeout = null;
+                if( initialize_toolbar )
+                {
+                    initialize_toolbar();
+                    initialize_toolbar = null;
+                }
+                $container.addClass( 'wysiwyg-active' );
+                $container.find( '.wysiwyg-toolbar-focus' ).slideDown(200);
+            };
+            var remove_class_active = function() {
+                if( remove_active_timeout || document.activeElement == wysiwygeditor.getElement() )
+                    return ;
+                remove_active_timeout = setTimeout( function() {
+                    remove_active_timeout = null;
+                    $container.removeClass( 'wysiwyg-active' );
+                    if( $.trim(wysiwygeditor.getHTML().replace(/<br\s*[\/]?>/gi,'')).length == 0 )
+                        $container.find( '.wysiwyg-toolbar-focus' ).slideUp(200);
+                }, 100 );
+            };
+            $(wysiwygeditor.getElement()).focus( add_class_active ).blur( remove_class_active );
+            $textarea.closest( 'form' ).on( 'reset', remove_class_active );
+
+            // Hotkey+Commands-List
+            var commands = {};
+            $.each( toolbar_buttons, function(key, value) {
+                if( ! value || ! value.hotkey )
+                    return ;
+                var toolbar_handler = get_toolbar_handler( key );
+                if( ! toolbar_handler )
+                    return ;
+                hotkeys[value.hotkey.toLowerCase()] = toolbar_handler;
+                commands[key] = toolbar_handler;
+            });
+
+            // Toolbar on top or bottom
+            if( ! $.isEmptyObject(toolbar_buttons) && toolbar_position != 'selection' )
+            {
+                var toolbar_top = $.inArray( 'top', toolbar_position.split('-') ) != -1;
+                var toolbar_focus = $.inArray( 'focus', toolbar_position.split('-') ) != -1;
+                // Callback to create toolbar on demand
+                var create_toolbar = function()
+                {
+                    var $toolbar = $('<div/>').addClass( 'wysiwyg-toolbar' ).addClass( toolbar_top ? 'wysiwyg-toolbar-top' : 'wysiwyg-toolbar-bottom' );
+                    if( toolbar_focus )
+                        $toolbar.hide().addClass( 'wysiwyg-toolbar-focus' );
+                    // Add buttons to the toolbar
+                    add_buttons_to_toolbar( $toolbar, false,
+                        function() {
+                            // Open a popup from the toolbar
+                            var $popup = $(wysiwygeditor.openPopup());
+                            // if wrong popup -> create a new one
+                            if( $popup.hasClass('wysiwyg-popup') && $popup.hasClass('wysiwyg-popuphover') )
+                                $popup = $(wysiwygeditor.closePopup().openPopup());
+                            if( ! $popup.hasClass('wysiwyg-popup') )
+                                // add classes + content
+                                $popup.addClass( 'wysiwyg-popup' );
+                            return $popup;
+                        },
+                        function( $popup, target, overwrite_offset ) {
+                            // Popup position
+                            var $button = $(target);
+                            var popup_width = $popup.outerWidth();
+                            // Point is the top/bottom-center of the button
+                            var left = $button.offset().left - $container.offset().left + parseInt($button.width() / 2) - parseInt(popup_width / 2);
+                            var top = $button.offset().top - $container.offset().top;
+                            if( toolbar_top )
+                                top += $button.outerHeight();
+                            else
+                                top -= $popup.outerHeight();
+                            if( overwrite_offset )
+                            {
+                                left = overwrite_offset.left;
+                                top = overwrite_offset.top;
+                            }
+                            popup_position( $popup, $container, left, top );
+                        });
                     if( toolbar_top )
-                        top += $button.outerHeight();
+                        $container.prepend( $toolbar );
                     else
-                        top -= $popup.outerHeight();
-                    if( overwrite_offset )
-                    {
-                        left = overwrite_offset.left;
-                        top = overwrite_offset.top;
-                    }
-                    popup_position( $popup, $container, left, top );
-                });
-            if( toolbar_top )
-                $container.prepend( $toolbar );
-            else
-                $container.append( $toolbar );
+                        $container.append( $toolbar );
+                };
+                if( ! toolbar_focus )
+                    create_toolbar();
+                else
+                    initialize_toolbar = create_toolbar;
+            }
         }
 
         // Export userdata

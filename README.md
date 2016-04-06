@@ -2,6 +2,11 @@ Example:
 ==========
 **http://wysiwygjs.github.io/**
 
+Recent changes:
+==========
+
+* Flicker-free markup
+
 API changed:
 ==========
 

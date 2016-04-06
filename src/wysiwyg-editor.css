@@ -21,7 +21,7 @@
 .wysiwyg-textarea {
     display: block;
     width: 100%;
-    height: 1.5em;          /* should be equal to line-height */
+    min-height: 1.5em;          /* should be equal to line-height */
     padding: 0;
     resize: none;
 }

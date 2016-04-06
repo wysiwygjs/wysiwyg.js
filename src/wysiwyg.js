@@ -663,6 +663,9 @@
         var option_element = option.element || null;
         if( typeof(option_element) == 'string' )
             option_element = document.getElementById( option_element );
+        var option_contenteditable = option.contenteditable || null;
+        if( typeof(option_contenteditable) == 'string' )
+            option_contenteditable = document.getElementById( option_contenteditable );
         var option_onkeydown = option.onKeyDown || null;
         var option_onkeypress = option.onKeyPress || null;
         var option_onkeyup = option.onKeyUp || null;
@@ -771,14 +774,19 @@
             node_textarea.style.display = 'none';
 
             // Contenteditable
-            node_wysiwyg = document.createElement( 'DIV' );
-            node_wysiwyg.innerHTML = node_textarea.value || '';
-            var parent = node_textarea.parentNode,
-                next = node_textarea.nextSibling;
-            if( next )
-                parent.insertBefore( node_wysiwyg, next );
+            if( option_contenteditable )
+                node_wysiwyg = option_contenteditable;
             else
-                parent.appendChild( node_wysiwyg );
+            {
+                node_wysiwyg = document.createElement( 'DIV' );
+                node_wysiwyg.innerHTML = node_textarea.value || '';
+                var parent = node_textarea.parentNode,
+                    next = node_textarea.nextSibling;
+                if( next )
+                    parent.insertBefore( node_wysiwyg, next );
+                else
+                    parent.appendChild( node_wysiwyg );
+            }
         }
         else
             node_wysiwyg = option_element;
