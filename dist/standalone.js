@@ -2163,7 +2163,7 @@
                         // Open popup
                         $popup = $(wysiwygeditor.openPopup());
                         // if wrong popup -> close and open a new one
-                        if( ! $popup.hasClass('wysiwyg-popuphover') || (!$popup.data('special')) != (!$special_popup) )
+                        if( ! $popup.hasClass('wysiwyg-popuphover') || (!$popup.data('wysiwygjs-special')) != (!$special_popup) )
                             $popup = $(wysiwygeditor.closePopup().openPopup());
                         if( autocomplete )
                             $popup.show();
@@ -2172,7 +2172,7 @@
                             // add classes + buttons
                             $popup.addClass( 'wysiwyg-popup wysiwyg-popuphover' );
                             if( $special_popup )
-                                $popup.empty().append( $special_popup ).data('special',true);
+                                $popup.empty().append( $special_popup ).data('wysiwygjs-special',true);
                             else
                                 add_buttons_to_toolbar( $popup, true,
                                     function() {
@@ -2374,7 +2374,7 @@
             return this.each(function() {
                 var $that = $(this);
                 // Already an editor
-                if( $that.data( 'wysiwyg') )
+                if( $that.data( 'wysiwygjs') )
                     return ;
 
                 // Two modes: toolbar on top and on bottom
@@ -2400,12 +2400,12 @@
                 var data = create_editor( $that, classes, placeholder, toolbar_position, toolbar_buttons, toolbar_submit, label_selectImage,
                                           placeholder_url, placeholder_embed, max_imagesize, filter_imageType, on_imageupload, force_imageupload, video_from_url,
                                           on_keydown, on_keypress, on_keyup, on_autocomplete );
-                $that.data( 'wysiwyg', data );
+                $that.data( 'wysiwygjs', data );
             });
         }
         else if( this.length == 1 )
         {
-            var data = this.data('wysiwyg');
+            var data = this.data('wysiwygjs');
             if( ! data )
                 return this;
             if( option == 'container' )
