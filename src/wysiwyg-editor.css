@@ -58,6 +58,10 @@
     left: 6px;
     opacity: 0.54;  /* https://developer.mozilla.org/de/docs/Web/CSS/%3A%3A-moz-placeholder */
 }
+[dir="rtl"] .wysiwyg-placeholder {
+    left: auto;
+    right: 6px;
+}
 .wysiwyg-popup {
     position: absolute;
     z-index: 9999;
