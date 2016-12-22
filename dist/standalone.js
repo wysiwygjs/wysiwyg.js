@@ -718,7 +718,7 @@
                     {
                         // query read-only
                         if( readonly === undefined )
-                            return node_textarea.hasAttribute ? node_textarea.hasAttribute('readonly') : 
+                            return node_textarea.hasAttribute ? node_textarea.hasAttribute('readonly') :
                                                                 !!node_textarea.getAttribute('readonly'); // IE7
                         // set read-only
                         if( readonly )
@@ -1195,7 +1195,7 @@
             node_wysiwyg.focus();
             if( ! selectionInside(node_wysiwyg, force_selection) ) // returns 'selection inside editor'
                 return false;
-            
+
             // for webkit, mozilla, opera
             if( window.getSelection )
             {
@@ -1227,6 +1227,33 @@
             }
             return false;
         };
+
+        // copy/paste images from clipboard - if FileReader-API is available
+        if( window.FileReader )
+        {
+            addEvent( node_wysiwyg, 'paste', function( e )
+            {
+                var clipboardData = e.clipboardData;
+                if( ! clipboardData )
+                    return;
+                var items = clipboardData.items;
+                if( ! items || ! items.length )
+                    return;
+                var item = items[0];
+                if( ! item.type.match(/^image\//) )
+                    return;
+                // Insert image from clipboard
+                var filereader = new FileReader();
+                filereader.onloadend = function( e )
+                {
+                    var image = e.target.result;
+                    if( image )
+                        execCommand( 'insertImage', image );
+                };
+                filereader.readAsDataURL( item.getAsFile() );
+                return cancelEvent( e ); // dismiss paste
+            });
+        }
 
         // Workaround IE11 - https://github.com/wysiwygjs/wysiwyg.js/issues/14
         var trailingDiv = null;
@@ -1293,7 +1320,7 @@
             {
                 // query read-only
                 if( readonly === undefined )
-                    return node_wysiwyg.hasAttribute ? !node_wysiwyg.hasAttribute('contentEditable') : 
+                    return node_wysiwyg.hasAttribute ? !node_wysiwyg.hasAttribute('contentEditable') :
                                                        !node_wysiwyg.getAttribute('contentEditable'); // IE7
                 // set read-only
                 if( readonly )
