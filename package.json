@@ -1,6 +1,6 @@
 {
   "name": "wysiwyg.js",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "wysiwyg contenteditable editor (lightweight + cross browser)",
   "homepage": "http://wysiwygjs.github.io/",
   "keywords": [
@@ -12,7 +12,9 @@
     "javascript"
   ],
   "main": "src/wysiwyg.js",
-  "files": ["src/"],
+  "files": [
+    "src/"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/wysiwygjs/wysiwyg.js.git"
