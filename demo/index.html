@@ -168,6 +168,29 @@ $(document).ready(function() {
                     //showstatic: true,    // wanted on the toolbar
                     showselection: index == 2 ? true : false    // wanted on selection
                 },
+                attachfiles: {
+                    title: 'Attach files',
+                    image: '\uf0c6', // <img src="path/to/image.png" width="16" height="16" alt="" />
+                    click: function( $button )
+                        {
+                            var $input = $('<input type="file" multiple>')
+                                .change( function(e) {
+                                    var files = e.target.files;
+                                    var filenames = [];
+                                    if( ! files )  // legacy browsers
+                                        filenames.push( this.value );
+                                    else for( var i=0; i < files.length; ++i ) {
+                                        var file = files[i];
+                                        filenames.push( file.name );
+                                    }
+                                    alert('Selected files: ' + filenames.join(', ') );
+                                })
+                                .after( $(element) )
+                                .trigger('click');
+                        },
+                    showstatic: index == 0 ? true : false,    // wanted on the toolbar
+                    showselection: false    // wanted on selection
+                },
                 insertlink: {
                     title: 'Insert link',
                     image: '\uf08e' // <img src="path/to/image.png" width="16" height="16" alt="" />
