@@ -173,7 +173,7 @@ $(document).ready(function() {
                     image: '\uf0c6', // <img src="path/to/image.png" width="16" height="16" alt="" />
                     click: function( $button )
                         {
-                            var $input = $('<input type="file" multiple>')
+                            var $input = $('<input type="file" multiple>').hide()
                                 .change( function(e) {
                                     var files = e.target.files;
                                     var filenames = [];
@@ -185,7 +185,7 @@ $(document).ready(function() {
                                     }
                                     alert('Selected files: ' + filenames.join(', ') );
                                 })
-                                .after( $(element) )
+                                .insertAfter( $(element) )
                                 .trigger('click');
                         },
                     showstatic: index == 0 ? true : false,    // wanted on the toolbar
