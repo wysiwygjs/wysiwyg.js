@@ -1,6 +1,6 @@
 {
   "name": "wysiwyg.js",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "wysiwyg contenteditable editor (lightweight + cross browser)",
   "homepage": "http://wysiwygjs.github.io/",
   "keywords": [
@@ -28,7 +28,6 @@
     "uglify-js": "^2.4.21"
   },
   "scripts": {
-    "prepublish": "npm run build",
     "build": "make build"
   }
 }

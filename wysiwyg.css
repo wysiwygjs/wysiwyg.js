@@ -1,0 +1,145 @@
+.wysiwyg {
+    color: black;
+    background: none white;
+    border: 1px solid #dddddd;
+    border-radius: 0.2em;
+    transition: border 0.2s ease-in-out;
+}
+/* active: change border */
+.wysiwyg:focus-within,
+.wysiwyg.focus {
+    border: 1px solid Highlight;
+}
+/* contenteditable + textarea */
+.wysiwyg > [contenteditable=true] {
+    display: block;
+    outline: none;
+    word-wrap: break-word;
+    padding: 0.3em 0.4em;
+}
+.wysiwyg > textarea {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 1em;
+    margin: 0.3em 0.4em;
+    padding: 0;
+    border: none;
+    background: transparent none;
+    -webkit-appearance: none;
+    overflow: auto;
+    outline: none;
+    box-shadow: none;
+    resize: none;
+    font-family: inherit;
+    transition: height 0.3s ease-in-out;
+}
+.wysiwyg > [contenteditable=true] ~ textarea {
+    display: none !important;
+}
+.wysiwyg > textarea:focus {
+    height: 5em;
+}
+/* placeholder - ':placeholder-shown' only works with input/textarea */
+.wysiwyg [contenteditable=true]:empty:before {
+    content: '\00A0'; /* Keep distance */
+    display: block; /* For Firefox */
+    opacity: 0.54;  /* https://developer.mozilla.org/de/docs/Web/CSS/%3A%3A-moz-placeholder */
+    white-space: nowrap;
+}
+.wysiwyg [contenteditable=true][placeholder]:empty:before {
+    content: '\200B' attr(placeholder); /* ZWSP if placeholder empty */
+}
+/* toolbar */
+.wysiwyg .toolbar,
+.wysiwyg-popup .toolbar {
+    white-space: nowrap;
+    overflow: hidden;
+}
+.wysiwyg .toolbar *,
+.wysiwyg-popup .toolbar * {
+    vertical-align: middle;
+}
+.wysiwyg .toolbar-top {
+    border-bottom: 1px solid #dddddd;
+}
+.wysiwyg .toolbar-bottom {
+    border-top: 1px solid #dddddd;
+}
+.wysiwyg .toolbar-auto {
+    overflow-y: hidden;
+    max-height: 0;  /* https://stackoverflow.com/questions/3508605/how-can-i-transition-height-0-to-height-auto-using-css */
+    border-top: 0 solid #dddddd;
+    transition: max-height 0.2s linear, border-top-width 0.2s linear;
+    transition-delay: 0.1s;
+}
+.wysiwyg [contenteditable="true"]:focus ~ .toolbar-auto,
+.wysiwyg:focus-within .toolbar-auto,
+.wysiwyg.focus .toolbar-auto {
+    max-height: 3em;
+    border-top-width: 1px;
+    transition-delay: 0;
+}
+.wysiwyg .toolbar a,
+.wysiwyg-popup .toolbar a {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    color: #999999;
+    text-decoration: none;
+    vertical-align: top;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+    padding: 0.4em 0.7em;
+    text-decoration: none;
+    transition: color 0.2s, background 0.2s;
+}
+.wysiwyg .toolbar a:hover,
+.wysiwyg-popup .toolbar a:hover {
+    color: HighlightText;
+    background-color: Highlight;
+}
+/* Popup can be placed anywhere in the DOM */
+.wysiwyg-popup {
+    position: absolute;
+    z-index: 9999;
+    color: black;
+    background: white;
+    background: rgba(255,255,255,0.9);
+    left: -50%;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    user-select: none;
+}
+.wysiwyg-popup input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0.5em 0.7em;
+    padding: 0;
+    border: none;
+    background: transparent none;
+    -webkit-appearance: none;
+    box-shadow: none;
+    font-family: inherit;
+}
+.wysiwyg-popup .suggestion {
+    display: block;
+    padding: 0.3em 0.5em;
+    padding: 0.3em 0.5em;
+    font-size: 0.9em;
+}
+.wysiwyg-popup .suggestion:hover,
+.wysiwyg-popup .suggestion:first-of-type {
+    color: HighlightText;
+    background-color: Highlight;
+}
+/* content inside contenteditable */
+.wysiwyg [contenteditable=true] * {
+    margin: 0 !important;
+    border: 0 none !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+}

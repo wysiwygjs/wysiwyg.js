@@ -1,6 +1,6 @@
 {
   "name": "wysiwyg.js",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "wysiwyg contenteditable editor (lightweight + cross browser)",
   "homepage": "http://wysiwygjs.github.io/",
   "keywords": [
@@ -13,8 +13,7 @@
   ],
   "main": [
     "dist/wysiwyg.min.js",
-    "dist/wysiwyg-editor.min.js",
-    "dist/wysiwyg-editor.min.css"
+    "dist/wysiwyg.min.css"
   ],
   "repository": {
     "type" : "git",
@@ -23,8 +22,5 @@
   "bugs": {
     "url" : "https://github.com/wysiwygjs/wysiwyg.js/issues"
   },
-  "license": "Apache-2.0",
-  "dependencies": {
-    "jquery": ">=1.11.0"
-  }
+  "license": "Apache-2.0"
 }

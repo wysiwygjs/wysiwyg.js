@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>WYSIWYG</title>
+<script type="text/javascript" src="wysiwyg.js"></script>
+<link rel="stylesheet" type="text/css" href="wysiwyg.css" />
+<!-- This demo uses font-awesome, but you may want PNG/SVG images -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body {
+    font-family: Arial,Verdana;
+}
+</style>
+<script type="text/javascript">
+function ready(fn)
+{
+    if( document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading" )
+        fn();
+    else
+        document.addEventListener( 'DOMContentLoaded', fn );
+}
+ready(function() {
+    // Buttons
+    var buttons = [
+        // generic
+        {
+            html: '<input type="button" value="Submit" />'
+        },
+        // click
+        {
+            icon: '<span class="fa fa-slideshare"></span>',
+            title: 'Dummy',
+            click: function( commands, button ) {
+                    if( commands.getSelectedHTML() )
+                        commands.bold();
+                    else
+                        alert( 'No text selected - cannot make bold' );
+                },
+        },
+        // open popup
+        {
+            icon: '<span class="fa fa-smile-o"></span>',
+            title: 'Smilies',
+            popup: function( commands, popup, button ) {
+                    var smilies = [ 'afraid.png','amorous.png','angel.png','angry.png','bored.png','cold.png','confused.png','cross.png','crying.png','devil.png','disappointed.png','dont-know.png','drool.png',
+                                    'embarrassed.png','excited.png','excruciating.png','eyeroll.png','happy.png','hot.png','hug-left.png','hug-right.png','hungry.png','invincible.png','kiss.png','lying.png',
+                                    'meeting.png','nerdy.png','neutral.png','party.png','pirate.png','pissed-off.png','question.png','sad.png','shame.png','shocked.png','shut-mouth.png','sick.png','silent.png',
+                                    'sleeping.png','sleepy.png','stressed.png','thinking.png','tongue.png','uhm-yeah.png','wink.png','working.png','bathing.png','beer.png','boy.png','camera.png','chilli.png',
+                                    'cigarette.png','cinema.png','coffee.png','girl.png','console.png','grumpy.png','in_love.png','internet.png','lamp.png','mobile.png','mrgreen.png','musical-note.png','music.png',
+                                    'phone.png','plate.png','restroom.png','rose.png','search.png','shopping.png','star.png','studying.png','suit.png','surfing.png','thunder.png','tv.png','typing.png','writing.png' ];
+                    smilies.forEach( function( filename )
+                    {
+                        var smiley = document.createElement('img');
+                        smiley.src = 'smiley/' + filename;
+                        smiley.width = 16;
+                        smiley.height = 16;
+                        smiley.style.cursor = 'pointer';
+                        smiley.onclick = function( e ) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            var smileyhtml = ' <img src="smiley/' + filename + '" width="16" height="16"> ';
+                            commands.insertHTML( smileyhtml ); // 'commands.insertHTML(...).closePopup()' - to close popup
+                        };
+                        popup.style.textAlign = 'center';
+                        popup.style.width = '300px';
+                        popup.style.padding = '0.5em';
+                        popup.appendChild( smiley );
+                        popup.appendChild( document.createTextNode(' ') );
+                    });
+                }
+        },
+        // insert file
+        {
+            icon: '<span class="fa fa-camera"></span>',
+            title: 'Insert image',
+            insert: function( commands, dataurl, button ) {
+                    var width = Math.min(screen.width/3,screen.height/3,500);
+                    commands.insertHTML( ' <img src="'+dataurl+'" style="max-width:'+parseInt(width)+'px;max-height:'+parseInt(width/2)+'px;"> ' );
+                }
+        },
+        // attach file
+        {
+            icon: '<span class="fa fa-paperclip"></span>',
+            title: 'Attach files',
+            attach: function( commands, input,file, button ) {
+                    button.style.position = 'relative';
+                    var badge = button.querySelector('div.badge');
+                    if( ! badge ) {
+                        badge = document.createElement('div');
+                        badge.className = 'badge';
+                        badge.style.position = 'absolute';
+                        badge.style.top = '-3px';
+                        badge.style.right = '-3px';
+                        badge.style.fontSize = '0.6em';
+                        badge.style.padding = '1px 3px';
+                        badge.style.color = 'white';
+                        badge.style.backgroundColor = '#fa3e3e';
+                        badge.style.borderRadius = '3px';
+                        badge.textContent = '1';
+                        button.appendChild( badge );
+                    }
+                    else
+                        badge.textContent = parseInt(badge.textContent) + 1;
+                }
+        },
+        // default buttons
+        {
+            icon: '<span class="fa fa-external-link"></span>',
+            title: 'Insert link',
+            default: 'link'
+        },
+        {
+            icon: '<span class="fa fa-bold"></span>',
+            title: 'Bold (Ctrl+B)',
+            hotkey: 'b',
+            default: 'bold'
+        },
+        {
+            icon: '<span class="fa fa-italic"></span>',
+            title: 'Italic (Ctrl+I)',
+            hotkey: 'i',
+            default: 'italic'
+        },
+        {
+            icon: '<span class="fa fa-underline"></span>',
+            title: 'Underline (Ctrl+U)',
+            hotkey: 'u',
+            default: 'underline'
+        },
+        {
+            icon: '<span class="fa fa-strikethrough"></span>',
+            title: 'Strikethrough (Ctrl+S)',
+            hotkey: 's',
+            default: 'strikethrough'
+        },
+        {
+            icon: '<span class="fa fa-paint-brush"></span>',
+            title: 'Text color',
+            default: 'forecolor'
+        },
+        {
+            icon: '<span class="fa fa-tint"></span>',
+            title: 'Background color',
+            default: 'highlight'
+        },
+        {
+            icon: '<span class="fa fa-subscript"></span>',
+            title: 'Subscript',
+            default: 'subscript'
+        },
+        {
+            icon: '<span class="fa fa-superscript"></span>',
+            title: 'Superscript',
+            default: 'superscript'
+        },
+        {
+            icon: '<span class="fa fa-eraser"></span>',
+            title: 'Remove format',
+            default: 'removeformat'
+        }
+    ];
+    var buttonsselection = buttons.slice(3,4).concat( buttons.slice(5,14) );
+    
+    var suggester = function( typed, open_suggester )
+    {
+        // Suggestions start with '@'
+        if( typed[0] != '@' )
+            return false;
+        // You may want to ask the server ...
+        var fill_suggestion = function()
+            {
+                var suggestions = {};
+                var usernames = ['Evelyn','Harry','Amelia','Oliver','Isabelle','Eddie','Editha','Jacob','Emily','George','Edison'];
+                usernames.forEach( function( username )
+                {
+                    var re = new RegExp( '^' + typed.substring(1).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i' );
+                    if( typed == '@' || re.test(username) )
+                        suggestions[username] = '<a href="/' + username + '">@' + username + '</a>&nbsp;';
+                });
+                open_suggester( Object.keys(suggestions).length ? suggestions : null );  // null = close suggestions
+            };
+        // simulate: immediate, fast and slow internet
+        if( Math.random() < 0.5 )
+            fill_suggestion();
+        else 
+            setTimeout( fill_suggestion, Math.random() > 0.8 ? 15000 : 100 );
+        return true;
+    };
+    
+    var submitenter = function()
+    {
+        return false;
+    };    
+
+    wysiwyg( '#editor1', 'top', buttons, buttonsselection, suggester, submitenter );
+    wysiwyg( '#editor2', null, buttons, buttonsselection, suggester, submitenter );
+});
+</script>
+</head>
+<body>
+
+<a href="https://github.com/wysiwygjs/wysiwyg.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+
+<h1><center>wysiwyg.js</center></h1>
+
+<div style="width:860px; margin: 30px auto;">
+
+<div id="editor1" class="wysiwyg">
+  <textarea name="editor"></textarea>
+</div>  
+
+<br><br>
+
+<span style="color:#ccc">flicker-free markup:</span><br>
+<div id="editor2" class="wysiwyg">
+  <div contenteditable="true" placeholder="Write a comment ..."></div>
+  <textarea name="editor"></textarea>
+</div>  
+
+<br><br>
+
+<span style="color:#ccc">Uninitialized:</span><br>
+<div id="editor3" class="wysiwyg">
+  <textarea name="editor" placeholder="Write a comment ..."></textarea>
+</div>  
+
+</div>
+</body>
+</html>
