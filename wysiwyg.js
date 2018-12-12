@@ -1294,6 +1294,50 @@
             }
             return true;
         };
+        var ask_suggestions = function()
+        {
+            if( ! typed_suggestion )
+                return;
+            var current_sequence = suggestion_sequence;
+            var open_suggester = function( suggestions )
+            {
+                if( ! recent_selection_rect || current_sequence != suggestion_sequence )
+                    return;
+                first_suggestion_html = null;
+                // Empty suggestions means: stop suggestion handling
+                if( ! suggestions )
+                {
+                    finish_suggestion();
+                    return;
+                }
+                // Show suggester
+                var fill_popup = function( popup )
+                {
+                    Object.keys(suggestions).forEach( function( suggestion )
+                    {
+                        var element = document.createElement('div');
+                        add_class( element, 'suggestion' );
+                        element.textContent = suggestion;
+                        element.style.cursor = 'pointer';
+                        addEvent( element, 'click', function( e )
+                            {
+                                finish_suggestion( suggestions[suggestion] );
+                                cancelEvent( e );
+                            });
+                        popup.appendChild( element );
+
+                        // Store suggestion to handle 'Enter'
+                        if( first_suggestion_html === null )
+                            first_suggestion_html = suggestions[suggestion];
+                    });
+                };
+                open_popup_selection( recent_selection_rect, fill_popup );
+            };
+            // Ask to start/continue a suggestion
+            if( ! suggester(typed_suggestion, open_suggester) )
+                finish_suggestion();
+        };
+        var debounced_suggestions = debounce( ask_suggestions, 500, true );
         var suggester_keypress = function( key, character, shiftKey, altKey, ctrlKey, metaKey )
         {
             if( ! recent_selection_rect )
@@ -1324,53 +1368,8 @@
                     typed_suggestion += character;
                     break;
             }
-            // debounce asked suggester
-            var debounce_suggester = function()
-            {
-                if( ! typed_suggestion )
-                    return;
-                var current_sequence = suggestion_sequence;
-                var open_suggester = function( suggestions )
-                {
-                    if( ! recent_selection_rect || current_sequence != suggestion_sequence )
-                        return;
-                    first_suggestion_html = null;
-                    // Empty suggestions means: stop suggestion handling
-                    if( ! suggestions )
-                    {
-                        finish_suggestion();
-                        return;
-                    }
-                    // Show suggester
-                    var fill_popup = function( popup )
-                    {
-                        Object.keys(suggestions).forEach( function( suggestion )
-                        {
-                            var element = document.createElement('div');
-                            add_class( element, 'suggestion' );
-                            element.textContent = suggestion;
-                            element.style.cursor = 'pointer';
-                            addEvent( element, 'click', function( e )
-                                {
-                                    finish_suggestion( suggestions[suggestion] );
-                                    cancelEvent( e );
-                                });
-                            popup.appendChild( element );
-
-                            // Store suggestion to handle 'Enter'
-                            if( first_suggestion_html === null )
-                                first_suggestion_html = suggestions[suggestion];
-                        });
-                    };
-                    open_popup_selection( recent_selection_rect, fill_popup );
-                };
-                if( ! suggester(typed_suggestion, open_suggester) )
-                {
-                    finish_suggestion();
-                    return;
-                }
-            };
-            debounce( debounce_suggester, 500, true )();
+            // Throttle requests
+            debounced_suggestions();
             return true;
         };
 
