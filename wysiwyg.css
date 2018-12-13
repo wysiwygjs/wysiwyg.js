@@ -32,6 +32,8 @@
     box-shadow: none;
     resize: none;
     font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
     transition: height 0.3s ease-in-out;
 }
 .wysiwyg > [contenteditable=true] ~ textarea {
