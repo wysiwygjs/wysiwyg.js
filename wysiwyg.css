@@ -41,46 +41,46 @@
     height: 5em;
 }
 /* placeholder - ':placeholder-shown' only works with input/textarea */
-.wysiwyg [contenteditable=true]:empty:before {
+.wysiwyg > [contenteditable=true]:empty:before {
     content: '\00A0'; /* Keep distance */
     display: block; /* For Firefox */
     opacity: 0.54;  /* https://developer.mozilla.org/de/docs/Web/CSS/%3A%3A-moz-placeholder */
     white-space: nowrap;
 }
-.wysiwyg [contenteditable=true][placeholder]:empty:before {
+.wysiwyg > [contenteditable=true][placeholder]:empty:before {
     content: '\200B' attr(placeholder); /* ZWSP if placeholder empty */
 }
 /* toolbar */
-.wysiwyg .toolbar,
+.wysiwyg > .toolbar,
 .wysiwyg-popup .toolbar {
     white-space: nowrap;
     overflow: hidden;
 }
-.wysiwyg .toolbar *,
+.wysiwyg > .toolbar *,
 .wysiwyg-popup .toolbar * {
     vertical-align: middle;
 }
-.wysiwyg .toolbar-top {
+.wysiwyg > .toolbar-top {
     border-bottom: 1px solid #dddddd;
 }
-.wysiwyg .toolbar-bottom {
+.wysiwyg > .toolbar-bottom {
     border-top: 1px solid #dddddd;
 }
-.wysiwyg .toolbar-auto {
+.wysiwyg > .toolbar-auto {
     overflow-y: hidden;
     max-height: 0;  /* https://stackoverflow.com/questions/3508605/how-can-i-transition-height-0-to-height-auto-using-css */
     border-top: 0 solid #dddddd;
     transition: max-height 0.2s linear, border-top-width 0.2s linear;
     transition-delay: 0.1s;
 }
-.wysiwyg [contenteditable="true"]:focus ~ .toolbar-auto,
-.wysiwyg:focus-within .toolbar-auto,
-.wysiwyg.focus .toolbar-auto {
+.wysiwyg > [contenteditable="true"]:focus ~ .toolbar-auto,
+.wysiwyg:focus-within > .toolbar-auto,
+.wysiwyg.focus > .toolbar-auto {
     max-height: 3em;
     border-top-width: 1px;
     transition-delay: 0;
 }
-.wysiwyg .toolbar a,
+.wysiwyg > .toolbar a,
 .wysiwyg-popup .toolbar a {
     display: inline-block;
     margin: 0;
@@ -95,7 +95,7 @@
     text-decoration: none;
     transition: color 0.2s, background 0.2s;
 }
-.wysiwyg .toolbar a:hover,
+.wysiwyg > .toolbar a:hover,
 .wysiwyg-popup .toolbar a:hover {
     color: HighlightText;
     background-color: Highlight;
@@ -136,7 +136,7 @@
     background-color: Highlight;
 }
 /* content inside contenteditable */
-.wysiwyg [contenteditable=true] * {
+.wysiwyg > [contenteditable=true] * {
     margin: 0 !important;
     border: 0 none !important;
     padding: 0 !important;
