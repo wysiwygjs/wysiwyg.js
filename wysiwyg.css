@@ -132,12 +132,16 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
     display: block;
     padding: 0.3em 0.5em;
     padding: 0.3em 0.5em;
-    font-size: 0.9em;
 }
 .wysiwyg-popup .suggestion:hover,
 .wysiwyg-popup .suggestion:first-of-type {
     color: HighlightText;
     background-color: Highlight;
+}
+.wysiwyg-popup .suggestion * {
+    color: inherit;
+    background-color: inherit;
+    text-decoration: inherit;
 }
 /* content inside contenteditable */
 .wysiwyg > [contenteditable=true] * {

@@ -1125,6 +1125,7 @@
         };
 
         // Fill buttons (on toolbar or on selection)
+        var recent_selection_rect = null, recent_selection_link = null
         var fill_buttons = function( toolbar_container, selection_rect, buttons, hotkeys )
         {
             buttons.forEach( function(button)
@@ -1219,9 +1220,9 @@
                         {
                             case 'link':
                                 if( selection_rect )
-                                    open_popup_selection( selection_rect, create_insertlink );
+                                    open_popup_selection( selection_rect, create_insertlink, recent_selection_link );
                                 else
-                                    open_popup_button( element, create_insertlink );
+                                    open_popup_button( element, create_insertlink, recent_selection_link );
                                 break;
                             case 'bold':
                                 commands.bold(); // .closePopup().collapseSelection()
@@ -1273,8 +1274,7 @@
         };
 
         // Handle suggester
-        var typed_suggestion = null, suggestion_sequence = 1, first_suggestion_html = null,
-            recent_selection_rect = null;
+        var typed_suggestion = null, suggestion_sequence = 1, first_suggestion_html = null;
         var finish_suggestion = function( insert_html )
         {
             // fire suggestion
@@ -1313,22 +1313,22 @@
                 // Show suggester
                 var fill_popup = function( popup )
                 {
-                    Object.keys(suggestions).forEach( function( suggestion )
+                    suggestions.forEach( function( suggestion )
                     {
                         var element = document.createElement('div');
                         add_class( element, 'suggestion' );
-                        element.textContent = suggestion;
+                        element.innerHTML = suggestion;
                         element.style.cursor = 'pointer';
                         addEvent( element, 'click', function( e )
                             {
-                                finish_suggestion( suggestions[suggestion] );
+                                finish_suggestion( suggestion );
                                 cancelEvent( e );
                             });
                         popup.appendChild( element );
 
                         // Store suggestion to handle 'Enter'
                         if( first_suggestion_html === null )
-                            first_suggestion_html = suggestions[suggestion];
+                            first_suggestion_html = suggestion;
                     });
                 };
                 open_popup_selection( recent_selection_rect, fill_popup );
@@ -1337,7 +1337,7 @@
             if( ! suggester(typed_suggestion, open_suggester) )
                 finish_suggestion();
         };
-        var debounced_suggestions = debounce( ask_suggestions, 500, true );
+        var debounced_suggestions = debounce( ask_suggestions, 100, true );
         var suggester_keypress = function( key, character, shiftKey, altKey, ctrlKey, metaKey )
         {
             if( ! recent_selection_rect )
@@ -1408,6 +1408,7 @@
         var onSelection = function( collapsed, rect, nodes, rightclick )
         {
             recent_selection_rect = collapsed ? rect : null;
+            recent_selection_link = null;
             // Fix type error - https://github.com/wysiwygjs/wysiwyg.js/issues/4
             if( ! rect )
             {
@@ -1425,28 +1426,26 @@
                         popup_selection_position( popup, rect );
                     return;
                 }
-                // Click on a link opens the link-popup
-                for( var i=0; i < nodes.length; ++i )
-                {
-                    var node = nodes[i];
-                    var closest = node.closest ||   // latest
-                        function( selector ) {      // IE + Edge - https://github.com/nefe/You-Dont-Need-jQuery
-                            var node = this;
-                            while( node )
-                            {
-                                var matchesSelector = node.matches || node.webkitMatchesSelector || node.mozMatchesSelector || node.msMatchesSelector;
-                                if( matchesSelector && matchesSelector.call(node, selector) )
-                                    return node;
-                                node = node.parentElement;
-                            }
-                            return null;
-                        };
-                    var node_a = closest.call( node, 'a' );
-                    if( ! node_a )  // only clicks on text-nodes
-                        continue;
-                    open_popup_selection( rect, create_insertlink, node_a );
-                    return;
-                }
+            }
+            // Click on a link opens the link-popup
+            for( var i=0; i < nodes.length; ++i )
+            {
+                var node = nodes[i];
+                var closest = node.closest ||   // latest
+                    function( selector ) {      // IE + Edge - https://github.com/nefe/You-Dont-Need-jQuery
+                        var node = this;
+                        while( node )
+                        {
+                            var matchesSelector = node.matches || node.webkitMatchesSelector || node.mozMatchesSelector || node.msMatchesSelector;
+                            if( matchesSelector && matchesSelector.call(node, selector) )
+                                return node;
+                            node = node.parentElement;
+                        }
+                        return null;
+                    };
+                recent_selection_link = closest.call( node, 'a' );
+                if( recent_selection_link )
+                    break;
             }
             // Show selection popup?
             var show_popup = true;

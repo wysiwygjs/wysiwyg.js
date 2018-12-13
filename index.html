@@ -170,15 +170,15 @@ ready(function() {
         // You may want to ask the server ...
         var fill_suggestion = function()
             {
-                var suggestions = {};
+                var suggestions = [];
                 var usernames = ['Evelyn','Harry','Amelia','Oliver','Isabelle','Eddie','Editha','Jacob','Emily','George','Edison'];
                 usernames.forEach( function( username )
                 {
                     var re = new RegExp( '^' + typed.substring(1).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i' );
                     if( typed == '@' || re.test(username) )
-                        suggestions[username] = '<a href="/' + username + '">@' + username + '</a>&nbsp;';
+                        suggestions.push( '<a href="/' + username + '">@' + username + '</a>' );
                 });
-                open_suggester( Object.keys(suggestions).length ? suggestions : null );  // null = close suggestions
+                open_suggester( suggestions.length ? suggestions : null );  // null = close suggestions
             };
         // simulate: immediate, fast and slow internet
         if( Math.random() < 0.5 )
