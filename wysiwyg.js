@@ -835,7 +835,7 @@
     {
         var toolbar = options.toolbar,
             buttons = options.buttons, selectionbuttons = options.selectionbuttons,
-            suggester = options.suggester, interceptenter = options.interceptenter,
+            suggester = options.suggester, interceptenter = options.interceptenter, hijackContextmenu = !!options.hijackmenu,
             node_container = typeof(element) == 'string' ? document.querySelector(element) : element,
             node_textarea = node_container.querySelector('textarea'),
             commands, hotkeys = {}, toolbar_top = toolbar == 'top';
@@ -1506,7 +1506,6 @@
             finish_suggestion();
             remove_class_focus();
         };
-        var hijackContextmenu = true;
 
         // Create wysiwyg-editor
         commands = createContentEditable( node_contenteditable, node_textarea,
