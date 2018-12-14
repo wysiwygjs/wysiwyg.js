@@ -344,7 +344,7 @@
 
             // debounce 'syncTextarea', because 'innerHTML' is quite burdensome
             // High timeout is save, because of "onblur" fires immediately
-            debounced_syncTextarea = debounce( syncTextarea, 100, true );
+            debounced_syncTextarea = debounce( syncTextarea, 250, true );
 
             // Catch change events
             // http://stackoverflow.com/questions/1391278/contenteditable-change-events/1411296#1411296
@@ -1339,8 +1339,6 @@
         var debounced_suggestions = debounce( ask_suggestions, 100, true );
         var suggester_keypress = function( key, character, shiftKey, altKey, ctrlKey, metaKey )
         {
-            if( ! recent_selection_rect )
-                return true;
             // Special keys
             switch( key )
             {
