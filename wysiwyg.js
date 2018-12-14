@@ -1409,7 +1409,7 @@
             // Fix type error - https://github.com/wysiwygjs/wysiwyg.js/issues/4
             if( ! rect )
             {
-                commands.closePopup();
+                finish_suggestion();
                 return;
             }
             // Collapsed selection
@@ -1424,6 +1424,8 @@
                     return;
                 }
             }
+            else
+                finish_suggestion();
             // Click on a link opens the link-popup
             for( var i=0; i < nodes.length; ++i )
             {
@@ -1480,7 +1482,7 @@
             }
             if( ! show_popup )
             {
-                commands.closePopup();
+                finish_suggestion();
                 return;
             }
             // fill buttons
