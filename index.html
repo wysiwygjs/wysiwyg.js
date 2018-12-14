@@ -172,14 +172,19 @@ ready(function() {
             {
                 var suggestions = [];
                 var usernames = ['Evelyn','Harry','Amelia','Oliver','Isabelle','Eddie','Editha','Jacob','Emily','George','Edison'];
-                usernames.forEach( function( username )
+                usernames.forEach( function( username, index )
                 {
                     var re = new RegExp( '^(' + typed.substring(1).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')(.*)$', 'i' );
                     if( typed == '@' || re.test(username) )
+                    {
+                        var codepoint = 0xF600 + index;
+                        var fakeavatar = String.fromCharCode( ((codepoint >>>10) & 0x3FF) | 0xD800 ) + 
+                                         String.fromCharCode( 0xDC00 | (codepoint & 0x3FF) );
                         suggestions.push({
-                            label: typed != '@' ? username.replace(re,'$1<b>$2</b>') : username,
+                            label: fakeavatar + ' ' + (typed != '@' ? username.replace(re,'$1<b>$2</b>') : username),
                             insert: '<a href="/' + username + '">@' + username + '</a>&nbsp;'
                         });
+                    }
                 });
                 open_suggester( suggestions.length ? suggestions : null );  // null = close suggestions
             };
