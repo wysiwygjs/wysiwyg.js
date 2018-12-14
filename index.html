@@ -160,7 +160,7 @@ ready(function() {
             default: 'removeformat'
         }
     ];
-    var buttonsselection = buttons.slice(3,4).concat( buttons.slice(5,14) );
+    var selectionbuttons = buttons.slice(3,4).concat( buttons.slice(5,14) );
     
     var suggester = function( typed, open_suggester )
     {
@@ -196,13 +196,25 @@ ready(function() {
         return true;
     };
     
-    var submitenter = function()
+    var interceptenter = function()
     {
         return false;
     };    
 
-    wysiwyg( '#editor1', 'top', buttons, buttonsselection, suggester, submitenter );
-    wysiwyg( '#editor2', null, buttons, buttonsselection, suggester, submitenter );
+    wysiwyg( '#editor1', {
+        toolbar: 'top',
+        buttons: buttons,
+        selectionbuttons: selectionbuttons,
+        suggester: suggester,
+        interceptenter: interceptenter
+    });
+    wysiwyg( '#editor2', {
+        toolbar: null,
+        buttons: buttons,
+        selectionbuttons: selectionbuttons,
+        suggester: suggester,
+        interceptenter: interceptenter
+    });
 });
 </script>
 </head>

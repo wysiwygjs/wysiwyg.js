@@ -20,7 +20,11 @@ Markup
 
 <script>
 $(function() {
-  wysiwyg( '.wysiwyg', 'top', [buttons], [buttonsselection], suggester(), submitenter() );
+  toolbar: 'top',
+  buttons: [buttons],
+  selectionbuttons: [selectionbuttons],
+  suggester: suggester( open_suggestion ),
+  interceptenter: interceptenter()
 });
 </script>
 ````

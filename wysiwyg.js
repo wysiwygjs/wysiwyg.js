@@ -831,9 +831,12 @@
     };
 
     // Create editor
-    window.wysiwyg = function( element, toolbar, buttons, selectionbuttons, suggester, submitenter )
+    window.wysiwyg = function( element, options )
     {
-        var node_container = typeof(element) == 'string' ? document.querySelector(element) : element,
+        var toolbar = options.toolbar,
+            buttons = options.buttons, selectionbuttons = options.selectionbuttons,
+            suggester = options.suggester, interceptenter = options.interceptenter,
+            node_container = typeof(element) == 'string' ? document.querySelector(element) : element,
             node_textarea = node_container.querySelector('textarea'),
             commands, hotkeys = {}, toolbar_top = toolbar == 'top';
 
@@ -1377,10 +1380,10 @@
             if( suggester )
                 return suggester_keydown( key, character, shiftKey, altKey, ctrlKey, metaKey );
             // submit form on enter-key
-            if( submitenter && key == 13 && ! shiftKey && ! altKey && ! ctrlKey && ! metaKey )
+            if( interceptenter && key == 13 && ! shiftKey && ! altKey && ! ctrlKey && ! metaKey )
             {
                 commands.sync().closePopup();
-                if( submitenter() )
+                if( interceptenter() )
                     return false; // swallow enter
             }
             // Exec hotkey (onkeydown because e.g. CTRL+B would oben the bookmarks)
