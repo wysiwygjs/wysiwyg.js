@@ -146,3 +146,6 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
     font-size: inherit !important;
     line-height: inherit !important;
 }
+.wysiwyg > [contenteditable=true] a {
+    cursor: text;
+}
