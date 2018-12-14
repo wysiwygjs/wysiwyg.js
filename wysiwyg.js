@@ -375,11 +375,10 @@
 
         // Handle selection
         var popup_saved_selection = null, // preserve selection during popup
-            handleSelection = null,
             debounced_handleSelection = null;
         if( onselection )
         {
-            handleSelection = function( clientX, clientY, rightclick )
+            var handleSelection = function( clientX, clientY, rightclick )
             {
                 // Detect collapsed selection
                 var collapsed = getSelectionCollapsed( node_contenteditable );
@@ -693,7 +692,7 @@
             },
             setHTML: function( html )
             {
-                node_contenteditable.innerHTML = html || '<br>';
+                node_contenteditable.innerHTML = html || '';
                 callUpdates( true ); // selection destroyed
                 return this;
             },
@@ -1317,18 +1316,18 @@
                     {
                         var element = document.createElement('div');
                         add_class( element, 'suggestion' );
-                        element.innerHTML = suggestion;
+                        element.innerHTML = suggestion.label;
                         element.style.cursor = 'pointer';
                         addEvent( element, 'click', function( e )
                             {
-                                finish_suggestion( suggestion );
+                                finish_suggestion( suggestion.insert );
                                 cancelEvent( e );
                             });
                         popup.appendChild( element );
 
                         // Store suggestion to handle 'Enter'
                         if( first_suggestion_html === null )
-                            first_suggestion_html = suggestion;
+                            first_suggestion_html = suggestion.insert;
                     });
                 };
                 open_popup_selection( recent_selection_rect, fill_popup );
@@ -1407,7 +1406,7 @@
         };
         var onSelection = function( collapsed, rect, nodes, rightclick )
         {
-            recent_selection_rect = collapsed ? rect : null;
+            recent_selection_rect = collapsed ? rect || recent_selection_rect : null;
             recent_selection_link = null;
             // Fix type error - https://github.com/wysiwygjs/wysiwyg.js/issues/4
             if( ! rect )

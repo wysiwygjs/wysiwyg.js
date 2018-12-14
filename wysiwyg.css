@@ -138,11 +138,6 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
     color: HighlightText;
     background-color: Highlight;
 }
-.wysiwyg-popup .suggestion * {
-    color: inherit;
-    background-color: inherit;
-    text-decoration: inherit;
-}
 /* content inside contenteditable */
 .wysiwyg > [contenteditable=true] * {
     margin: 0 !important;
