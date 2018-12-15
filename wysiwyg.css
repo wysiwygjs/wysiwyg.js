@@ -60,7 +60,6 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
 .wysiwyg .toolbar,
 .wysiwyg-popup .toolbar {
     white-space: nowrap;
-    overflow-x: hidden;
 }
 .wysiwyg .toolbar *,
 .wysiwyg-popup .toolbar * {
@@ -82,7 +81,6 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
     height: 1em;
     max-height: 0px;
     transition: height 0.2s linear, max-height 0s 0.2s linear;
-    transition-delay: 0;
 }
 .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after
 {
@@ -97,14 +95,12 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
     margin-bottom: 0;
     border-top: 1px solid #dddddd;
     transition: margin-bottom 0.2s cubic-bezier(0, 0, 0, 1), border-top-width 0.2s linear;
-    transition-delay: 0;
 }
 .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto > .toolbar {
-    visibility: hidden;
     max-height: 0;
     margin-bottom: -2000px;
     border-top-width: 0;
-    transition: margin-bottom 0.2s cubic-bezier(1, 0, 1, 1), visibility 0s 0.2s, max-height 0s 0.2s, border-top-width 0.2s linear;
+    transition: margin-bottom 0.2s cubic-bezier(1, 0, 1, 1), max-height 0s 0.2s, border-top-width 0.2s linear;
     transition-delay: 0.1s;
 }
 /* buttons */
