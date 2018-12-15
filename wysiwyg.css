@@ -16,6 +16,7 @@
     outline: none;
     word-wrap: break-word;
     padding: 0.3em 0.4em;
+    overflow: hidden;
 }
 .wysiwyg > textarea {
     display: block;
@@ -59,7 +60,7 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
 .wysiwyg > .toolbar,
 .wysiwyg-popup .toolbar {
     white-space: nowrap;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 .wysiwyg > .toolbar *,
 .wysiwyg-popup .toolbar * {

@@ -639,7 +639,7 @@
             return false;
         };
 
-        // copy/paste images from clipboard - if FileReader-API is available
+        // copy/paste images from clipboard
         addEvent( node_contenteditable, 'paste', function( e )
         {
             var clipboardData = e.clipboardData;
@@ -1173,7 +1173,7 @@
                         else
                             open_popup_button( element, fill_popup );
                     };
-                else if( 'insert' in button || 'attach' in button )
+                else if( 'browse' in button || 'dataurl' in button )
                     handler = function()
                     {
                         // remove popup
@@ -1185,7 +1185,7 @@
                         input.style.display = 'none';
                         addEvent( input, 'change', function( e )
                             {
-                                var remove_input = 'insert' in button;
+                                var remove_input = 'dataurl' in button;
                                 if( ! e.target.files )
                                     remove_input = true;
                                 else
@@ -1193,17 +1193,19 @@
                                     var files = evt.target.files;
                                     for( var i=0; i < files.length; ++i )
                                     {
-                                        if( 'insert' in button )
+                                        var file = files[i];
+                                        if( 'browse' in button )
+                                            button.browse( commands, input,file, element );
+                                        // base64 a 2GB video is insane
+                                        else if( file.size < 0x1000000 )
                                         {
                                             var filereader = new FileReader();
                                             filereader.onloadend = function( e )
                                             {
-                                                button.insert( commands, e.target.result, element );
+                                                button.dataurl( commands, file.type,e.target.result, element );
                                             };
-                                            filereader.readAsDataURL( files[i] );
+                                            filereader.readAsDataURL( file );
                                         }
-                                        else
-                                            button.attach( commands, input,files[i], element );
                                     }
                                 }
                                 if( remove_input )

@@ -59,7 +59,7 @@ ready(function() {
                         smiley.onclick = function( e ) {
                             e.preventDefault();
                             e.stopPropagation();
-                            var smileyhtml = ' <img src="smiley/' + filename + '" width="16" height="16"> ';
+                            var smileyhtml = ' <img src="smiley/' + filename + '" width="16" height="16">&nbsp; ';
                             commands.insertHTML( smileyhtml ); // 'commands.insertHTML(...).closePopup()' - to close popup
                         };
                         popup.style.textAlign = 'center';
@@ -74,16 +74,19 @@ ready(function() {
         {
             icon: '<span class="fa fa-camera"></span>',
             title: 'Insert image',
-            insert: function( commands, dataurl, button ) {
-                    var width = Math.min(screen.width/3,screen.height/3,500);
-                    commands.insertHTML( ' <img src="'+dataurl+'" style="max-width:'+parseInt(width)+'px;max-height:'+parseInt(width/2)+'px;"> ' );
+            dataurl: function( commands, type,dataurl, button ) {
+                    if( type.match(/^image/i) )
+                    {
+                        var width = Math.min(screen.width/3,screen.height/3,500);
+                        commands.insertHTML( ' <img src="'+dataurl+'" style="max-width:'+parseInt(width)+'px;max-height:'+parseInt(width/2)+'px;"> <br><br> ' );
+                    }
                 }
         },
         // attach file
         {
             icon: '<span class="fa fa-paperclip"></span>',
             title: 'Attach files',
-            attach: function( commands, input,file, button ) {
+            browse: function( commands, input,file, button ) {
                     button.style.position = 'relative';
                     var badge = button.querySelector('div.badge');
                     if( ! badge ) {
