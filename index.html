@@ -163,7 +163,6 @@ ready(function() {
             default: 'removeformat'
         }
     ];
-    var selectionbuttons = buttons.slice(3,4).concat( buttons.slice(5,14) );
     
     var suggester = function( typed, open_suggester )
     {
@@ -206,8 +205,8 @@ ready(function() {
 
     wysiwyg( '#editor1', {
         toolbar: 'top',
-        buttons: buttons,
-        selectionbuttons: selectionbuttons,
+        buttons: buttons.slice(1),
+        selectionbuttons: buttons.slice(3,4).concat( buttons.slice(5,14) ),
         suggester: suggester,
         interceptenter: interceptenter,
         hijackmenu: true
@@ -215,7 +214,7 @@ ready(function() {
     wysiwyg( '#editor2', {
         toolbar: null,
         buttons: buttons,
-        selectionbuttons: selectionbuttons,
+        selectionbuttons: buttons.slice(3,4).concat( buttons.slice(5,14) ),
         suggester: suggester,
         interceptenter: interceptenter,
         hijackmenu: false
