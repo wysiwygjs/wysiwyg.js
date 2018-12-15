@@ -57,12 +57,12 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
     content: '\200B'; /* IE11 puts caret after placeholder */
 }
 /* toolbar */
-.wysiwyg > .toolbar,
+.wysiwyg .toolbar,
 .wysiwyg-popup .toolbar {
     white-space: nowrap;
     overflow-x: hidden;
 }
-.wysiwyg > .toolbar *,
+.wysiwyg .toolbar *,
 .wysiwyg-popup .toolbar * {
     vertical-align: middle;
 }
@@ -72,20 +72,39 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
 .wysiwyg > .toolbar-bottom {
     border-top: 1px solid #dddddd;
 }
+/* https://stackoverflow.com/questions/3508605/how-can-i-transition-height-0-to-height-auto-using-css */
 .wysiwyg > .toolbar-auto {
-    overflow-y: hidden;
-    max-height: 0;  /* https://stackoverflow.com/questions/3508605/how-can-i-transition-height-0-to-height-auto-using-css */
-    border-top: 0 solid #dddddd;
-    transition: max-height 0.2s linear, border-top-width 0.2s linear;
-    transition-delay: 0.1s;
+    display: flex;
+    overflow: hidden;
 }
-.wysiwyg > [contenteditable="true"]:focus ~ .toolbar-auto,
-.wysiwyg.focus > .toolbar-auto {
-    max-height: 3em;
-    border-top-width: 1px;
-    transition-delay: 0;
+.wysiwyg > .toolbar-auto:after {
+    content: '';
+    height: 1em;
+    max-height: 0px;
+    transition: height 0.2s linear, max-height 0s 0.2s linear;
 }
-.wysiwyg > .toolbar a,
+.wysiwyg > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after
+{
+    height: 0;
+    max-height: 1em;
+    transition: height 0.2s linear;
+}
+.wysiwyg > .toolbar-auto > .toolbar {
+    width: 100%;
+    max-height: 1000000px;
+    margin-bottom: 0;
+    border-top: 1px solid #dddddd;
+    transition: margin-bottom 0.2s cubic-bezier(0, 0, 0, 1), border-top-width 0.2s linear;
+}
+.wysiwyg > [contenteditable="true"]:not(:focus) ~ .toolbar-auto > .toolbar {
+    visibility: hidden;
+    max-height: 0;
+    margin-bottom: -2000px;
+    border-top-width: 0;
+    transition: margin-bottom 0.2s cubic-bezier(1, 0, 1, 1), visibility 0s 0.2s, max-height 0s 0.2s;
+}
+/* buttons */
+.wysiwyg .toolbar a,
 .wysiwyg-popup .toolbar a {
     display: inline-block;
     margin: 0;
@@ -100,7 +119,7 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
     text-decoration: none;
     transition: color 0.2s, background 0.2s;
 }
-.wysiwyg > .toolbar a:hover,
+.wysiwyg .toolbar a:hover,
 .wysiwyg-popup .toolbar a:hover {
     color: HighlightText;
     background-color: Highlight;

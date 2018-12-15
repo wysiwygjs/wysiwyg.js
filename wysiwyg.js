@@ -838,7 +838,7 @@
             suggester = options.suggester, interceptenter = options.interceptenter, hijackContextmenu = !!options.hijackmenu,
             node_container = typeof(element) == 'string' ? document.querySelector(element) : element,
             node_textarea = node_container.querySelector('textarea'),
-            commands, hotkeys = {}, toolbar_top = toolbar == 'top';
+            commands, hotkeys = {}, toolbar_top = toolbar == 'top', toolbar_bottom = toolbar == 'bottom';
 
         // http://stackoverflow.com/questions/1882205/how-do-i-detect-support-for-contenteditable-via-javascript
         var canContentEditable = 'contentEditable' in document.body;
@@ -1523,10 +1523,17 @@
                 add_class( toolbar_element, 'toolbar-top' );
                 node_container.insertBefore( toolbar_element, node_container.firstChild );
             }
-            else // bottom + auto
+            else if( toolbar_bottom )
             {
-                add_class( toolbar_element, toolbar == 'bottom' ? 'toolbar-bottom' : 'toolbar-auto' );
+                add_class( toolbar_element, 'toolbar-bottom' );
                 node_container.appendChild( toolbar_element );
+            }
+            else
+            {
+                var toolbar_wrapper = document.createElement('div');
+                add_class( toolbar_wrapper, 'toolbar-auto' );
+                node_container.appendChild( toolbar_wrapper );
+                toolbar_wrapper.appendChild( toolbar_element );
             }
             fill_buttons( toolbar_element, null, buttons, hotkeys );
         }
