@@ -75,11 +75,9 @@ ready(function() {
             icon: '<span class="fa fa-camera"></span>',
             title: 'Insert image',
             dataurl: function( commands, type,dataurl, button ) {
-                    if( type.match(/^image/i) )
-                    {
-                        var width = Math.min(screen.width/3,screen.height/3,500);
-                        commands.insertHTML( ' <img src="'+dataurl+'" style="max-width:'+parseInt(width)+'px;max-height:'+parseInt(width/2)+'px;"> <br><br> ' );
-                    }
+                    if( ! type.match(/^image/i) )
+                        return;
+                    commands.insertHTML( ' <img src="'+dataurl+'" style="max-width:100%;max-height:20em;"> <br><br> ' );
                 }
         },
         // attach file
