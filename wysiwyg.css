@@ -82,8 +82,13 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
     max-height: 0px;
     transition: height 0.2s linear, max-height 0s 0.2s linear;
 }
-.wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after
-{
+.wysiwyg:not(:focus-within):not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after {
+    height: 0;
+    max-height: 1em;
+    transition: height 0.2s linear;
+    transition-delay: 0.1s;
+}
+_:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after { /* IE10+IE11: repeat due :focus-within */
     height: 0;
     max-height: 1em;
     transition: height 0.2s linear;
@@ -96,7 +101,14 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
     border-top: 1px solid #dddddd;
     transition: margin-bottom 0.2s cubic-bezier(0, 0, 0, 1), border-top-width 0.2s linear;
 }
-.wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto > .toolbar {
+.wysiwyg:not(:focus-within):not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto > .toolbar {
+    max-height: 0;
+    margin-bottom: -2000px;
+    border-top-width: 0;
+    transition: margin-bottom 0.2s cubic-bezier(1, 0, 1, 1), max-height 0s 0.2s, border-top-width 0.2s linear;
+    transition-delay: 0.1s;
+}
+_:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto > .toolbar { /* IE10+IE11: repeat due :focus-within */
     max-height: 0;
     margin-bottom: -2000px;
     border-top-width: 0;
