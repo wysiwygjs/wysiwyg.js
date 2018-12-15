@@ -19,12 +19,13 @@ Markup
 </div>
 
 <script>
-$(function() {
-  toolbar: 'top',
-  buttons: [buttons],
-  selectionbuttons: [selectionbuttons],
-  suggester: suggester( open_suggestion ),
-  interceptenter: interceptenter()
+wysiwyg( '.wysiwyg', {
+  toolbar: 'top',                           // 'top','bottom',null
+  buttons: [buttons],                       // buttons on toolbar
+  selectionbuttons: [selectionbuttons],     // buttons on selection-toolbar
+  suggester: suggester( open_suggestion ),  // handle suggestions
+  interceptenter: interceptenter(),         // intercept 'enter'
+  hijackmenu: false                         // toolbar instead context menu
 });
 </script>
 ````
