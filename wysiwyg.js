@@ -299,7 +299,8 @@
                                           onkeydown, onkeypress, onkeyup, onselection, onopenpopup, onclosepopup, hijackcontextmenu )
     {
         // Sync Editor with Textarea
-        var debounced_syncTextarea = null,
+        var syncTextarea = null,
+            debounced_syncTextarea = null,
             callUpdates;
         if( node_textarea )
         {
@@ -309,7 +310,7 @@
 
             // sync html from the contenteditor to the textarea
             var previous_html = node_contenteditable.innerHTML;
-            var syncTextarea = function()
+            syncTextarea = function()
             {
                 var new_html = node_contenteditable.innerHTML;
                 if( new_html.match(/^<br[/ ]*>$/i) )
@@ -682,8 +683,9 @@
             // properties
             sync: function()
             {
-                if( debounced_syncTextarea )
-                    debounced_syncTextarea();
+                // sync textarea immediately
+                if( syncTextarea )
+                    syncTextarea();
                 return this;
             },
             getHTML: function()
