@@ -878,7 +878,7 @@
             node_container.insertBefore( node_contenteditable, node_container.firstChild );
         }
 
-        // Simulate ':focus'-class
+        // Simulate ':focus-within'
         var remove_focus_timeout = null;
         var add_class_focus = function()
         {
@@ -898,6 +898,7 @@
         };
         addEvent( node_contenteditable, 'focus', add_class_focus );
         addEvent( node_contenteditable, 'blur', remove_class_focus );
+        // register form-reset
         if( node_textarea && node_textarea.form )
             addEvent( node_textarea.form, 'reset', remove_class_focus );
 
@@ -1142,10 +1143,23 @@
                         var htmlparser = document.implementation.createHTMLDocument('');
                         htmlparser.body.innerHTML = button.html;
                         for( var child=htmlparser.body.firstChild; child !== null; child=child.nextSibling )
+                        {
                             toolbar_container.appendChild( child );
+
+                            // Simulate ':focus-within'
+                            addEvent( child, 'focus', add_class_focus );
+                            addEvent( child, 'blur', remove_class_focus );
+                        }
                     }
                     else
-                        toolbar_container.appendChild( button.html );
+                    {
+                        var element = button.html;
+                        toolbar_container.appendChild( element );
+
+                        // Simulate ':focus-within'
+                        addEvent( element, 'focus', add_class_focus );
+                        addEvent( element, 'blur', remove_class_focus );
+                    }
                     return;
                 }
 
@@ -1155,6 +1169,10 @@
                 element.innerHTML = button.icon;
                 if( button.title )
                     element.title = button.title;
+
+                // Simulate ':focus-within'
+                addEvent( element, 'focus', add_class_focus );
+                addEvent( element, 'blur', remove_class_focus );
 
                 // Create handler
                 var handler = null;
