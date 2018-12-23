@@ -842,18 +842,6 @@
             node_textarea = node_container.querySelector('textarea'),
             commands, hotkeys = {}, toolbar_top = toolbar == 'top', toolbar_bottom = toolbar == 'bottom';
 
-        // http://stackoverflow.com/questions/1882205/how-do-i-detect-support-for-contenteditable-via-javascript
-        var canContentEditable = 'contentEditable' in document.body;
-        if( canContentEditable )
-        {
-            // contenteditable is supported from IOS 5 onward
-            var webkit = navigator.userAgent.match(/(?:iPad|iPhone|Android).* AppleWebKit\/([^ ]+)/);
-            if( webkit && 420 <= parseInt(webkit[1]) && parseInt(webkit[1]) < 534 ) // iPhone 1 was Webkit/420
-                canContentEditable = false;
-        }
-        if( ! canContentEditable )
-            return null;
-
         // initialize editor
         var add_class = function( element, classname )
         {
