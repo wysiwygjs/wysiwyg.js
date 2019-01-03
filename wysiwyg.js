@@ -42,9 +42,9 @@
     };
 
     // http://stackoverflow.com/questions/2234979/how-to-check-in-javascript-if-one-element-is-a-child-of-another
-    var isOrContainsNode = function( ancestor, descendant )
+    var isOrContainsNode = function( ancestor, descendant, within )
     {
-        var node = descendant;
+        var node = within ? descendant.parentNode : descendant;
         while( node )
         {
             if( node === ancestor )
@@ -52,6 +52,12 @@
             node = node.parentNode;
         }
         return false;
+    };
+    var isMediaNode = function( node )
+    {
+        var name = node.nodeName;
+        return name == 'IMG' || name == 'PICTURE' || name == 'SVG' || name == 'VIDEO' || name == 'AUDIO' ||
+               name == 'IFRAME' || name == 'MAP' || name == 'OBJECT' || name == 'EMBED';
     };
 
     // save/restore selection
@@ -526,6 +532,15 @@
                 if( left < 1 )
                     left = 1;
             }
+            var popup_height = popup.offsetHeight;    // accurate to integer
+            if( offsetparent_fixed || offsetparent_overflow )
+            {
+                var popup_parent_height = popup_parent.offsetHeight;
+                if( top + popup_height > popup_parent_height - 1 )
+                    top = popup_parent_height - popup_height - 1;
+                if( top < 1 )
+                    top = 1;
+            }
             // Trim to viewport
             var viewport_width = window.innerWidth;
             var scroll_left = offsetparent_fixed ? 0 : document.documentElement.scrollLeft;
@@ -533,6 +548,12 @@
                 left = viewport_width + scroll_left - offsetparent_window_left - popup_width - 2;
             if( offsetparent_window_left + left < scroll_left + 1 )
                 left = scroll_left - offsetparent_window_left + 1;
+            var viewport_height = window.innerHeight;
+            var scroll_top = offsetparent_fixed ? 0 : document.documentElement.scrollTop;
+            if( offsetparent_window_top + top + popup_height > viewport_height + scroll_top - 2 )
+                top = viewport_height + scroll_top - offsetparent_window_top - popup_height - 2;
+            if( offsetparent_window_top + top < scroll_top + 1 )
+                top = scroll_top - offsetparent_window_top + 1;
             // Set offset
             popup.style.left = parseInt(left) + 'px';
             popup.style.top = parseInt(top) + 'px';
@@ -933,28 +954,11 @@
             else if( collapsed )
                 show_popup = false;
             // Image selected -> skip toolbar-popup (better would be an 'image-popup')
-            else
+            else nodes.forEach( function(node)
             {
-                var img_nodes = [];
-                nodes.forEach( function(node)
-                {
-                    if( node.nodeName == 'IMG' )
-                        img_nodes.push( node );
-                });
-                if( img_nodes.length == 1 )
-                {
-                    var only_img_selected = true;
-                    var img_node = img_nodes.shift();
-                    nodes.forEach( function(node)
-                    {
-                        if( isOrContainsNode(node,img_node) )
-                            return;
-                        only_img_selected = false;
-                    });
-                    if( only_img_selected )
-                        show_popup = false;
-                }
-            }
+                if( isMediaNode(node) )
+                    show_popup = false;
+            });
             if( ! show_popup )
             {
                 finish_suggestion();
@@ -978,8 +982,6 @@
             finish_suggestion();
             remove_class_focus();
         };
-
-
 
         // Sync Editor with Textarea
         var syncTextarea = null,
@@ -1270,14 +1272,30 @@
             if( debounced_handleSelection )
                 debounced_handleSelection( clientX, clientY, rightclick );
         };
+        var mouse_down_target = null;
         addEvent( node_contenteditable, 'mousedown', function( e )
         {
             // catch event if 'mouseup' outside 'contenteditable'
             removeEvent( window, 'mouseup', mouseHandler );
             addEvent( window, 'mouseup', mouseHandler );
+            // remember target
+            mouse_down_target = e.target;
         });
         addEvent( node_contenteditable, 'mouseup', function( e )
         {
+            // Select image (improve user experience on Webkit)
+            var node = e.target;
+            if( node && node.nodeType == Node.ELEMENT_NODE && node === mouse_down_target &&
+                isMediaNode(node) && isOrContainsNode(node_contenteditable, node, true) )
+            {
+                var selection = window.getSelection();
+                var range = document.createRange();
+                range.setStartBefore( node );
+                range.setEndAfter( node );
+                selection.removeAllRanges();
+                selection.addRange( range );
+            }
+            // handle click
             mouseHandler( e );
             // Trigger change
             if( debounced_syncTextarea )

@@ -161,7 +161,7 @@ ready(function() {
             default: 'removeformat'
         }
     ];
-    
+
     var suggester = function( typed, open_suggester )
     {
         // Suggestions start with '@'
@@ -178,7 +178,7 @@ ready(function() {
                     if( typed == '@' || re.test(username) )
                     {
                         var codepoint = 0xF600 + index;
-                        var fakeavatar = String.fromCharCode( ((codepoint >>>10) & 0x3FF) | 0xD800 ) + 
+                        var fakeavatar = String.fromCharCode( ((codepoint >>>10) & 0x3FF) | 0xD800 ) +
                                          String.fromCharCode( 0xDC00 | (codepoint & 0x3FF) );
                         suggestions.push({
                             label: fakeavatar + ' ' + (typed != '@' ? username.replace(re,'$1<b>$2</b>') : username),
@@ -191,17 +191,17 @@ ready(function() {
         // simulate: immediate, fast and slow internet
         if( Math.random() < 0.5 )
             fill_suggestion();
-        else 
+        else
             setTimeout( fill_suggestion, Math.random() > 0.9 ? 5000 : 100 );
         return true;
     };
-    
+
     var interceptenter = function()
     {
         return false;
-    };    
+    };
 
-    wysiwyg( '#editor1', {
+    var editor1_commands = wysiwyg( '#editor1', {
         toolbar: 'top',
         buttons: buttons.slice(1),
         selectionbuttons: buttons.slice(3,4).concat( buttons.slice(5,14) ),
@@ -217,6 +217,11 @@ ready(function() {
         interceptenter: interceptenter,
         hijackmenu: false
     });
+
+    // insert text
+    document.querySelector('#outside').addEventListener('click', function() {
+        editor1_commands.insertHTML( '<i>some text</i>&nbsp;' );
+    });
 });
 </script>
 </head>
@@ -230,7 +235,8 @@ ready(function() {
 
 <div id="editor1" class="wysiwyg">
   <textarea name="editor"></textarea>
-</div>  
+</div>
+<center><button id="outside">Insert text</button></center>
 
 <br><br>
 
@@ -238,14 +244,14 @@ ready(function() {
 <div id="editor2" class="wysiwyg">
   <div contenteditable="true" placeholder="Write a comment ..."></div>
   <textarea name="editor"></textarea>
-</div>  
+</div>
 
 <br><br>
 
 <span style="color:#ccc">Uninitialized:</span><br>
 <div id="editor3" class="wysiwyg">
   <textarea name="editor" placeholder="Write a comment ..."></textarea>
-</div>  
+</div>
 
 </div>
 </body>
