@@ -294,544 +294,6 @@
         }
     };
 
-    // Interface: Create wysiwyg
-    var createContentEditable = function( node_contenteditable, node_textarea,
-                                          onkeydown, onkeypress, onkeyup, onselection, onopenpopup, onclosepopup, hijackcontextmenu )
-    {
-        // Sync Editor with Textarea
-        var syncTextarea = null,
-            debounced_syncTextarea = null,
-            callUpdates;
-        if( node_textarea )
-        {
-            // copy placeholder from the textarea to the contenteditor
-            if( ! node_contenteditable.innerHTML && node_textarea.value )
-                node_contenteditable.innerHTML = node_textarea.value;
-
-            // sync html from the contenteditor to the textarea
-            var previous_html = node_contenteditable.innerHTML;
-            syncTextarea = function()
-            {
-                var new_html = node_contenteditable.innerHTML;
-                if( new_html.match(/^<br[/ ]*>$/i) )
-                {
-                    node_contenteditable.innerHTML = '';
-                    new_html = '';
-                }
-                if( new_html == previous_html )
-                    return;
-                // HTML changed
-                node_textarea.value = new_html;
-                previous_html = new_html;
-            };
-
-            // Focus/Blur events
-            addEvent( node_contenteditable, 'focus', function()
-            {
-                // forward focus/blur to the textarea
-                var event = document.createEvent( 'Event' );
-                event.initEvent( 'focus', false, false );
-                node_textarea.dispatchEvent( event );
-            });
-            addEvent( node_contenteditable, 'blur', function()
-            {
-                // sync textarea immediately
-                syncTextarea();
-                // forward focus/blur to the textarea
-                var event = document.createEvent( 'Event' );
-                event.initEvent( 'blur', false, false );
-                node_textarea.dispatchEvent( event );
-            });
-
-            // debounce 'syncTextarea', because 'innerHTML' is quite burdensome
-            // High timeout is save, because of "onblur" fires immediately
-            debounced_syncTextarea = debounce( syncTextarea, 250, true );
-
-            // Catch change events
-            // http://stackoverflow.com/questions/1391278/contenteditable-change-events/1411296#1411296
-            // http://stackoverflow.com/questions/8694054/onchange-event-with-contenteditable/8694125#8694125
-            // https://github.com/mindmup/bootstrap-wysiwyg/pull/50/files
-            // http://codebits.glennjones.net/editing/events-contenteditable.htm
-            addEvent( node_contenteditable, 'input', debounced_syncTextarea );
-            addEvent( node_contenteditable, 'propertychange', debounced_syncTextarea );
-            addEvent( node_contenteditable, 'textInput', debounced_syncTextarea );
-            addEvent( node_contenteditable, 'paste', debounced_syncTextarea );
-            addEvent( node_contenteditable, 'cut', debounced_syncTextarea );
-            addEvent( node_contenteditable, 'drop', debounced_syncTextarea );
-            // MutationObserver should report everything
-            var observer = new MutationObserver( debounced_syncTextarea );
-            observer.observe( node_contenteditable, {attributes:true,childList:true,characterData:true,subtree:true});
-
-            // handle reset event
-            var form = node_textarea.form;
-            if( form )
-            {
-                addEvent( form, 'reset', function() {
-                    node_contenteditable.innerHTML = '';
-                    debounced_syncTextarea();
-                    callUpdates( true );
-                });
-            }
-        }
-
-        // Handle selection
-        var popup_saved_selection = null, // preserve selection during popup
-            debounced_handleSelection = null;
-        if( onselection )
-        {
-            var handleSelection = function( clientX, clientY, rightclick )
-            {
-                // Detect collapsed selection
-                var collapsed = getSelectionCollapsed( node_contenteditable );
-                // List of all selected nodes
-                var nodes = getSelectedNodes( node_contenteditable );
-                // Rectangle of the selection
-                var rect = (clientX === null || clientY === null) ? null :
-                            {
-                                left: clientX,
-                                top: clientY,
-                                width: 0,
-                                height: 0
-                            };
-                var selectionRect = getSelectionRect();
-                if( selectionRect )
-                    rect = selectionRect;
-                if( rect )
-                {
-                    // So far 'rect' is relative to viewport, make it relative to the editor
-                    var boundingrect = node_contenteditable.getBoundingClientRect();
-                    rect.left -= parseInt(boundingrect.left);
-                    rect.top -= parseInt(boundingrect.top);
-                    // Trim rectangle to the editor
-                    if( rect.left < 0 )
-                        rect.left = 0;
-                    if( rect.top < 0 )
-                        rect.top = 0;
-                    if( rect.width > node_contenteditable.offsetWidth )
-                        rect.width = node_contenteditable.offsetWidth;
-                    if( rect.height > node_contenteditable.offsetHeight )
-                        rect.height = node_contenteditable.offsetHeight;
-                }
-                else if( nodes.length )
-                {
-                    // What else could we do? Offset of first element...
-                    for( var i=0; i < nodes.length; ++i )
-                    {
-                        var node = nodes[i];
-                        if( node.nodeType != Node.ELEMENT_NODE )
-                            continue;
-                        rect = {
-                                left: node.offsetLeft,
-                                top: node.offsetTop,
-                                width: node.offsetWidth,
-                                height: node.offsetHeight
-                            };
-                        break;
-                    }
-                }
-                // Callback
-                onselection( collapsed, rect, nodes, rightclick );
-            };
-            debounced_handleSelection = debounce( handleSelection, 1 );
-        }
-
-        // Open popup
-        var node_popup = null;
-        var popupClickClose = function( e )
-        {
-            var target = e.target || e.srcElement;
-            if( target.nodeType == Node.TEXT_NODE ) // defeat Safari bug
-                target = target.parentNode;
-            // Click within popup?
-            if( isOrContainsNode(node_popup,target) )
-                return;
-            // close popup
-            popupClose();
-        };
-        var popupOpen = function()
-        {
-            // Already open?
-            if( node_popup )
-                return node_popup;
-
-            // Global click closes popup
-            addEvent( window, 'mousedown', popupClickClose, true );
-
-            // Create popup element
-            node_popup = document.createElement( 'DIV' );
-            var parent = node_contenteditable.parentNode,
-                next = node_contenteditable.nextSibling;
-            if( next )
-                parent.insertBefore( node_popup, next );
-            else
-                parent.appendChild( node_popup );
-            if( onopenpopup )
-                onopenpopup();
-            return node_popup;
-        };
-        var popupClose = function()
-        {
-            if( ! node_popup )
-                return;
-            node_popup.parentNode.removeChild( node_popup );
-            node_popup = null;
-            removeEvent( window, 'mousedown', popupClickClose, true );
-            if( onclosepopup )
-                onclosepopup();
-        };
-
-        // Key events
-        // http://sandbox.thewikies.com/html5-experiments/key-events.html
-        var keyHandler = function( e, phase )
-        {
-            // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
-            // http://stackoverflow.com/questions/1444477/keycode-and-charcode
-            // http://stackoverflow.com/questions/4285627/javascript-keycode-vs-charcode-utter-confusion
-            // http://unixpapa.com/js/key.html
-            var key = e.which || e.keyCode,
-                character = String.fromCharCode(key || e.charCode),
-                shiftKey = e.shiftKey || false,
-                altKey = e.altKey || false,
-                ctrlKey = e.ctrlKey || false,
-                metaKey = e.metaKey || false;
-            if( phase == 1 )
-            {
-                // Callback
-                if( onkeydown && onkeydown(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
-                    cancelEvent( e ); // dismiss key
-            }
-            else if( phase == 2 )
-            {
-                // Callback
-                if( onkeypress && onkeypress(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
-                    cancelEvent( e ); // dismiss key
-            }
-            else if( phase == 3 )
-            {
-                // Callback
-                if( onkeyup && onkeyup(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
-                    cancelEvent( e ); // dismiss key
-            }
-
-            // Keys can change the selection
-            if( phase == 2 )
-                popup_saved_selection = null;
-            if( phase == 2 || phase == 3 )
-            {
-                if( debounced_handleSelection )
-                    debounced_handleSelection( null, null, false );
-            }
-            // Most keys can cause text-changes
-            if( phase == 2 && debounced_syncTextarea )
-            {
-                switch( key )
-                {
-                    case 33: // pageUp
-                    case 34: // pageDown
-                    case 35: // end
-                    case 36: // home
-                    case 37: // left
-                    case 38: // up
-                    case 39: // right
-                    case 40: // down
-                        // cursors do not
-                        break;
-                    default:
-                        // call change handler
-                        debounced_syncTextarea();
-                        break;
-                }
-            }
-        };
-        addEvent( node_contenteditable, 'keydown', function( e )
-        {
-            keyHandler( e, 1 );
-        });
-        addEvent( node_contenteditable, 'keypress', function( e )
-        {
-            keyHandler( e, 2 );
-        });
-        addEvent( node_contenteditable, 'keyup', function( e )
-        {
-            keyHandler( e, 3 );
-        });
-
-        // Mouse events
-        var mouseHandler = function( e, rightclick )
-        {
-            // mouse position
-            var clientX = null,
-                clientY = null;
-            if( e.clientX && e.clientY )
-            {
-                clientX = e.clientX;
-                clientY = e.clientY;
-            }
-            else if( e.pageX && e.pageY )
-            {
-                clientX = e.pageX - window.pageXOffset;
-                clientY = e.pageY - window.pageYOffset;
-            }
-            // mouse button
-            if( e.which && e.which == 3 )
-                rightclick = true;
-            else if( e.button && e.button == 2 )
-                rightclick = true;
-
-            // remove event handler
-            removeEvent( window, 'mouseup', mouseHandler );
-            // Callback selection
-            popup_saved_selection = null;
-            if( ! hijackcontextmenu && rightclick )
-                return;
-            if( debounced_handleSelection )
-                debounced_handleSelection( clientX, clientY, rightclick );
-        };
-        addEvent( node_contenteditable, 'mousedown', function( e )
-        {
-            // catch event if 'mouseup' outside 'contenteditable'
-            removeEvent( window, 'mouseup', mouseHandler );
-            addEvent( window, 'mouseup', mouseHandler );
-        });
-        addEvent( node_contenteditable, 'mouseup', function( e )
-        {
-            mouseHandler( e );
-            // Trigger change
-            if( debounced_syncTextarea )
-                debounced_syncTextarea();
-        });
-        addEvent( node_contenteditable, 'dblclick', function( e )
-        {
-            mouseHandler( e );
-        });
-        addEvent( node_contenteditable, 'selectionchange',  function( e )
-        {
-            mouseHandler( e );
-        });
-        if( hijackcontextmenu )
-        {
-            addEvent( node_contenteditable, 'contextmenu', function( e )
-            {
-                mouseHandler( e, true );
-                cancelEvent( e );
-            });
-        }
-
-        // exec command
-        // https://developer.mozilla.org/en-US/docs/Web/API/document.execCommand
-        // http://www.quirksmode.org/dom/execCommand.html
-        var execCommand = function( command, param, force_selection )
-        {
-            // give selection to contenteditable element
-            restoreSelection( node_contenteditable, popup_saved_selection );
-            // tried to avoid forcing focus(), but ... - https://github.com/wysiwygjs/wysiwyg.js/issues/51
-            node_contenteditable.focus();
-            if( ! selectionInside(node_contenteditable, force_selection) ) // returns 'selection inside editor'
-                return false;
-
-            // Buggy, call within 'try/catch'
-            try {
-                if( document.queryCommandSupported && ! document.queryCommandSupported(command) )
-                    return false;
-                return document.execCommand( command, false, param );
-            }
-            catch( e ) {
-            }
-            return false;
-        };
-
-        // copy/paste images from clipboard
-        addEvent( node_contenteditable, 'paste', function( e )
-        {
-            var clipboardData = e.clipboardData;
-            if( ! clipboardData )
-                return;
-            var items = clipboardData.items;
-            if( ! items || ! items.length )
-                return;
-            var item = items[0];
-            if( ! item.type.match(/^image\//) )
-                return;
-            // Insert image from clipboard
-            var filereader = new FileReader();
-            filereader.onloadend = function( e )
-            {
-                var image = e.target.result;
-                if( image )
-                    execCommand( 'insertImage', image );
-            };
-            filereader.readAsDataURL( item.getAsFile() );
-            cancelEvent( e ); // dismiss paste
-        });
-
-        // Command structure
-        callUpdates = function( selection_destroyed )
-        {
-            // change-handler
-            if( debounced_syncTextarea )
-                debounced_syncTextarea();
-            // handle saved selection
-            if( selection_destroyed )
-            {
-                collapseSelectionEnd();
-                popup_saved_selection = null; // selection destroyed
-            }
-            else if( popup_saved_selection )
-                popup_saved_selection = saveSelection( node_contenteditable );
-        };
-        return {
-            // properties
-            sync: function()
-            {
-                // sync textarea immediately
-                if( syncTextarea )
-                    syncTextarea();
-                return this;
-            },
-            getHTML: function()
-            {
-                return node_contenteditable.innerHTML;
-            },
-            setHTML: function( html )
-            {
-                node_contenteditable.innerHTML = html || '';
-                callUpdates( true ); // selection destroyed
-                return this;
-            },
-            getSelectedHTML: function()
-            {
-                restoreSelection( node_contenteditable, popup_saved_selection );
-                if( ! selectionInside(node_contenteditable) )
-                    return null;
-                return getSelectionHtml( node_contenteditable );
-            },
-            // selection and popup
-            collapseSelection: function()
-            {
-                collapseSelectionEnd();
-                popup_saved_selection = null; // selection destroyed
-                return this;
-            },
-            expandSelection: function( preceding, following )
-            {
-                restoreSelection( node_contenteditable, popup_saved_selection );
-                if( ! selectionInside(node_contenteditable) )
-                    return this;
-                expandSelectionCaret( node_contenteditable, preceding, following );
-                popup_saved_selection = saveSelection( node_contenteditable ); // save new selection
-                return this;
-            },
-            openPopup: function()
-            {
-                if( ! popup_saved_selection )
-                    popup_saved_selection = saveSelection( node_contenteditable ); // save current selection
-                return popupOpen();
-            },
-            activePopup: function()
-            {
-                return node_popup;
-            },
-            closePopup: function()
-            {
-                popupClose();
-                return this;
-            },
-            removeFormat: function()
-            {
-                execCommand( 'removeFormat' );
-                execCommand( 'unlink' );
-                callUpdates();
-                return this;
-            },
-            bold: function()
-            {
-                execCommand( 'bold' );
-                callUpdates();
-                return this;
-            },
-            italic: function()
-            {
-                execCommand( 'italic' );
-                callUpdates();
-                return this;
-            },
-            underline: function()
-            {
-                execCommand( 'underline' );
-                callUpdates();
-                return this;
-            },
-            strikethrough: function()
-            {
-                execCommand( 'strikeThrough' );
-                callUpdates();
-                return this;
-            },
-            forecolor: function( color )
-            {
-                execCommand( 'foreColor', color );
-                callUpdates();
-                return this;
-            },
-            highlight: function( color )
-            {
-                // http://stackoverflow.com/questions/2756931/highlight-the-text-of-the-dom-range-element
-                if( ! execCommand('hiliteColor',color) ) // some browsers apply 'backColor' to the whole block
-                    execCommand( 'backColor', color );
-                callUpdates();
-                return this;
-            },
-            fontName: function( name )
-            {
-                execCommand( 'fontName', name );
-                callUpdates();
-                return this;
-            },
-            fontSize: function( size )
-            {
-                execCommand( 'fontSize', size );
-                callUpdates();
-                return this;
-            },
-            subscript: function()
-            {
-                execCommand( 'subscript' );
-                callUpdates();
-                return this;
-            },
-            superscript: function()
-            {
-                execCommand( 'superscript' );
-                callUpdates();
-                return this;
-            },
-            insertLink: function( url )
-            {
-                execCommand( 'createLink', url );
-                callUpdates( true ); // selection destroyed
-                return this;
-            },
-            insertImage: function( url )
-            {
-                execCommand( 'insertImage', url, true );
-                callUpdates( true ); // selection destroyed
-                return this;
-            },
-            insertHTML: function( html )
-            {
-                if( ! execCommand('insertHTML', html, true) )
-                {
-                    // IE 11 still does not support 'insertHTML'
-                    restoreSelection( node_contenteditable, popup_saved_selection );
-                    selectionInside( node_contenteditable, true );
-                    pasteHtmlAtCaret( node_contenteditable, html );
-                }
-                callUpdates( true ); // selection destroyed
-                return this;
-            },
-        };
-    };
-
     // Create editor
     window.wysiwyg = function( element, options )
     {
@@ -1517,9 +979,540 @@
             remove_class_focus();
         };
 
-        // Create wysiwyg-editor
-        commands = createContentEditable( node_contenteditable, node_textarea,
-                                          onKeyDown, onKeyPress, onKeyUp, onSelection, onOpenpopup, onClosepopup, hijackContextmenu );
+
+
+        // Sync Editor with Textarea
+        var syncTextarea = null,
+            debounced_syncTextarea = null,
+            callUpdates;
+        if( node_textarea )
+        {
+            // copy placeholder from the textarea to the contenteditor
+            if( ! node_contenteditable.innerHTML && node_textarea.value )
+                node_contenteditable.innerHTML = node_textarea.value;
+
+            // sync html from the contenteditor to the textarea
+            var previous_html = node_contenteditable.innerHTML;
+            syncTextarea = function()
+            {
+                var new_html = node_contenteditable.innerHTML;
+                if( new_html.match(/^<br[/ ]*>$/i) )
+                {
+                    node_contenteditable.innerHTML = '';
+                    new_html = '';
+                }
+                if( new_html == previous_html )
+                    return;
+                // HTML changed
+                node_textarea.value = new_html;
+                previous_html = new_html;
+            };
+
+            // Focus/Blur events
+            addEvent( node_contenteditable, 'focus', function()
+            {
+                // forward focus/blur to the textarea
+                var event = document.createEvent( 'Event' );
+                event.initEvent( 'focus', false, false );
+                node_textarea.dispatchEvent( event );
+            });
+            addEvent( node_contenteditable, 'blur', function()
+            {
+                // sync textarea immediately
+                syncTextarea();
+                // forward focus/blur to the textarea
+                var event = document.createEvent( 'Event' );
+                event.initEvent( 'blur', false, false );
+                node_textarea.dispatchEvent( event );
+            });
+
+            // debounce 'syncTextarea', because 'innerHTML' is quite burdensome
+            // High timeout is save, because of "onblur" fires immediately
+            debounced_syncTextarea = debounce( syncTextarea, 250, true );
+
+            // Catch change events
+            // http://stackoverflow.com/questions/1391278/contenteditable-change-events/1411296#1411296
+            // http://stackoverflow.com/questions/8694054/onchange-event-with-contenteditable/8694125#8694125
+            // https://github.com/mindmup/bootstrap-wysiwyg/pull/50/files
+            // http://codebits.glennjones.net/editing/events-contenteditable.htm
+            addEvent( node_contenteditable, 'input', debounced_syncTextarea );
+            addEvent( node_contenteditable, 'propertychange', debounced_syncTextarea );
+            addEvent( node_contenteditable, 'textInput', debounced_syncTextarea );
+            addEvent( node_contenteditable, 'paste', debounced_syncTextarea );
+            addEvent( node_contenteditable, 'cut', debounced_syncTextarea );
+            addEvent( node_contenteditable, 'drop', debounced_syncTextarea );
+            // MutationObserver should report everything
+            var observer = new MutationObserver( debounced_syncTextarea );
+            observer.observe( node_contenteditable, {attributes:true,childList:true,characterData:true,subtree:true});
+
+            // handle reset event
+            var form = node_textarea.form;
+            if( form )
+            {
+                addEvent( form, 'reset', function() {
+                    node_contenteditable.innerHTML = '';
+                    debounced_syncTextarea();
+                    callUpdates( true );
+                });
+            }
+        }
+
+        // Handle selection
+        var popup_saved_selection = null, // preserve selection during popup
+            debounced_handleSelection = null;
+        if( onSelection )
+        {
+            var handleSelection = function( clientX, clientY, rightclick )
+            {
+                // Detect collapsed selection
+                var collapsed = getSelectionCollapsed( node_contenteditable );
+                // List of all selected nodes
+                var nodes = getSelectedNodes( node_contenteditable );
+                // Rectangle of the selection
+                var rect = (clientX === null || clientY === null) ? null :
+                            {
+                                left: clientX,
+                                top: clientY,
+                                width: 0,
+                                height: 0
+                            };
+                var selectionRect = getSelectionRect();
+                if( selectionRect )
+                    rect = selectionRect;
+                if( rect )
+                {
+                    // So far 'rect' is relative to viewport, make it relative to the editor
+                    var boundingrect = node_contenteditable.getBoundingClientRect();
+                    rect.left -= parseInt(boundingrect.left);
+                    rect.top -= parseInt(boundingrect.top);
+                    // Trim rectangle to the editor
+                    if( rect.left < 0 )
+                        rect.left = 0;
+                    if( rect.top < 0 )
+                        rect.top = 0;
+                    if( rect.width > node_contenteditable.offsetWidth )
+                        rect.width = node_contenteditable.offsetWidth;
+                    if( rect.height > node_contenteditable.offsetHeight )
+                        rect.height = node_contenteditable.offsetHeight;
+                }
+                else if( nodes.length )
+                {
+                    // What else could we do? Offset of first element...
+                    for( var i=0; i < nodes.length; ++i )
+                    {
+                        var node = nodes[i];
+                        if( node.nodeType != Node.ELEMENT_NODE )
+                            continue;
+                        rect = {
+                                left: node.offsetLeft,
+                                top: node.offsetTop,
+                                width: node.offsetWidth,
+                                height: node.offsetHeight
+                            };
+                        break;
+                    }
+                }
+                // Callback
+                onSelection( collapsed, rect, nodes, rightclick );
+            };
+            debounced_handleSelection = debounce( handleSelection, 1 );
+        }
+
+        // Open popup
+        var node_popup = null;
+        var popupClickClose = function( e )
+        {
+            var target = e.target || e.srcElement;
+            if( target.nodeType == Node.TEXT_NODE ) // defeat Safari bug
+                target = target.parentNode;
+            // Click within popup?
+            if( isOrContainsNode(node_popup,target) )
+                return;
+            // close popup
+            popupClose();
+        };
+        var popupOpen = function()
+        {
+            // Already open?
+            if( node_popup )
+                return node_popup;
+
+            // Global click closes popup
+            addEvent( window, 'mousedown', popupClickClose, true );
+
+            // Create popup element
+            node_popup = document.createElement( 'DIV' );
+            var parent = node_contenteditable.parentNode,
+                next = node_contenteditable.nextSibling;
+            if( next )
+                parent.insertBefore( node_popup, next );
+            else
+                parent.appendChild( node_popup );
+            if( onOpenpopup )
+                onOpenpopup();
+            return node_popup;
+        };
+        var popupClose = function()
+        {
+            if( ! node_popup )
+                return;
+            node_popup.parentNode.removeChild( node_popup );
+            node_popup = null;
+            removeEvent( window, 'mousedown', popupClickClose, true );
+            if( onClosepopup )
+                onClosepopup();
+        };
+
+        // Key events
+        // http://sandbox.thewikies.com/html5-experiments/key-events.html
+        var keyHandler = function( e, phase )
+        {
+            // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
+            // http://stackoverflow.com/questions/1444477/keycode-and-charcode
+            // http://stackoverflow.com/questions/4285627/javascript-keycode-vs-charcode-utter-confusion
+            // http://unixpapa.com/js/key.html
+            var key = e.which || e.keyCode,
+                character = String.fromCharCode(key || e.charCode),
+                shiftKey = e.shiftKey || false,
+                altKey = e.altKey || false,
+                ctrlKey = e.ctrlKey || false,
+                metaKey = e.metaKey || false;
+            if( phase == 1 )
+            {
+                // Callback
+                if( onKeyDown && onKeyDown(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
+                    cancelEvent( e ); // dismiss key
+            }
+            else if( phase == 2 )
+            {
+                // Callback
+                if( onKeyPress && onKeyPress(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
+                    cancelEvent( e ); // dismiss key
+            }
+            else if( phase == 3 )
+            {
+                // Callback
+                if( onKeyUp && onKeyUp(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
+                    cancelEvent( e ); // dismiss key
+            }
+
+            // Keys can change the selection
+            if( phase == 2 )
+                popup_saved_selection = null;
+            if( phase == 2 || phase == 3 )
+            {
+                if( debounced_handleSelection )
+                    debounced_handleSelection( null, null, false );
+            }
+            // Most keys can cause text-changes
+            if( phase == 2 && debounced_syncTextarea )
+            {
+                switch( key )
+                {
+                    case 33: // pageUp
+                    case 34: // pageDown
+                    case 35: // end
+                    case 36: // home
+                    case 37: // left
+                    case 38: // up
+                    case 39: // right
+                    case 40: // down
+                        // cursors do not
+                        break;
+                    default:
+                        // call change handler
+                        debounced_syncTextarea();
+                        break;
+                }
+            }
+        };
+        addEvent( node_contenteditable, 'keydown', function( e )
+        {
+            keyHandler( e, 1 );
+        });
+        addEvent( node_contenteditable, 'keypress', function( e )
+        {
+            keyHandler( e, 2 );
+        });
+        addEvent( node_contenteditable, 'keyup', function( e )
+        {
+            keyHandler( e, 3 );
+        });
+
+        // Mouse events
+        var mouseHandler = function( e, rightclick )
+        {
+            // mouse position
+            var clientX = null,
+                clientY = null;
+            if( e.clientX && e.clientY )
+            {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            else if( e.pageX && e.pageY )
+            {
+                clientX = e.pageX - window.pageXOffset;
+                clientY = e.pageY - window.pageYOffset;
+            }
+            // mouse button
+            if( e.which && e.which == 3 )
+                rightclick = true;
+            else if( e.button && e.button == 2 )
+                rightclick = true;
+
+            // remove event handler
+            removeEvent( window, 'mouseup', mouseHandler );
+            // Callback selection
+            popup_saved_selection = null;
+            if( ! hijackContextmenu && rightclick )
+                return;
+            if( debounced_handleSelection )
+                debounced_handleSelection( clientX, clientY, rightclick );
+        };
+        addEvent( node_contenteditable, 'mousedown', function( e )
+        {
+            // catch event if 'mouseup' outside 'contenteditable'
+            removeEvent( window, 'mouseup', mouseHandler );
+            addEvent( window, 'mouseup', mouseHandler );
+        });
+        addEvent( node_contenteditable, 'mouseup', function( e )
+        {
+            mouseHandler( e );
+            // Trigger change
+            if( debounced_syncTextarea )
+                debounced_syncTextarea();
+        });
+        addEvent( node_contenteditable, 'dblclick', function( e )
+        {
+            mouseHandler( e );
+        });
+        addEvent( node_contenteditable, 'selectionchange',  function( e )
+        {
+            mouseHandler( e );
+        });
+        if( hijackContextmenu )
+        {
+            addEvent( node_contenteditable, 'contextmenu', function( e )
+            {
+                mouseHandler( e, true );
+                cancelEvent( e );
+            });
+        }
+
+        // exec command
+        // https://developer.mozilla.org/en-US/docs/Web/API/document.execCommand
+        // http://www.quirksmode.org/dom/execCommand.html
+        var execCommand = function( command, param, force_selection )
+        {
+            // give selection to contenteditable element
+            restoreSelection( node_contenteditable, popup_saved_selection );
+            // tried to avoid forcing focus(), but ... - https://github.com/wysiwygjs/wysiwyg.js/issues/51
+            node_contenteditable.focus();
+            if( ! selectionInside(node_contenteditable, force_selection) ) // returns 'selection inside editor'
+                return false;
+
+            // Buggy, call within 'try/catch'
+            try {
+                if( document.queryCommandSupported && ! document.queryCommandSupported(command) )
+                    return false;
+                return document.execCommand( command, false, param );
+            }
+            catch( e ) {
+            }
+            return false;
+        };
+
+        // copy/paste images from clipboard
+        addEvent( node_contenteditable, 'paste', function( e )
+        {
+            var clipboardData = e.clipboardData;
+            if( ! clipboardData )
+                return;
+            var items = clipboardData.items;
+            if( ! items || ! items.length )
+                return;
+            var item = items[0];
+            if( ! item.type.match(/^image\//) )
+                return;
+            // Insert image from clipboard
+            var filereader = new FileReader();
+            filereader.onloadend = function( e )
+            {
+                var image = e.target.result;
+                if( image )
+                    execCommand( 'insertImage', image );
+            };
+            filereader.readAsDataURL( item.getAsFile() );
+            cancelEvent( e ); // dismiss paste
+        });
+
+        // Command structure
+        callUpdates = function( selection_destroyed )
+        {
+            // change-handler
+            if( debounced_syncTextarea )
+                debounced_syncTextarea();
+            // handle saved selection
+            if( selection_destroyed )
+            {
+                collapseSelectionEnd();
+                popup_saved_selection = null; // selection destroyed
+            }
+            else if( popup_saved_selection )
+                popup_saved_selection = saveSelection( node_contenteditable );
+        };
+        commands = {
+            // properties
+            sync: function()
+            {
+                // sync textarea immediately
+                if( syncTextarea )
+                    syncTextarea();
+                return this;
+            },
+            getHTML: function()
+            {
+                return node_contenteditable.innerHTML;
+            },
+            setHTML: function( html )
+            {
+                node_contenteditable.innerHTML = html || '';
+                callUpdates( true ); // selection destroyed
+                return this;
+            },
+            getSelectedHTML: function()
+            {
+                restoreSelection( node_contenteditable, popup_saved_selection );
+                if( ! selectionInside(node_contenteditable) )
+                    return null;
+                return getSelectionHtml( node_contenteditable );
+            },
+            // selection and popup
+            collapseSelection: function()
+            {
+                collapseSelectionEnd();
+                popup_saved_selection = null; // selection destroyed
+                return this;
+            },
+            expandSelection: function( preceding, following )
+            {
+                restoreSelection( node_contenteditable, popup_saved_selection );
+                if( ! selectionInside(node_contenteditable) )
+                    return this;
+                expandSelectionCaret( node_contenteditable, preceding, following );
+                popup_saved_selection = saveSelection( node_contenteditable ); // save new selection
+                return this;
+            },
+            openPopup: function()
+            {
+                if( ! popup_saved_selection )
+                    popup_saved_selection = saveSelection( node_contenteditable ); // save current selection
+                return popupOpen();
+            },
+            activePopup: function()
+            {
+                return node_popup;
+            },
+            closePopup: function()
+            {
+                popupClose();
+                return this;
+            },
+            removeFormat: function()
+            {
+                execCommand( 'removeFormat' );
+                execCommand( 'unlink' );
+                callUpdates();
+                return this;
+            },
+            bold: function()
+            {
+                execCommand( 'bold' );
+                callUpdates();
+                return this;
+            },
+            italic: function()
+            {
+                execCommand( 'italic' );
+                callUpdates();
+                return this;
+            },
+            underline: function()
+            {
+                execCommand( 'underline' );
+                callUpdates();
+                return this;
+            },
+            strikethrough: function()
+            {
+                execCommand( 'strikeThrough' );
+                callUpdates();
+                return this;
+            },
+            forecolor: function( color )
+            {
+                execCommand( 'foreColor', color );
+                callUpdates();
+                return this;
+            },
+            highlight: function( color )
+            {
+                // http://stackoverflow.com/questions/2756931/highlight-the-text-of-the-dom-range-element
+                if( ! execCommand('hiliteColor',color) ) // some browsers apply 'backColor' to the whole block
+                    execCommand( 'backColor', color );
+                callUpdates();
+                return this;
+            },
+            fontName: function( name )
+            {
+                execCommand( 'fontName', name );
+                callUpdates();
+                return this;
+            },
+            fontSize: function( size )
+            {
+                execCommand( 'fontSize', size );
+                callUpdates();
+                return this;
+            },
+            subscript: function()
+            {
+                execCommand( 'subscript' );
+                callUpdates();
+                return this;
+            },
+            superscript: function()
+            {
+                execCommand( 'superscript' );
+                callUpdates();
+                return this;
+            },
+            insertLink: function( url )
+            {
+                execCommand( 'createLink', url );
+                callUpdates( true ); // selection destroyed
+                return this;
+            },
+            insertImage: function( url )
+            {
+                execCommand( 'insertImage', url, true );
+                callUpdates( true ); // selection destroyed
+                return this;
+            },
+            insertHTML: function( html )
+            {
+                if( ! execCommand('insertHTML', html, true) )
+                {
+                    // IE 11 still does not support 'insertHTML'
+                    restoreSelection( node_contenteditable, popup_saved_selection );
+                    selectionInside( node_contenteditable, true );
+                    pasteHtmlAtCaret( node_contenteditable, html );
+                }
+                callUpdates( true ); // selection destroyed
+                return this;
+            },
+        };
 
         // Create toolbar
         if( buttons )
