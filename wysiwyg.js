@@ -559,20 +559,26 @@
             popup.style.top = parseInt(top) + 'px';
         };
         // open popup and apply position
-        var create_popup = function( down )
+        var popup_type = null;
+        var create_popup = function( down, type, create_content, argument )
         {
+            // popup already open?
+            var popup = commands.activePopup();
+            if( popup && popup_type === type )
+                return popup;
             // either run 'commands.closePopup().openPopup()' or remove children
-            var popup = commands.openPopup();
+            popup = commands.openPopup();
             add_class( popup, 'wysiwyg-popup' );
-            add_class( popup, down ? 'down' : 'up' );
+            //add_class( popup, down ? 'down' : 'up' );
             while( popup.firstChild )
                 popup.removeChild( popup.firstChild );
+            create_content( popup, argument );
+            popup_type = type;
             return popup;
         };
-        var open_popup_button = function( button, create_content, argument )
+        var open_popup_button = function( button, type, create_content, argument )
         {
-            var popup = create_popup( toolbar_top ? true : false );
-            create_content( popup, argument );
+            var popup = create_popup( toolbar_top ? true : false, type, create_content, argument );
             // Popup position - point to top/bottom-center of the button
             var container_offset = node_container.getBoundingClientRect();
             var button_offset = button.getBoundingClientRect();
@@ -594,10 +600,9 @@
             var top = rect.top + rect.height + contenteditable_offset.top - container_offset.top;
             popup_position( popup, left, top );
         };
-        var open_popup_selection = function( rect, create_content, argument )
+        var open_popup_selection = function( rect, type, create_content, argument )
         {
-            var popup = create_popup( true );
-            create_content( popup, argument );
+            var popup = create_popup( true, type, create_content, argument );
             popup_selection_position( popup, rect );
         };
 
@@ -692,9 +697,9 @@
                                 button.popup( commands, popup, element );
                             };
                         if( selection_rect )
-                            open_popup_selection( selection_rect, fill_popup );
+                            open_popup_selection( selection_rect, fill_popup.toString(), fill_popup );
                         else
-                            open_popup_button( element, fill_popup );
+                            open_popup_button( element, fill_popup.toString(), fill_popup );
                     };
                 else if( 'browse' in button || 'dataurl' in button )
                     handler = function()
@@ -747,9 +752,9 @@
                         {
                             case 'link':
                                 if( selection_rect )
-                                    open_popup_selection( selection_rect, create_insertlink, recent_selection_link );
+                                    open_popup_selection( selection_rect, 'link', create_insertlink, recent_selection_link );
                                 else
-                                    open_popup_button( element, create_insertlink, recent_selection_link );
+                                    open_popup_button( element, 'link', create_insertlink, recent_selection_link );
                                 break;
                             case 'bold':
                                 commands.bold().closePopup().collapseSelection()
@@ -765,15 +770,15 @@
                                 break;
                             case 'colortext':
                                 if( selection_rect )
-                                    open_popup_selection( selection_rect, create_colorpalette, true );
+                                    open_popup_selection( selection_rect, 'colortext', create_colorpalette, true );
                                 else
-                                    open_popup_button( element, create_colorpalette, true );
+                                    open_popup_button( element, 'colortext', create_colorpalette, true );
                                 break;
                             case 'colorfill':
                                 if( selection_rect )
-                                    open_popup_selection( selection_rect, create_colorpalette, false );
+                                    open_popup_selection( selection_rect, 'colorfill', create_colorpalette, false );
                                 else
-                                    open_popup_button( element, create_colorpalette, false );
+                                    open_popup_button( element, 'colorfill', create_colorpalette, false );
                                 break;
                             case 'clearformat':
                                 commands.removeFormat().closePopup().collapseSelection();
@@ -852,7 +857,7 @@
                             first_suggestion_html = suggestion.insert;
                     });
                 };
-                open_popup_selection( recent_selection_rect, fill_popup );
+                open_popup_selection( recent_selection_rect, 'suggestion', fill_popup );
             };
             // Ask to start/continue a suggestion
             if( ! suggester(typed_suggestion, open_suggester) )
@@ -879,7 +884,8 @@
                 case 38: // up
                 case 39: // right
                 case 40: // down
-                    finish_suggestion();
+                    if( typed_suggestion )
+                        finish_suggestion();
                     return true;
                 default:
                     if( ! typed_suggestion )
@@ -924,7 +930,7 @@
         //var onKeyUp = function( key, character, shiftKey, altKey, ctrlKey, metaKey )
         //{
         //};
-         var onSelection = function( collapsed, rect, nodes, rightclick )
+        var onSelection = function( collapsed, rect, nodes, rightclick )
         {
             recent_selection_rect = collapsed ? rect || recent_selection_rect : null;
             recent_selection_link = null;
@@ -946,8 +952,6 @@
                     return;
                 }
             }
-            else
-                finish_suggestion();
             // Click on a link opens the link-popup
             for( var i=0; i < nodes.length; ++i )
             {
@@ -991,7 +995,7 @@
                 return;
             }
             // fill buttons
-            open_popup_selection( rect, function( popup )
+            open_popup_selection( rect, 'selection', function( popup )
                 {
                     var toolbar_element = document.createElement('div');
                     add_class( toolbar_element, 'toolbar' );
