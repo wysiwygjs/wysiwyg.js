@@ -565,15 +565,22 @@
             // popup already open?
             var popup = commands.activePopup();
             if( popup && popup_type === type )
-                return popup;
-            // either run 'commands.closePopup().openPopup()' or remove children
-            popup = commands.openPopup();
-            add_class( popup, 'wysiwyg-popup' );
-            //add_class( popup, down ? 'down' : 'up' );
+            {
+                remove_class( popup, 'animate-down' );
+                remove_class( popup, 'animate-up' );
+            }
+            else
+            {
+                // either run 'commands.closePopup().openPopup()' or remove children
+                popup = commands.openPopup();
+                add_class( popup, 'wysiwyg-popup' );
+                add_class( popup, down ? 'animate-down' : 'animate-up' );
+                popup_type = type;
+            }
+            // re-fill content
             while( popup.firstChild )
                 popup.removeChild( popup.firstChild );
             create_content( popup, argument );
-            popup_type = type;
             return popup;
         };
         var open_popup_button = function( button, type, create_content, argument )
@@ -857,7 +864,7 @@
                             first_suggestion_html = suggestion.insert;
                     });
                 };
-                open_popup_selection( recent_selection_rect, 'suggestion:'+typed_suggestion, fill_popup );
+                open_popup_selection( recent_selection_rect, 'suggestion', fill_popup );
             };
             // Ask to start/continue a suggestion
             if( ! suggester(typed_suggestion, open_suggester) )
@@ -872,8 +879,10 @@
                 case  8: // backspace
                     if( typed_suggestion )
                         typed_suggestion = typed_suggestion.slice( 0, -1 );
-                    if( typed_suggestion )  // if still text -> continue, else fall through (=abort)
+                    if( typed_suggestion )  // if still text -> continue, else abort
                         break;
+                    finish_suggestion();
+                    return true;
                 case 13: // enter
                 case 27: // escape
                 case 33: // pageUp
@@ -951,7 +960,11 @@
                 {
                     var popup = commands.activePopup();
                     if( popup )
+                    {
+                        remove_class( popup, 'animate-down' );
+                        remove_class( popup, 'animate-up' );
                         popup_selection_position( popup, rect );
+                    }
                     return;
                 }
             }
@@ -1232,8 +1245,8 @@
             //}
 
             // Keys can change the selection
-            if( phase == 2 )
-                popup_saved_selection = null;
+            if( popup_saved_selection )
+                popup_saved_selection = saveSelection( node_contenteditable );
             if( phase == 2 || phase == 3 )
             {
                 if( debounced_handleSelection )
@@ -1299,7 +1312,8 @@
             // remove event handler
             removeEvent( window, 'mouseup', mouseHandler );
             // Callback selection
-            popup_saved_selection = null;
+            if( popup_saved_selection )
+                popup_saved_selection = saveSelection( node_contenteditable );
             if( ! hijackContextmenu && rightclick )
                 return;
             if( debounced_handleSelection )
