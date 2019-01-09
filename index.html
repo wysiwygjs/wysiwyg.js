@@ -62,7 +62,7 @@ ready(function() {
         },
         // insert image
         {
-            icon: 'insertphoto',
+            icon: 'photo',
             dataurl: function( commands, type,dataurl, button ) {
                     if( ! type.match(/^image/i) )
                         return;
@@ -74,7 +74,7 @@ ready(function() {
         },
         // attach file
         {
-            icon: 'attachfile',
+            icon: 'attachment',
             browse: function( commands, input,file, button ) {
                     button.style.position = 'relative';
                     var badge = button.querySelector('div.badge');
@@ -101,7 +101,7 @@ ready(function() {
         },
         // simple buttons
         {
-            icon: 'insertlink',
+            icon: 'link',
             action: 'link',
             attr: { // attributes
                 title: 'Insert link',
