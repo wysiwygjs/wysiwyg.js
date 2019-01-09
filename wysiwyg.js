@@ -857,7 +857,7 @@
                             first_suggestion_html = suggestion.insert;
                     });
                 };
-                open_popup_selection( recent_selection_rect, 'suggestion', fill_popup );
+                open_popup_selection( recent_selection_rect, 'suggestion:'+typed_suggestion, fill_popup );
             };
             // Ask to start/continue a suggestion
             if( ! suggester(typed_suggestion, open_suggester) )
