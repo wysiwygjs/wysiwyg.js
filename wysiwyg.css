@@ -57,6 +57,23 @@
 _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
     content: '\200B'; /* IE11 puts caret after placeholder */
 }
+/* popup */
+.wysiwyg-popup.down {
+    transform-origin: top;
+    animation: transformer 0.1s ease-out 0s 1;
+}
+.wysiwyg-popup.up {
+    transform-origin: bottom;
+    animation: transformer 0.1s ease-out 0s 1;
+}
+@keyframes transformer {
+    from {
+        transform: scale(0.5, 0);
+    }
+    to {
+        transform: scale(1, 1);
+    }
+}
 /* toolbar */
 .wysiwyg .toolbar,
 .wysiwyg-popup .toolbar {

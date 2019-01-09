@@ -559,18 +559,19 @@
             popup.style.top = parseInt(top) + 'px';
         };
         // open popup and apply position
-        var create_popup = function()
+        var create_popup = function( down )
         {
             // either run 'commands.closePopup().openPopup()' or remove children
             var popup = commands.openPopup();
             add_class( popup, 'wysiwyg-popup' );
+            add_class( popup, down ? 'down' : 'up' );
             while( popup.firstChild )
                 popup.removeChild( popup.firstChild );
             return popup;
         };
         var open_popup_button = function( button, create_content, argument )
         {
-            var popup = create_popup();
+            var popup = create_popup( toolbar_top ? true : false );
             create_content( popup, argument );
             // Popup position - point to top/bottom-center of the button
             var container_offset = node_container.getBoundingClientRect();
@@ -595,7 +596,7 @@
         };
         var open_popup_selection = function( rect, create_content, argument )
         {
-            var popup = create_popup();
+            var popup = create_popup( true );
             create_content( popup, argument );
             popup_selection_position( popup, rect );
         };
