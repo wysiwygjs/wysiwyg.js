@@ -5,8 +5,6 @@
 <title>WYSIWYG</title>
 <script type="text/javascript" src="wysiwyg.js"></script>
 <link rel="stylesheet" type="text/css" href="wysiwyg.css" />
-<!-- This demo uses font-awesome, but you may want PNG/SVG images -->
-<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
 body {
     font-family: Arial,Verdana;
@@ -22,26 +20,15 @@ function ready(fn)
 }
 ready(function() {
     // Buttons
+    var htmlparser = document.implementation.createHTMLDocument('');
+    htmlparser.body.innerHTML = '<button>Insert text</button>';
+    var customButton = htmlparser.body.firstChild;
     var buttons = [
         // generic
-        {
-            html: '<input type="button" value="Submit" />'
-        },
-        // click
-        {
-            icon: '<span class="fa fa-slideshare"></span>',
-            title: 'Dummy',
-            click: function( commands, button ) {
-                    if( commands.getSelectedHTML() )
-                        commands.bold();
-                    else
-                        alert( 'No text selected - cannot make bold' );
-                },
-        },
+        customButton,
         // open popup
         {
-            icon: '<span class="fa fa-smile-o"></span>',
-            title: 'Smilies',
+            icon: 'emoticon',
             popup: function( commands, popup, button ) {
                     var smilies = [ 'afraid.png','amorous.png','angel.png','angry.png','bored.png','cold.png','confused.png','cross.png','crying.png','devil.png','disappointed.png','dont-know.png','drool.png',
                                     'embarrassed.png','excited.png','excruciating.png','eyeroll.png','happy.png','hot.png','hug-left.png','hug-right.png','hungry.png','invincible.png','kiss.png','lying.png',
@@ -63,27 +50,31 @@ ready(function() {
                             commands.insertHTML( smileyhtml ); // 'commands.insertHTML(...).closePopup()' - to close popup
                         };
                         popup.style.textAlign = 'center';
-                        popup.style.width = '300px';
+                        popup.style.width = '20em';
                         popup.style.padding = '0.5em';
                         popup.appendChild( smiley );
                         popup.appendChild( document.createTextNode(' ') );
                     });
-                }
+                },
+            attr: { // attributes
+                title: 'Smilies',
+            },
         },
-        // insert file
+        // insert image
         {
-            icon: '<span class="fa fa-camera"></span>',
-            title: 'Insert image',
+            icon: 'insertphoto',
             dataurl: function( commands, type,dataurl, button ) {
                     if( ! type.match(/^image/i) )
                         return;
                     commands.insertHTML( ' <img src="'+dataurl+'" style="max-width:100%;max-height:20em;"> <br><br> ' );
-                }
+                },
+            attr: { // attributes
+                title: 'Insert image',
+            },
         },
         // attach file
         {
-            icon: '<span class="fa fa-paperclip"></span>',
-            title: 'Attach files',
+            icon: 'attachfile',
             browse: function( commands, input,file, button ) {
                     button.style.position = 'relative';
                     var badge = button.querySelector('div.badge');
@@ -103,62 +94,71 @@ ready(function() {
                     }
                     else
                         badge.textContent = parseInt(badge.textContent) + 1;
-                }
+                },
+            attr: { // attributes
+                title: 'Attach files',
+            },
         },
-        // default buttons
+        // simple buttons
         {
-            icon: '<span class="fa fa-external-link"></span>',
-            title: 'Insert link',
-            default: 'link'
+            icon: 'insertlink',
+            action: 'link',
+            attr: { // attributes
+                title: 'Insert link',
+            },
         },
         {
-            icon: '<span class="fa fa-bold"></span>',
-            title: 'Bold (Ctrl+B)',
+            icon: 'bold',
+            action: 'bold',
             hotkey: 'b',
-            default: 'bold'
+            attr: { // attributes
+                title: 'Bold (Ctrl+B)',
+            },
         },
         {
-            icon: '<span class="fa fa-italic"></span>',
-            title: 'Italic (Ctrl+I)',
+            icon: 'italic',
+            action: 'italic',
             hotkey: 'i',
-            default: 'italic'
+            attr: { // attributes
+                title: 'Italic (Ctrl+I)',
+            },
         },
         {
-            icon: '<span class="fa fa-underline"></span>',
-            title: 'Underline (Ctrl+U)',
+            icon: 'underline',
+            action: 'underline',
             hotkey: 'u',
-            default: 'underline'
+            attr: { // attributes
+                title: 'Underline (Ctrl+U)',
+            },
         },
         {
-            icon: '<span class="fa fa-strikethrough"></span>',
-            title: 'Strikethrough (Ctrl+S)',
+            icon: 'strikethrough',
+            action: 'strikethrough',
             hotkey: 's',
-            default: 'strikethrough'
+            attr: { // attributes
+                title: 'Strikethrough (Ctrl+S)',
+            },
         },
         {
-            icon: '<span class="fa fa-paint-brush"></span>',
-            title: 'Text color',
-            default: 'forecolor'
+            icon: 'colortext',
+            action: 'colortext',
+            attr: { // attributes
+                title: 'Text color',
+            },
         },
         {
-            icon: '<span class="fa fa-tint"></span>',
-            title: 'Background color',
-            default: 'highlight'
+            icon: 'colorfill',
+            action: 'colorfill',
+            attr: { // attributes
+                title: 'Background color',
+            },
         },
         {
-            icon: '<span class="fa fa-subscript"></span>',
-            title: 'Subscript',
-            default: 'subscript'
-        },
-        {
-            icon: '<span class="fa fa-superscript"></span>',
-            title: 'Superscript',
-            default: 'superscript'
-        },
-        {
-            icon: '<span class="fa fa-eraser"></span>',
-            title: 'Remove format',
-            default: 'removeformat'
+            icon: 'clearformat',
+            action: 'clearformat',
+            attr: { // attributes
+                title: 'Remove format',
+            },
         }
     ];
 
@@ -204,15 +204,15 @@ ready(function() {
     var editor1_commands = wysiwyg( '#editor1', {
         toolbar: 'top',
         buttons: buttons.slice(1),
-        selectionbuttons: buttons.slice(3,4).concat( buttons.slice(5,14) ),
+        selectionbuttons: buttons.slice(2,3).concat( buttons.slice(4,13) ),
         suggester: suggester,
         interceptenter: interceptenter,
         hijackmenu: true
     });
-    wysiwyg( '#editor2', {
+    var editor2_commands = wysiwyg( '#editor2', {
         toolbar: null,
         buttons: buttons,
-        selectionbuttons: buttons.slice(3,4).concat( buttons.slice(5,14) ),
+        selectionbuttons: buttons.slice(2,3).concat( buttons.slice(4,13) ),
         suggester: suggester,
         interceptenter: interceptenter,
         hijackmenu: false
@@ -221,6 +221,9 @@ ready(function() {
     // insert text
     document.querySelector('#outside').addEventListener('click', function() {
         editor1_commands.insertHTML( '<i>some text</i>&nbsp;' );
+    });
+    customButton.addEventListener('click', function() {
+        editor2_commands.insertHTML( '<i>some text</i>&nbsp;' );
     });
 });
 </script>
@@ -234,9 +237,9 @@ ready(function() {
 <div style="width:860px; margin: 30px auto;">
 
 <div id="editor1" class="wysiwyg">
-  <textarea name="editor"></textarea>
+  <textarea name="editor" placeholder="Write a comment ..."></textarea>
 </div>
-<center><button id="outside">Insert text</button></center>
+<button id="outside">Insert text</button>
 
 <br><br>
 

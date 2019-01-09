@@ -116,25 +116,34 @@ _:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .to
     transition-delay: 0.1s;
 }
 /* buttons */
-.wysiwyg .toolbar a,
-.wysiwyg-popup .toolbar a {
+.wysiwyg .toolbar button.btn,
+.wysiwyg-popup .toolbar button.btn {
     display: inline-block;
+    width: 1.2em;
+    height: 1.2em;
     margin: 0;
-    padding: 0;
+    border: none;
+    padding: 0.4em 0.7em;
     color: #999999;
+    background: transparent none;
     text-decoration: none;
     vertical-align: top;
     cursor: pointer;
     outline: none;
     user-select: none;
-    padding: 0.4em 0.7em;
-    text-decoration: none;
     transition: color 0.2s, background 0.2s;
+    box-sizing: content-box;
 }
-.wysiwyg .toolbar a:hover,
-.wysiwyg-popup .toolbar a:hover {
+.wysiwyg .toolbar button.btn:hover,
+.wysiwyg-popup .toolbar button.btn:hover {
     color: HighlightText;
     background-color: Highlight;
+}
+.wysiwyg .toolbar button.btn svg,
+.wysiwyg-popup .toolbar button.btn svg {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 /* Popup can be placed anywhere in the DOM */
 .wysiwyg-popup {
