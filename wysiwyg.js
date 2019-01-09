@@ -904,18 +904,21 @@
             // submit form on enter-key
             if( interceptenter && key == 13 && ! shiftKey && ! altKey && ! ctrlKey && ! metaKey )
             {
-                commands.sync().closePopup();
                 if( interceptenter() )
+                {
+                    commands.sync().closePopup();
                     return false; // swallow enter
+                }
             }
             // Exec hotkey (onkeydown because e.g. CTRL+B would oben the bookmarks)
             if( character && !shiftKey && !altKey && ctrlKey && !metaKey )
             {
                 var hotkey = character.toLowerCase();
-                if( ! hotkeys[hotkey] )
-                    return;
-                hotkeys[hotkey]();
-                return false; // prevent default
+                if( hotkeys[hotkey] )
+                {
+                    hotkeys[hotkey]();
+                    return false; // prevent default
+                }
             }
             // Handle suggester
             if( suggester )
