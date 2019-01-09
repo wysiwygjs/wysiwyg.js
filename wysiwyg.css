@@ -49,6 +49,7 @@
     display: block; /* For Firefox */
     opacity: 0.54;  /* https://developer.mozilla.org/de/docs/Web/CSS/%3A%3A-moz-placeholder */
     white-space: nowrap;
+    cursor: text;
 }
 .wysiwyg > [contenteditable=true][placeholder]:empty:before {
     content: '\200B' attr(placeholder); /* ZWSP if placeholder empty */
