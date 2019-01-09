@@ -751,16 +751,16 @@
                                     open_popup_button( element, create_insertlink, recent_selection_link );
                                 break;
                             case 'bold':
-                                commands.bold(); // .closePopup().collapseSelection()
+                                commands.bold().closePopup().collapseSelection()
                                 break;
                             case 'italic':
-                                commands.italic(); // .closePopup().collapseSelection()
+                                commands.italic().closePopup().collapseSelection()
                                 break;
                             case 'underline':
-                                commands.underline(); // .closePopup().collapseSelection()
+                                commands.underline().closePopup().collapseSelection()
                                 break;
                             case 'strikethrough':
-                                commands.strikethrough(); // .closePopup().collapseSelection()
+                                commands.strikethrough().closePopup().collapseSelection()
                                 break;
                             case 'colortext':
                                 if( selection_rect )
