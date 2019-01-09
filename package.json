@@ -1,6 +1,6 @@
 {
   "name": "wysiwyg.js",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "description": "wysiwyg contenteditable editor (lightweight + cross browser)",
   "homepage": "http://wysiwygjs.github.io/",
   "keywords": [
@@ -24,8 +24,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "clean-css": "^3.2.9",
-    "uglify-js": "^2.4.21"
+    "clean-css-cli": "^4.2.1",
+    "uglify-js": "^3.4.9"
   },
   "scripts": {
     "build": "make build"

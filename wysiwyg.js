@@ -1,3 +1,5 @@
+/*! wysiwyg.js | https://github.com/wysiwygjs/wysiwyg.js | Apache License (v2) */
+/*! Material Design Icons | https://material.io/ | Apache License (v2) */
 (function(window, document, undefined)
 {
     'use strict';
