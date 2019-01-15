@@ -331,7 +331,7 @@
             node_contenteditable.setAttribute( 'contentEditable', 'true' );
             var placeholder = node_textarea.placeholder;
             if( placeholder )
-                node_contenteditable.setAttribute( 'placeholder', placeholder );
+                node_contenteditable.setAttribute( 'data-placeholder', placeholder );
             node_container.insertBefore( node_contenteditable, node_container.firstChild );
         }
 

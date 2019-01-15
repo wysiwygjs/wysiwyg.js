@@ -11,6 +11,19 @@
 body {
     font-family: Arial,Verdana;
 }
+/* custom styles */
+.wysiwyg {
+    border-radius: 0.2em;
+    transition: border 0.2s;
+}
+.wysiwyg-popup {
+    border-radius: 0.2em;
+}
+/* active: change border */
+.wysiwyg:focus-within,
+.wysiwyg.focus {
+    border-color: Highlight;
+}
 </style>
 <script type="text/javascript">
 function ready(fn)
@@ -179,10 +192,10 @@ ready(function() {
         },
     ];
 
-    var suggester = function( typed, open_suggester )
+    var suggester = function( term, response )
     {
         // Suggestions start with '@'
-        if( typed[0] != '@' )
+        if( term[0] != '@' )
             return false;
         // You may want to ask the server ...
         var fill_suggestion = function()
@@ -191,19 +204,19 @@ ready(function() {
                 var usernames = ['Evelyn','Harry','Amelia','Oliver','Isabelle','Eddie','Editha','Jacob','Emily','George','Edison'];
                 usernames.forEach( function( username, index )
                 {
-                    var re = new RegExp( '^(' + typed.substring(1).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')(.*)$', 'i' );
-                    if( typed == '@' || re.test(username) )
+                    var re = new RegExp( '^(' + term.substring(1).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')(.*)$', 'i' );
+                    if( term == '@' || re.test(username) )
                     {
                         var codepoint = 0xF600 + index;
                         var fakeavatar = String.fromCharCode( ((codepoint >>>10) & 0x3FF) | 0xD800 ) +
                                          String.fromCharCode( 0xDC00 | (codepoint & 0x3FF) );
                         suggestions.push({
-                            label: fakeavatar + ' ' + (typed != '@' ? username.replace(re,'$1<b>$2</b>') : username),
+                            label: fakeavatar + ' ' + (term != '@' ? username.replace(re,'$1<b>$2</b>') : username),
                             insert: '<a href="/' + username + '">@' + username + '</a>&nbsp;'
                         });
                     }
                 });
-                open_suggester( suggestions.length ? suggestions : null );  // null = close suggestions
+                response( suggestions.length ? suggestions : null );  // null = close suggestions
             };
         // simulate: immediate, fast and slow internet
         if( Math.random() < 0.5 )
@@ -263,7 +276,7 @@ ready(function() {
 
 <span style="color:#ccc">flicker-free markup:</span><br>
 <div id="editor2" class="wysiwyg">
-  <div contenteditable="true" placeholder="Write a comment ..."></div>
+  <div contenteditable="true" data-placeholder="Write a comment ..."></div>
   <textarea name="editor"></textarea>
 </div>
 

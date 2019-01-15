@@ -1,14 +1,7 @@
 .wysiwyg {
     color: black;
     background: none white;
-    border: 1px solid #dddddd;
-    border-radius: 0.2em;
-    transition: border 0.2s ease-in-out;
-}
-/* active: change border */
-.wysiwyg:focus-within,
-.wysiwyg.focus {
-    border: 1px solid Highlight;
+    border: 1px solid #ccc;
 }
 /* contenteditable + textarea */
 .wysiwyg > [contenteditable=true] {
@@ -35,7 +28,7 @@
     font-family: inherit;
     font-size: inherit;
     line-height: inherit;
-    transition: height 0.3s ease-in-out;
+    transition: height 0.3s;
 }
 .wysiwyg > [contenteditable=true] ~ textarea {
     display: none !important;
@@ -51,10 +44,10 @@
     white-space: nowrap;
     cursor: text;
 }
-.wysiwyg > [contenteditable=true][placeholder]:empty:before {
-    content: '\200B' attr(placeholder); /* ZWSP if placeholder empty */
+.wysiwyg > [contenteditable=true][data-placeholder]:empty:before {
+    content: '\200B' attr(data-placeholder); /* ZWSP if placeholder empty */
 }
-_:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
+_:-ms-lang(x), .wysiwyg > [contenteditable=true][data-placeholder]:focus:before {
     content: '\200B'; /* IE11 puts caret after placeholder */
 }
 /* popup */
@@ -86,10 +79,10 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
     vertical-align: middle;
 }
 .wysiwyg > .toolbar-top {
-    border-bottom: 1px solid #dddddd;
+    border-bottom: 1px solid #ccc;
 }
 .wysiwyg > .toolbar-bottom {
-    border-top: 1px solid #dddddd;
+    border-top: 1px solid #ccc;
 }
 /* https://stackoverflow.com/questions/3508605/how-can-i-transition-height-0-to-height-auto-using-css */
 .wysiwyg > .toolbar-auto {
@@ -99,40 +92,40 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][placeholder]:focus:before {
 .wysiwyg > .toolbar-auto:after {
     content: '';
     height: 1em;
-    max-height: 0px;
-    transition: height 0.2s linear, max-height 0s 0.2s linear;
+    max-height: 0;
+    transition: height 0.2s, max-height 0s 0.2s;
 }
 .wysiwyg:not(:focus-within):not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after {
     height: 0;
     max-height: 1em;
-    transition: height 0.2s linear;
+    transition: height 0.2s;
     transition-delay: 0.1s;
 }
 _:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after { /* IE10+IE11: repeat due :focus-within */
     height: 0;
     max-height: 1em;
-    transition: height 0.2s linear;
+    transition: height 0.2s;
     transition-delay: 0.1s;
 }
 .wysiwyg > .toolbar-auto > .toolbar {
     width: 100%;
     max-height: 1000000px;
     margin-bottom: 0;
-    border-top: 1px solid #dddddd;
-    transition: margin-bottom 0.2s cubic-bezier(0, 0, 0, 1), border-top-width 0.2s linear;
+    border-top: 1px solid #ccc;
+    transition: margin-bottom 0.2s cubic-bezier(0, 0, 0, 1), border-top-width 0.2s;
 }
 .wysiwyg:not(:focus-within):not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto > .toolbar {
     max-height: 0;
     margin-bottom: -2000px;
     border-top-width: 0;
-    transition: margin-bottom 0.2s cubic-bezier(1, 0, 1, 1), max-height 0s 0.2s, border-top-width 0.2s linear;
+    transition: margin-bottom 0.2s cubic-bezier(1, 0, 1, 1), max-height 0s 0.2s, border-top-width 0.2s;
     transition-delay: 0.1s;
 }
 _:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto > .toolbar { /* IE10+IE11: repeat due :focus-within */
     max-height: 0;
     margin-bottom: -2000px;
     border-top-width: 0;
-    transition: margin-bottom 0.2s cubic-bezier(1, 0, 1, 1), max-height 0s 0.2s, border-top-width 0.2s linear;
+    transition: margin-bottom 0.2s cubic-bezier(1, 0, 1, 1), max-height 0s 0.2s, border-top-width 0.2s;
     transition-delay: 0.1s;
 }
 /* buttons */
@@ -150,6 +143,10 @@ _:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .to
     vertical-align: top;
     cursor: pointer;
     outline: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
     transition: color 0.2s, background 0.2s;
     box-sizing: content-box;
@@ -173,8 +170,11 @@ _:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .to
     background: white;
     background: rgba(255,255,255,0.9);
     left: -50%;
-    border: 1px solid #dddddd;
-    border-radius: 4px;
+    border: 1px solid #ccc;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
 }
 .wysiwyg-popup input {
