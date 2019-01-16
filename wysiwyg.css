@@ -1,7 +1,7 @@
 .wysiwyg {
     color: black;
     background: none white;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
 }
 /* contenteditable + textarea */
 .wysiwyg > [contenteditable=true] {
@@ -79,10 +79,10 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][data-placeholder]:focus:before 
     vertical-align: middle;
 }
 .wysiwyg > .toolbar-top {
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #ddd;
 }
 .wysiwyg > .toolbar-bottom {
-    border-top: 1px solid #ccc;
+    border-top: 1px solid #ddd;
 }
 /* https://stackoverflow.com/questions/3508605/how-can-i-transition-height-0-to-height-auto-using-css */
 .wysiwyg > .toolbar-auto {
@@ -111,7 +111,7 @@ _:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .to
     width: 100%;
     max-height: 1000000px;
     margin-bottom: 0;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid #ddd;
     transition: margin-bottom 0.2s cubic-bezier(0, 0, 0, 1), border-top-width 0.2s;
 }
 .wysiwyg:not(:focus-within):not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto > .toolbar {
@@ -170,7 +170,7 @@ _:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .to
     background: white;
     background: rgba(255,255,255,0.9);
     left: -50%;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -moz-user-select: none;
