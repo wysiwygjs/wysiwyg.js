@@ -880,9 +880,10 @@
             // submit form on enter-key
             if( interceptenter && key == 13 && ! shiftKey && ! altKey && ! ctrlKey && ! metaKey )
             {
+                commands.sync();
                 if( interceptenter() )
                 {
-                    commands.sync().closePopup();
+                    commands.closePopup();
                     return false; // swallow enter
                 }
             }

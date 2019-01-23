@@ -4,7 +4,8 @@
     border: 1px solid #ddd;
 }
 /* contenteditable + textarea */
-.wysiwyg > [contenteditable=true] {
+.wysiwyg > [contenteditable=true],
+.wysiwyg > .contenteditable {
     display: block;
     outline: none;
     word-wrap: break-word;
@@ -37,14 +38,16 @@
     height: 5em;
 }
 /* placeholder - ':placeholder-shown' only works with input/textarea */
-.wysiwyg > [contenteditable=true]:empty:before {
+.wysiwyg > [contenteditable=true]:empty:before,
+.wysiwyg > .contenteditable:empty:before {
     content: '\200B'; /* Keep distance */
     display: block; /* For Firefox */
     opacity: 0.54;  /* https://developer.mozilla.org/de/docs/Web/CSS/%3A%3A-moz-placeholder */
     white-space: nowrap;
     cursor: text;
 }
-.wysiwyg > [contenteditable=true][data-placeholder]:empty:before {
+.wysiwyg > [contenteditable=true][data-placeholder]:empty:before,
+.wysiwyg > .contenteditable[data-placeholder]:empty:before {
     content: '\200B' attr(data-placeholder); /* ZWSP if placeholder empty */
 }
 _:-ms-lang(x), .wysiwyg > [contenteditable=true][data-placeholder]:focus:before {
