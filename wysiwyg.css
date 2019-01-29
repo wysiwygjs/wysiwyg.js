@@ -195,7 +195,6 @@ _:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .to
 .wysiwyg-popup .suggestion {
     display: block;
     padding: 0.3rem 0.5rem;
-    padding: 0.3rem 0.5rem;
 }
 .wysiwyg-popup .suggestion:hover,
 .wysiwyg-popup .suggestion:first-of-type {
