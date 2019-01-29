@@ -9,15 +9,15 @@
     display: block;
     outline: none;
     word-wrap: break-word;
-    padding: 0.3em 0.4em;
+    padding: 0.3rem 0.4rem;
     overflow: hidden;
 }
 .wysiwyg > textarea {
     display: block;
     box-sizing: border-box;
     width: 100%;
-    height: 1em;
-    margin: 0.3em 0.4em;
+    height: 1.15rem;
+    margin: 0.3rem 0.4rem;
     padding: 0;
     border: none;
     background: transparent none;
@@ -35,7 +35,7 @@
     display: none !important;
 }
 .wysiwyg > textarea:focus {
-    height: 5em;
+    height: 5rem;
 }
 /* placeholder - ':placeholder-shown' only works with input/textarea */
 .wysiwyg > [contenteditable=true]:empty:before,
@@ -94,19 +94,19 @@ _:-ms-lang(x), .wysiwyg > [contenteditable=true][data-placeholder]:focus:before 
 }
 .wysiwyg > .toolbar-auto:after {
     content: '';
-    height: 1em;
+    height: 1rem;
     max-height: 0;
     transition: height 0.2s, max-height 0s 0.2s;
 }
 .wysiwyg:not(:focus-within):not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after {
     height: 0;
-    max-height: 1em;
+    max-height: 1rem;
     transition: height 0.2s;
     transition-delay: 0.1s;
 }
 _:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after { /* IE10+IE11: repeat due :focus-within */
     height: 0;
-    max-height: 1em;
+    max-height: 1rem;
     transition: height 0.2s;
     transition-delay: 0.1s;
 }
@@ -135,11 +135,11 @@ _:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .to
 .wysiwyg .toolbar button.btn,
 .wysiwyg-popup .toolbar button.btn {
     display: inline-block;
-    width: 1.2em;
-    height: 1.2em;
+    width: 1.2rem;
+    height: 1.2rem;
     margin: 0;
     border: none;
-    padding: 0.4em 0.7em;
+    padding: 0.4rem 0.7rem;
     color: #999999;
     background: transparent none;
     text-decoration: none;
@@ -184,7 +184,7 @@ _:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .to
     display: block;
     box-sizing: border-box;
     width: 100%;
-    margin: 0.5em 0.7em;
+    margin: 0.5rem 0.7rem;
     padding: 0;
     border: none;
     background: transparent none;
@@ -194,8 +194,8 @@ _:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .to
 }
 .wysiwyg-popup .suggestion {
     display: block;
-    padding: 0.3em 0.5em;
-    padding: 0.3em 0.5em;
+    padding: 0.3rem 0.5rem;
+    padding: 0.3rem 0.5rem;
 }
 .wysiwyg-popup .suggestion:hover,
 .wysiwyg-popup .suggestion:first-of-type {
