@@ -495,15 +495,9 @@
             var node = node_container.offsetParent,
                 offsetparent_left = 0,
                 offsetparent_top = 0,
-                offsetparent_break = false,
-                offsetparent_window_left = 0,
-                offsetparent_window_top = 0,
-                offsetparent_fixed = false,
-                offsetparent_overflow = false;
+                offsetparent_break = false;
             while( node )
             {
-                offsetparent_window_left += node.offsetLeft;
-                offsetparent_window_top += node.offsetTop;
                 var node_style = getComputedStyle( node );
                 if( node_style['position'] != 'static' )
                     offsetparent_break = true;
@@ -512,10 +506,6 @@
                     offsetparent_left += node.offsetLeft;
                     offsetparent_top += node.offsetTop;
                 }
-                if( node_style['position'] == 'fixed' )
-                    offsetparent_fixed = true;
-                if( node_style['overflow'] != 'visible' )
-                    offsetparent_overflow = true;
                 node = node.offsetParent;
             }
             // Move popup as high as possible in the DOM tree: offsetParent of container
@@ -523,38 +513,21 @@
             popup_parent.appendChild( popup );
             left += offsetparent_left + node_container.offsetLeft;
             top += offsetparent_top + node_container.offsetTop;
-            // Trim to offset-parent
-            var popup_width = popup.offsetWidth;    // accurate to integer
-            if( offsetparent_fixed || offsetparent_overflow )
-            {
-                var popup_parent_width = popup_parent.offsetWidth;
-                if( left + popup_width > popup_parent_width - 1 )
-                    left = popup_parent_width - popup_width - 1;
-                if( left < 1 )
-                    left = 1;
-            }
-            var popup_height = popup.offsetHeight;    // accurate to integer
-            if( offsetparent_fixed || offsetparent_overflow )
-            {
-                var popup_parent_height = popup_parent.offsetHeight;
-                if( top + popup_height > popup_parent_height - 1 )
-                    top = popup_parent_height - popup_height - 1;
-                if( top < 1 )
-                    top = 1;
-            }
             // Trim to viewport
-            var viewport_width = window.innerWidth;
-            var scroll_left = offsetparent_fixed ? 0 : document.documentElement.scrollLeft;
-            if( offsetparent_window_left + left + popup_width > viewport_width + scroll_left - 2 )
-                left = viewport_width + scroll_left - offsetparent_window_left - popup_width - 2;
-            if( offsetparent_window_left + left < scroll_left + 1 )
-                left = scroll_left - offsetparent_window_left + 1;
+            var rect = popup_parent.getBoundingClientRect();
+            var documentElement = document.documentElement;
+            var viewport_width = Math.min( window.innerWidth, Math.max(documentElement.offsetWidth, documentElement.scrollWidth) );
             var viewport_height = window.innerHeight;
-            var scroll_top = offsetparent_fixed ? 0 : document.documentElement.scrollTop;
-            if( offsetparent_window_top + top + popup_height > viewport_height + scroll_top - 2 )
-                top = viewport_height + scroll_top - offsetparent_window_top - popup_height - 2;
-            if( offsetparent_window_top + top < scroll_top + 1 )
-                top = scroll_top - offsetparent_window_top + 1;
+            var popup_width = popup.offsetWidth;    // accurate to integer
+            var popup_height = popup.offsetHeight;
+            if( rect.left + left < 1 )
+                left = 1 - rect.left;
+            else if( rect.left + left + popup_width > viewport_width - 1 )
+                left = Math.max( 1 - rect.left, viewport_width - 1 - rect.left - popup_width );
+            if( rect.top + top < 1 )
+                top = 1 - rect.top;
+            else if( rect.top + top + popup_height > viewport_height - 1 )
+                top = Math.max( 1 - rect.top, viewport_height - 1 - rect.top - popup_height );
             // Set offset
             popup.style.left = parseInt(left) + 'px';
             popup.style.top = parseInt(top) + 'px';
@@ -818,7 +791,6 @@
                         var element = document.createElement('div');
                         add_class( element, 'suggestion' );
                         element.innerHTML = suggestion.label;
-                        element.style.cursor = 'pointer';
                         addEvent( element, 'click', function( e )
                             {
                                 finish_suggestion( suggestion.insert );
