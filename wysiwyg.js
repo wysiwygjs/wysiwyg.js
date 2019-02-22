@@ -492,27 +492,20 @@
         var popup_position = function( popup, left, top ) // left+top relative to container
         {
             // Test parents, el.getBoundingClientRect() does not work within 'position:fixed'
-            var node = node_container.offsetParent,
-                offsetparent_left = 0,
-                offsetparent_top = 0,
-                offsetparent_break = false;
+            var node = node_container,
+                popup_parent = node.offsetParent;
             while( node )
             {
                 var node_style = getComputedStyle( node );
                 if( node_style['position'] != 'static' )
-                    offsetparent_break = true;
-                else if( ! offsetparent_break )
-                {
-                    offsetparent_left += node.offsetLeft;
-                    offsetparent_top += node.offsetTop;
-                }
+                    break;
+                left += node.offsetLeft;
+                top += node.offsetTop;
+                popup_parent = node;
                 node = node.offsetParent;
             }
-            // Move popup as high as possible in the DOM tree: offsetParent of container
-            var popup_parent = node_container.offsetParent || document.body;
+            // Move popup as high as possible in the DOM tree
             popup_parent.appendChild( popup );
-            left += offsetparent_left + node_container.offsetLeft;
-            top += offsetparent_top + node_container.offsetTop;
             // Trim to viewport
             var rect = popup_parent.getBoundingClientRect();
             var documentElement = document.documentElement;
