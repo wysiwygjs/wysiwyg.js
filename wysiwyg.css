@@ -45,13 +45,15 @@
     opacity: 0.54;  /* https://developer.mozilla.org/de/docs/Web/CSS/%3A%3A-moz-placeholder */
     white-space: nowrap;
     cursor: text;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: none;
 }
 .wysiwyg > [contenteditable=true][data-placeholder]:empty:before,
 .wysiwyg > .contenteditable[data-placeholder]:empty:before {
-    content: '\200B' attr(data-placeholder); /* ZWSP if placeholder empty */
-}
-_:-ms-lang(x), .wysiwyg > [contenteditable=true][data-placeholder]:focus:before {
-    content: '\200B'; /* IE11 puts caret after placeholder */
+    content: '\200B' attr(data-placeholder); /* ZWSP if placeholder empty, IE11 puts caret after placeholder */
 }
 /* popup */
 .wysiwyg-popup.animate-down {
