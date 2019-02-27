@@ -1,0 +1,204 @@
+@charset "UTF-8";
+/* Config */
+/* CSS */
+.wysiwyg {
+  color: black;
+  background: none white;
+  border: 1px solid #ddd;
+  border-radius: 0.2rem;
+  transition: border 0.2s;
+  /* active: change border */
+  /* contenteditable + textarea */
+  /* placeholder - ':placeholder-shown' only works with input/textarea */
+  /* content inside contenteditable */ }
+  .wysiwyg:focus-within, .wysiwyg.focus {
+    border-color: Highlight; }
+  .wysiwyg > [contenteditable=true],
+  .wysiwyg > .contenteditable {
+    display: block;
+    outline: none;
+    word-wrap: break-word;
+    padding: 0.3rem 0.5rem;
+    overflow: hidden; }
+  .wysiwyg > textarea {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 1.15rem;
+    margin: 0.3rem 0.5rem;
+    padding: 0;
+    border: none;
+    background: transparent none;
+    -webkit-appearance: none;
+    overflow: auto;
+    outline: none;
+    box-shadow: none;
+    resize: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    transition: height 0.3s; }
+    .wysiwyg > textarea:focus {
+      height: 5rem; }
+  .wysiwyg > [contenteditable=true] ~ textarea {
+    display: none !important; }
+  .wysiwyg > [contenteditable=true]:empty:before,
+  .wysiwyg > .contenteditable:empty:before {
+    content: '\200B';
+    /* Keep distance */
+    display: block;
+    /* For Firefox */
+    opacity: .54;
+    /* https://developer.mozilla.org/de/docs/Web/CSS/%3A%3A-moz-placeholder */
+    white-space: nowrap;
+    cursor: text;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: none; }
+  .wysiwyg > [contenteditable=true][data-placeholder]:empty:before,
+  .wysiwyg > .contenteditable[data-placeholder]:empty:before {
+    content: "​" attr(data-placeholder);
+    /* ZWSP if placeholder empty, IE11 puts caret after placeholder */ }
+  .wysiwyg > [contenteditable=true] * {
+    margin: 0 !important;
+    border: 0 none !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+    line-height: inherit !important; }
+  .wysiwyg > [contenteditable=true] a {
+    cursor: text; }
+
+/* popup - can be placed anywhere in the DOM */
+.wysiwyg-popup {
+  position: absolute;
+  z-index: 9999;
+  color: black;
+  background: white;
+  background: rgba(255, 255, 255, 0.9);
+  left: -50%;
+  border: 1px solid #ddd;
+  border-radius: 0.2rem;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+  .wysiwyg-popup input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0.3rem 0.5rem;
+    padding: 0;
+    border: none;
+    background: transparent none;
+    -webkit-appearance: none;
+    box-shadow: none;
+    font-family: inherit; }
+  .wysiwyg-popup .suggestion {
+    display: block;
+    padding: 0.3rem 0.5rem;
+    cursor: pointer; }
+    .wysiwyg-popup .suggestion:hover, .wysiwyg-popup .suggestion:first-of-type {
+      color: HighlightText;
+      background-color: Highlight; }
+  .wysiwyg-popup.animate-down {
+    transform-origin: top;
+    animation: transformer 0.2s ease-out 0s 1; }
+  .wysiwyg-popup.animate-up {
+    transform-origin: bottom;
+    animation: transformer 0.2s ease-out 0s 1; }
+
+@keyframes transformer {
+  from {
+    opacity: 0;
+    transform: scale(0.5, 0); }
+  to {
+    opacity: 1;
+    transform: scale(1, 1); } }
+/* toolbar */
+.wysiwyg .toolbar,
+.wysiwyg-popup .toolbar {
+  white-space: nowrap; }
+  .wysiwyg .toolbar *,
+  .wysiwyg-popup .toolbar * {
+    vertical-align: middle; }
+
+.wysiwyg {
+  /* https://stackoverflow.com/questions/3508605/how-can-i-transition-height-0-to-height-auto-using-css */ }
+  .wysiwyg > .toolbar-top {
+    border-bottom: 1px solid #ddd; }
+  .wysiwyg > .toolbar-bottom {
+    border-top: 1px solid #ddd; }
+  .wysiwyg > .toolbar-auto {
+    display: flex;
+    overflow: hidden; }
+    .wysiwyg > .toolbar-auto:after {
+      content: '';
+      height: 1rem;
+      max-height: 0;
+      transition: height 0.2s, max-height 0s 0.2s; }
+    .wysiwyg > .toolbar-auto > .toolbar {
+      width: 100%;
+      max-height: 1000000px;
+      margin-bottom: 0;
+      border-top: 1px solid #ddd;
+      transition: margin-bottom 0.2s cubic-bezier(0, 0, 0, 1), border-top-width 0.2s; }
+  .wysiwyg:not(:focus-within):not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after {
+    height: 0;
+    max-height: 1rem;
+    transition: height 0.2s;
+    transition-delay: 0.1s; }
+  .wysiwyg:not(:focus-within):not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto > .toolbar {
+    max-height: 0;
+    margin-bottom: -2000px;
+    border-top-width: 0;
+    transition: margin-bottom 0.2s cubic-bezier(1, 0, 1, 1), max-height 0s 0.2s, border-top-width 0.2s;
+    transition-delay: 0.1s; }
+
+/* IE10+IE11: repeat due :focus-within */
+_:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after {
+  height: 0;
+  max-height: 1rem;
+  transition: height 0.2s;
+  transition-delay: 0.1s; }
+
+_:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto > .toolbar {
+  max-height: 0;
+  margin-bottom: -2000px;
+  border-top-width: 0;
+  transition: margin-bottom 0.2s cubic-bezier(1, 0, 1, 1), max-height 0s 0.2s, border-top-width 0.2s;
+  transition-delay: 0.1s; }
+
+/* buttons */
+.wysiwyg .toolbar button.btn,
+.wysiwyg-popup .toolbar button.btn {
+  display: inline-block;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0;
+  border: none;
+  padding: 0.3rem 0.5rem;
+  color: #999;
+  background: transparent none;
+  text-decoration: none;
+  vertical-align: top;
+  cursor: pointer;
+  outline: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transition: color 0.2s, background 0.2s;
+  box-sizing: content-box; }
+  .wysiwyg .toolbar button.btn:hover,
+  .wysiwyg-popup .toolbar button.btn:hover {
+    color: HighlightText;
+    background-color: Highlight; }
+  .wysiwyg .toolbar button.btn svg,
+  .wysiwyg-popup .toolbar button.btn svg {
+    display: block;
+    width: 100%;
+    height: 100%; }
