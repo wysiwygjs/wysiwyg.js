@@ -11,6 +11,7 @@ $wysiwyg-padding-horiz:     .5rem !default;
 
 /* CSS */
 .wysiwyg {
+    display: block;
     color: black;
     background: none white;
     border: 1px solid $wysiwyg-border-color;

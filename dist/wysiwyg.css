@@ -2,6 +2,7 @@
 /* Config */
 /* CSS */
 .wysiwyg {
+  display: block;
   color: black;
   background: none white;
   border: 1px solid #ddd;
