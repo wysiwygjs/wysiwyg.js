@@ -8,6 +8,6 @@ compress-js:
 	$(UGLIFYJS) wysiwyg.js --mangle --compress --unsafe --comments '/^\/*!/' > dist/wysiwyg.min.js
 
 compress-css:
-	$(SCSS) --sourcemap=none --cache-location=/tmp/.sass-cache wysiwyg.scss dist/wysiwyg.css
+	$(SCSS) --sourcemap=none --no-cache wysiwyg.scss dist/wysiwyg.css
 	$(CLEANCSS) dist/wysiwyg.css > dist/wysiwyg.min.css
 
