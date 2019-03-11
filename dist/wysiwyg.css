@@ -63,11 +63,27 @@
     content: "​" attr(data-placeholder);
     /* ZWSP if placeholder empty, IE11 puts caret after placeholder */ }
   .wysiwyg > [contenteditable=true] * {
+    /* Since we don't use a shadow-dom, brutally reset CSS */
+    display: inline !important;
+    visibility: visible !important;
+    transition: none !important;
+    float: none !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
     margin: 0 !important;
-    border: 0 none !important;
+    border: 0 !important;
     padding: 0 !important;
+    white-space: normal !important;
+    line-height: inherit !important;
+    font-family: inherit !important;
     font-size: inherit !important;
-    line-height: inherit !important; }
+    caret-color: auto !important; }
+  .wysiwyg > [contenteditable=true] main, .wysiwyg > [contenteditable=true] aside, .wysiwyg > [contenteditable=true] nav, .wysiwyg > [contenteditable=true] header, .wysiwyg > [contenteditable=true] footer, .wysiwyg > [contenteditable=true] article, .wysiwyg > [contenteditable=true] section, .wysiwyg > [contenteditable=true] blockquote, .wysiwyg > [contenteditable=true] div, .wysiwyg > [contenteditable=true] p, .wysiwyg > [contenteditable=true] pre, .wysiwyg > [contenteditable=true] h1, .wysiwyg > [contenteditable=true] h2, .wysiwyg > [contenteditable=true] h3, .wysiwyg > [contenteditable=true] h4, .wysiwyg > [contenteditable=true] h5, .wysiwyg > [contenteditable=true] h6, .wysiwyg > [contenteditable=true] hr, .wysiwyg > [contenteditable=true] ul, .wysiwyg > [contenteditable=true] ol, .wysiwyg > [contenteditable=true] li, .wysiwyg > [contenteditable=true] dl, .wysiwyg > [contenteditable=true] dt, .wysiwyg > [contenteditable=true] dd {
+    display: block !important; }
   .wysiwyg > [contenteditable=true] a {
     cursor: text; }
 
