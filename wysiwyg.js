@@ -480,6 +480,7 @@
                                 commands.forecolor( color ).closePopup().collapseSelection();
                             else
                                 commands.highlight( color ).closePopup().collapseSelection();
+                            cancelEvent( e );
                         });
                     tr.appendChild( td );
                 }
@@ -1417,6 +1418,7 @@
                 popupClose();
                 return this;
             },
+            // formats
             removeFormat: function()
             {
                 execCommand( 'removeFormat' );
