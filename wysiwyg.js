@@ -588,8 +588,7 @@
             buttons.forEach( function(button)
             {
                 // Custom button
-                var domnode = button instanceof Element || button instanceof Document;
-                if( domnode )
+                if( button instanceof HTMLElement )
                 {
                     toolbar_container.appendChild( button );
                     // Simulate ':focus-within'
