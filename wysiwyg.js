@@ -588,7 +588,7 @@
             buttons.forEach( function(button)
             {
                 // Custom button
-                var domnode = button instanceof Element || button instanceof HTMLDocument;
+                var domnode = button instanceof Element || button instanceof Document;
                 if( domnode )
                 {
                     toolbar_container.appendChild( button );
@@ -1024,8 +1024,11 @@
             addEvent( node_contenteditable, 'cut', debounced_syncTextarea );
             addEvent( node_contenteditable, 'drop', debounced_syncTextarea );
             // MutationObserver should report everything
-            var observer = new MutationObserver( debounced_syncTextarea );
-            observer.observe( node_contenteditable, {attributes:true,childList:true,characterData:true,subtree:true});
+            if( window.MutationObserver )
+            {
+                var observer = new MutationObserver( debounced_syncTextarea );
+                observer.observe( node_contenteditable, {attributes:true,childList:true,characterData:true,subtree:true});
+            }
 
             // handle reset event
             var form = node_textarea.form;
