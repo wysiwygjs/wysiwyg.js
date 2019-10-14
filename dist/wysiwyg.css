@@ -92,7 +92,8 @@
   .wysiwyg > [contenteditable=true] main, .wysiwyg > [contenteditable=true] aside, .wysiwyg > [contenteditable=true] nav, .wysiwyg > [contenteditable=true] header, .wysiwyg > [contenteditable=true] footer, .wysiwyg > [contenteditable=true] article, .wysiwyg > [contenteditable=true] section, .wysiwyg > [contenteditable=true] blockquote, .wysiwyg > [contenteditable=true] div, .wysiwyg > [contenteditable=true] p, .wysiwyg > [contenteditable=true] pre, .wysiwyg > [contenteditable=true] h1, .wysiwyg > [contenteditable=true] h2, .wysiwyg > [contenteditable=true] h3, .wysiwyg > [contenteditable=true] h4, .wysiwyg > [contenteditable=true] h5, .wysiwyg > [contenteditable=true] h6, .wysiwyg > [contenteditable=true] hr, .wysiwyg > [contenteditable=true] ul, .wysiwyg > [contenteditable=true] ol, .wysiwyg > [contenteditable=true] li, .wysiwyg > [contenteditable=true] dl, .wysiwyg > [contenteditable=true] dt, .wysiwyg > [contenteditable=true] dd {
     display: block !important; }
   .wysiwyg > [contenteditable=true] img {
-    max-width: 100% !important; }
+    max-width: 100% !important;
+    image-orientation: from-image; }
 
 /* popup - can be placed anywhere in the DOM */
 .wysiwyg-popup {

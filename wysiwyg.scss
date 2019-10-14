@@ -118,6 +118,7 @@ $wysiwyg-padding-horiz:     .5rem !default;
         }
         img {
             max-width: 100% !important;
+            image-orientation: from-image;
         }
     }
 }
