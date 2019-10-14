@@ -93,6 +93,7 @@
     display: block !important; }
   .wysiwyg > [contenteditable=true] img {
     max-width: 100% !important;
+    max-height: 50vh !important;
     image-orientation: from-image; }
 
 /* popup - can be placed anywhere in the DOM */
