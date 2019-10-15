@@ -845,6 +845,12 @@
                             case 'superscript':
                                 commands.superscript().closePopup().collapseSelection();
                                 break;
+                            case 'orderedlist':
+                                commands.orderedList().closePopup().collapseSelection();
+                                break;
+                            case 'unorderedlist':
+                                commands.unorderedList().closePopup().collapseSelection();
+                                break;
                             case 'clearformat':
                                 commands.removeFormat().closePopup().collapseSelection();
                                 break;
@@ -1632,6 +1638,18 @@
                     pasteHtmlAtCaret( node_contenteditable, html );
                 }
                 callUpdates( true ); // selection destroyed
+                return this;
+            },
+            orderedList: function()
+            {
+                execCommand( 'insertOrderedList' );
+                callUpdates();
+                return this;
+            },
+            unorderedList: function()
+            {
+                execCommand( 'insertUnorderedList' );
+                callUpdates();
                 return this;
             },
         };

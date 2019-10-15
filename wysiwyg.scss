@@ -81,47 +81,6 @@ $wysiwyg-padding-horiz:     .5rem !default;
     > .contenteditable[data-placeholder]:empty:before {
         content: '\200B' attr(data-placeholder); /* ZWSP if placeholder empty, IE11 puts caret after placeholder */
     }
-
-    /* Due copy/paste issues, brutally reset CSS of content inside contenteditable */
-    > [contenteditable=true] {
-        * {
-            display: inline !important;
-            position: static !important;
-            z-index: auto !important;
-            visibility: visible !important;
-            transition: none !important;
-            float: none !important;
-            top: auto !important;
-            right: auto !important;
-            bottom: auto !important;
-            left: auto !important;
-            width: auto !important;
-            min-width: 0 !important;
-            max-width: none !important;
-            height: auto !important;
-            min-height: 0 !important;
-            max-height: none !important;
-            background-image: none !important;
-            margin: 0 !important;
-            border: 0 !important;
-            padding: 0 !important;
-            white-space: normal !important;
-            line-height: inherit !important;
-            font-family: inherit !important;
-            font-size: inherit !important;
-            caret-color: auto !important;
-            cursor: text !important;
-        }
-        // html,head,body,dialog,details,summary,form,fieldset,legend,figure,figcaption,address,center
-        main,aside,nav,header,footer,article,section,blockquote,div,p,pre,h1,h2,h3,h4,h5,h6,hr,ul,ol,li,dl,dt,dd {
-            display: block !important;
-        }
-        img {
-            max-width: 100% !important;
-            max-height: 50vh !important;
-            image-orientation: from-image;
-        }
-    }
 }
 /* popup - can be placed anywhere in the DOM */
 .wysiwyg-popup {
