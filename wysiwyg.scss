@@ -178,8 +178,7 @@ $wysiwyg-padding-horiz:     .5rem !default;
             transition: margin-bottom $wysiwyg-duration cubic-bezier(0, 0, 0, 1), border-top-width $wysiwyg-duration;
         }
     }
-
-    &:not(:focus-within):not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto {
+    &:not(:focus-within):not(.focus):not(.focused) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto {
         &:after {
             height: 0;
             max-height: 1rem;
@@ -196,13 +195,13 @@ $wysiwyg-padding-horiz:     .5rem !default;
     }
 }
 /* IE10+IE11: repeat due :focus-within */
-_:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after {
+_:-ms-lang(x), .wysiwyg:not(.focus):not(.focused) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto:after {
     height: 0;
     max-height: 1rem;
     transition: height $wysiwyg-duration;
     transition-delay: $wysiwyg-delay;
 }
-_:-ms-lang(x), .wysiwyg:not(.focus) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto > .toolbar {
+_:-ms-lang(x), .wysiwyg:not(.focus):not(.focused) > [contenteditable="true"]:not(:focus) ~ .toolbar-auto > .toolbar {
     max-height: 0;
     margin-bottom: -2000px;
     border-top-width: 0;

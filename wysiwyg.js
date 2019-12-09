@@ -309,7 +309,8 @@
             suggester = options.suggester, interceptenter = options.interceptenter, hijackContextmenu = !!options.hijackmenu,
             node_container = typeof(element) == 'string' ? document.querySelector(element) : element,
             node_textarea = node_container.querySelector('textarea'),
-            commands, hotkeys = {}, toolbar_top = toolbar == 'top', toolbar_bottom = toolbar == 'bottom';
+            commands, hotkeys = {},
+            toolbar_top = toolbar == 'top', toolbar_bottom = toolbar == 'bottom', toolbar_demand = toolbar == 'demand';
 
         // initialize editor
         var add_class = function( element, classname )
@@ -343,6 +344,8 @@
                 clearTimeout( remove_focus_timeout );
             remove_focus_timeout = null;
             add_class( node_container, 'focus' );
+            if( toolbar_demand )
+                add_class( node_container, 'focused' );
         };
         var remove_class_focus = function()
         {

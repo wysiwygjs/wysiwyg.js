@@ -241,7 +241,7 @@ ready(function() {
         hijackmenu: true
     });
     var editor2_commands = wysiwyg( '#editor2', {
-        toolbar: null,
+        toolbar: null,      // or 'demand'
         buttons: buttons,
         selectionbuttons: buttons.slice(2,3).concat( buttons.slice(4,13) ),
         suggester: suggester,

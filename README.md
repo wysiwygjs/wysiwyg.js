@@ -20,7 +20,7 @@ Markup
 
 <script>
 wysiwyg( '.wysiwyg', {
-  toolbar: 'top',                           // 'top','bottom',null
+  toolbar: 'demand',                        // 'top','bottom','demand',null
   buttons: [buttons],                       // buttons on toolbar
   selectionbuttons: [selectionbuttons],     // buttons on selection-toolbar
   suggester: suggester( open_suggestion ),  // handle suggestions
