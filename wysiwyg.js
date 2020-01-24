@@ -493,7 +493,7 @@
         };
 
         // read file as data-url
-        var filecontents = function( file, callback )
+        var filecontents = function( file, callback, finished )
         {
             // base64 a 2GB video is insane: 16MB should work for an average image
             if( file.size > 0x1000000 )
@@ -573,6 +573,8 @@
                         callback( file.type, dataURL );
                     }
                 };
+                if( finished )
+                    filereader.onloadend = finished;
                 filereader.readAsDataURL( file );
             }
             if( ! window.DataView )
@@ -787,15 +789,40 @@
                                 else
                                 {
                                     var files = evt.target.files;
-                                    for( var i=0; i < files.length; ++i )
+                                    for( var i=0; i < files.length; ++i )   // can't use forEach() with 'FileList'
                                     {
                                         var file = files[i];
                                         if( 'browse' in button )
                                             button.browse( commands, input,file, element );
                                         else
-                                            filecontents( file, function( type, dataurl ) {
-                                                button.dataurl( commands, type, dataurl, element );
-                                            });
+                                        {
+                                            // Keep callback-order - supporting browser without 'Promise'
+                                            var callbacks = [],
+                                                callnext = 0;
+                                            (function(i)
+                                            {
+                                                filecontents( file,
+                                                    function( type, dataurl )
+                                                    {
+                                                        callbacks[i] = function() {
+                                                            button.dataurl( commands, type, dataurl, element );
+                                                        };
+                                                    },
+                                                    function()
+                                                    {
+                                                        if( ! (i in callbacks) )
+                                                            callbacks[i] = null;
+                                                        while( callnext in callbacks )
+                                                        {
+                                                            if( callbacks[callnext] )
+                                                                callbacks[callnext]();
+                                                            callnext++;
+                                                        }
+                                                        if( callnext == files.length )
+                                                            callbacks = null;
+                                                    });
+                                            })(i);
+                                        }
                                     }
                                 }
                                 if( remove_input )
