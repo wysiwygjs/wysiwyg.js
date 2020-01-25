@@ -495,8 +495,8 @@
         // read file as data-url
         var filecontents = function( file, callback )
         {
-            // base64 a 2GB video is insane: 16MB should work for an average image
-            if( file.size > 0x1000000 )
+            // base64 a 2GB video is insane: artificial clamp at 64MB
+            if( file.size > 0x4000000 )
             {
                 callback();
                 return;
