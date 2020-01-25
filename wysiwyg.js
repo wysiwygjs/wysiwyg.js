@@ -493,11 +493,14 @@
         };
 
         // read file as data-url
-        var filecontents = function( file, callback, finished )
+        var filecontents = function( file, callback )
         {
             // base64 a 2GB video is insane: 16MB should work for an average image
             if( file.size > 0x1000000 )
+            {
+                callback();
                 return;
+            }
 
             // read file as data-url
             var normalize_dataurl = function( orientation )
@@ -573,8 +576,10 @@
                         callback( file.type, dataURL );
                     }
                 };
-                if( finished )
-                    filereader.onloadend = finished;
+                filereader.onerror = function( e )
+                {
+                    callback();
+                };
                 filereader.readAsDataURL( file );
             }
             if( ! window.DataView )
@@ -621,6 +626,10 @@
                         offset += view.getUint16( offset, false );
                 }
                 return normalize_dataurl();
+            };
+            filereader.onerror = function( e )
+            {
+                callback();
             };
             filereader.readAsArrayBuffer( file );
         };
@@ -805,17 +814,13 @@
                                                     function( type, dataurl )
                                                     {
                                                         callbacks[i] = function() {
-                                                            button.dataurl( commands, type, dataurl, element );
+                                                            if( dataurl )   // empty on error
+                                                                button.dataurl( commands, type, dataurl, element );
                                                         };
-                                                    },
-                                                    function()
-                                                    {
-                                                        if( ! (i in callbacks) )
-                                                            callbacks[i] = null;
+                                                        // trigger callbacks in order
                                                         while( callnext in callbacks )
                                                         {
-                                                            if( callbacks[callnext] )
-                                                                callbacks[callnext]();
+                                                            callbacks[callnext]();
                                                             callnext++;
                                                         }
                                                         if( callnext == files.length )
@@ -1499,7 +1504,8 @@
                 return;
             // Insert image from clipboard
             filecontents( item.getAsFile(), function( type, dataurl ) {
-                execCommand( 'insertImage', dataurl );
+                if( dataurl )   // empty on error
+                    execCommand( 'insertImage', dataurl );
             });
             cancelEvent( e ); // dismiss paste
         });
