@@ -1203,6 +1203,7 @@
                     node_contenteditable.innerHTML = '';
                     debounced_syncTextarea();
                     callUpdates( true );
+                    remove_class( node_container, 'focused' );
                 });
             }
         }
