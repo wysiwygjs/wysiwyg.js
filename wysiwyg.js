@@ -633,6 +633,34 @@
             };
             filereader.readAsArrayBuffer( file );
         };
+        function filecontents_multiple( files, callback )
+        {
+            // Keep callback-order - supporting browser without 'Promise'
+            var callbacks = [],
+                callnext = 0;
+            for( var i=0; i < files.length; ++i )   // can't use forEach() with 'FileList'
+            {
+                (function(i)
+                {
+                    filecontents( files[i],
+                        function( type, dataurl )
+                        {
+                            callbacks[i] = function() {
+                                if( dataurl )   // empty on error
+                                    callback( type, dataurl );
+                            };
+                            // trigger callbacks in order
+                            while( callnext in callbacks )
+                            {
+                                callbacks[callnext]();
+                                callnext++;
+                            }
+                            if( callnext == files.length )
+                                callbacks = null;
+                        });
+                })(i);
+            }
+        };
 
         // open popup and apply position
         var popup_position = function( popup, left, top ) // left+top relative to container
@@ -795,41 +823,17 @@
                                 var remove_input = 'dataurl' in button;
                                 if( ! e.target.files )
                                     remove_input = true;
-                                else
+                                else if( 'browse' in button )
                                 {
                                     var files = evt.target.files;
                                     for( var i=0; i < files.length; ++i )   // can't use forEach() with 'FileList'
-                                    {
-                                        var file = files[i];
-                                        if( 'browse' in button )
-                                            button.browse( commands, input,file, element );
-                                        else
-                                        {
-                                            // Keep callback-order - supporting browser without 'Promise'
-                                            var callbacks = [],
-                                                callnext = 0;
-                                            (function(i)
-                                            {
-                                                filecontents( file,
-                                                    function( type, dataurl )
-                                                    {
-                                                        callbacks[i] = function() {
-                                                            if( dataurl )   // empty on error
-                                                                button.dataurl( commands, type, dataurl, element );
-                                                        };
-                                                        // trigger callbacks in order
-                                                        while( callnext in callbacks )
-                                                        {
-                                                            callbacks[callnext]();
-                                                            callnext++;
-                                                        }
-                                                        if( callnext == files.length )
-                                                            callbacks = null;
-                                                    });
-                                            })(i);
-                                        }
-                                    }
+                                        button.browse( commands, input,files[i], element );
                                 }
+                                else
+                                    filecontents_multiple( evt.target.files, function( type, dataurl )
+                                    {
+                                        button.dataurl( commands, type, dataurl, element );
+                                    });                                    
                                 if( remove_input )
                                     input.parentNode.removeChild( input );
                                 cancelEvent( e );
@@ -1498,15 +1502,23 @@
             if( ! clipboardData )
                 return;
             var items = clipboardData.items;
-            if( ! items || ! items.length )
+            if( ! items )
                 return;
-            var item = items[0];
-            if( ! item.type.match(/^image\//) )
+            var files = [];
+            for( var i=0; i < items.length; ++i )
+            {
+                var item = items[i];
+                if( ! item.type.match(/^image\//) )
+                    continue;
+                // Insert image from clipboard
+                var file = item.getAsFile();
+                files.push( file );
+            }
+            if( ! files )
                 return;
-            // Insert image from clipboard
-            filecontents( item.getAsFile(), function( type, dataurl ) {
-                if( dataurl )   // empty on error
-                    execCommand( 'insertImage', dataurl );
+            filecontents_multiple( files, function( type, dataurl )
+            {
+                execCommand( 'insertImage', dataurl );
             });
             cancelEvent( e ); // dismiss paste
         });
