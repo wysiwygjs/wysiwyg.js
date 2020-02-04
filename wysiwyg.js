@@ -1514,7 +1514,7 @@
                 var file = item.getAsFile();
                 files.push( file );
             }
-            if( ! files )
+            if( ! files.length )
                 return;
             filecontents_multiple( files, function( type, dataurl )
             {
