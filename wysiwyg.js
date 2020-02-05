@@ -1496,31 +1496,48 @@
         };
 
         // copy/paste images from clipboard
-        addEvent( node_contenteditable, 'paste', function( e )
+        function paste_drop_file( datatransfer )
         {
-            var clipboardData = e.clipboardData;
-            if( ! clipboardData )
-                return;
-            var items = clipboardData.items;
-            if( ! items )
-                return;
-            var files = [];
-            for( var i=0; i < items.length; ++i )
+            if( ! datatransfer )
+                return false;
+            var insert_files = [];
+            // From clipboard
+            if( datatransfer.items )
             {
-                var item = items[i];
-                if( ! item.type.match(/^image\//) )
-                    continue;
-                // Insert image from clipboard
-                var file = item.getAsFile();
-                files.push( file );
+                var items = datatransfer.items;
+                for( var i=0; i < items.length; ++i )
+                {
+                    var item = items[i];
+                    if( ! item.type.match(/^image\//) )
+                        continue;
+                    var file = item.getAsFile();
+                    insert_files.push( file );
+                }
             }
-            if( ! files.length )
-                return;
-            filecontents_multiple( files, function( type, dataurl )
+            // From explorer/finder
+            else if( datatransfer.files )
+            {
+                var files = datatransfer.files;
+                for( var i=0; i < files.length; ++i )
+                    insert_files.push( files[i] );
+            }
+            if( ! insert_files.length )
+                return false;
+            filecontents_multiple( insert_files, function( type, dataurl )
             {
                 execCommand( 'insertImage', dataurl );
             });
-            cancelEvent( e ); // dismiss paste
+            return true;
+        };
+        addEvent( node_contenteditable, 'paste', function( e )
+        {
+            if( paste_drop_file(e.clipboardData) )
+                cancelEvent( e ); // dismiss paste
+        });
+        addEvent( node_contenteditable, 'drop', function( e )
+        {
+            if( paste_drop_file(e.dataTransfer) )
+                cancelEvent( e ); // dismiss drop
         });
 
         // Command structure
