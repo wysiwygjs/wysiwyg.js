@@ -77,17 +77,35 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none; }
-  .wysiwyg-popup input {
-    display: block;
-    box-sizing: border-box;
-    width: 100%;
-    margin: 0.3rem 0.5rem;
-    padding: 0;
-    border: none;
-    background: transparent none;
-    -webkit-appearance: none;
-    box-shadow: none;
-    font-family: inherit; }
+  .wysiwyg-popup.animate-down {
+    transform-origin: top;
+    animation: transformer 0.2s ease-out 0s 1; }
+  .wysiwyg-popup.animate-up {
+    transform-origin: bottom;
+    animation: transformer 0.2s ease-out 0s 1; }
+  .wysiwyg-popup.hyperlink {
+    width: 25rem;
+    max-width: 50vw; }
+    .wysiwyg-popup.hyperlink > input {
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      margin: 0;
+      padding: 0.3rem 0.5rem;
+      border: none;
+      background: transparent none;
+      -webkit-appearance: none;
+      box-shadow: none;
+      font-family: inherit; }
+  .wysiwyg-popup.palette td {
+    width: 0.5rem;
+    height: 0.5rem;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; }
   .wysiwyg-popup .suggestion {
     display: block;
     padding: 0.3rem 0.5rem;
@@ -95,12 +113,6 @@
     .wysiwyg-popup .suggestion:hover, .wysiwyg-popup .suggestion:first-of-type {
       color: HighlightText;
       background-color: Highlight; }
-  .wysiwyg-popup.animate-down {
-    transform-origin: top;
-    animation: transformer 0.2s ease-out 0s 1; }
-  .wysiwyg-popup.animate-up {
-    transform-origin: bottom;
-    animation: transformer 0.2s ease-out 0s 1; }
 
 @keyframes transformer {
   from {

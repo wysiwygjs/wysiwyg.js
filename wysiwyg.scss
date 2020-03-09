@@ -98,17 +98,43 @@ $wysiwyg-padding-horiz:     .5rem !default;
     -ms-user-select: none;
     user-select: none;
 
-    input {
-        display: block;
-        box-sizing: border-box;
-        width: 100%;
-        margin: $wysiwyg-padding-vert $wysiwyg-padding-horiz;
-        padding: 0;
-        border: none;
-        background: transparent none;
-        -webkit-appearance: none;
-        box-shadow: none;
-        font-family: inherit;
+    &.animate-down {
+        transform-origin: top;
+        animation: transformer $wysiwyg-duration ease-out 0s 1;
+    }
+    &.animate-up {
+        transform-origin: bottom;
+        animation: transformer $wysiwyg-duration ease-out 0s 1;
+    }
+
+    &.hyperlink {
+        width: 25rem;
+        max-width: 50vw;
+
+        > input {
+            display: block;
+            box-sizing: border-box;
+            width: 100%;
+            margin: 0;
+            padding: $wysiwyg-padding-vert $wysiwyg-padding-horiz;
+            border: none;
+            background: transparent none;
+            -webkit-appearance: none;
+            box-shadow: none;
+            font-family: inherit;
+        }
+    }
+    &.palette {
+        td {
+            width: 0.5rem;
+            height: 0.5rem;
+            cursor: pointer;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
     }
 
     .suggestion {
@@ -121,15 +147,6 @@ $wysiwyg-padding-horiz:     .5rem !default;
             color: $wysiwyg-highlight-color;
             background-color: $wysiwyg-highlight-back;
         }
-    }
-
-    &.animate-down {
-        transform-origin: top;
-        animation: transformer $wysiwyg-duration ease-out 0s 1;
-    }
-    &.animate-up {
-        transform-origin: bottom;
-        animation: transformer $wysiwyg-duration ease-out 0s 1;
     }
 }
 @keyframes transformer {

@@ -369,8 +369,6 @@
             textbox.placeholder = 'www.example.com';
             if( modify_a_href )
                 textbox.value = modify_a_href.href;
-            textbox.style.width = '20em';
-            textbox.style.maxWidth = parseInt(node_container.offsetWidth *2/3) + 'px';
             textbox.autofocus = true;
             if( modify_a_href )
                 addEvent( textbox, 'input', function( e )
@@ -410,6 +408,7 @@
                 commands.closePopup().collapseSelection();
                 node_contenteditable.focus();
             });
+            add_class( popup, 'hyperlink' );
             popup.appendChild( textbox );
             // set focus
             window.setTimeout( function()
@@ -470,12 +469,8 @@
                         color = HSVtoRGB( hue, saturation, value );
                     }
                     var td = document.createElement('td');
-                    td.style.width = '0.5em';
-                    td.style.height = '0.5em';
-                    td.style.cursor = 'pointer';
                     td.style.backgroundColor = color;
                     td.title = color;
-                    td.style.userSelect = 'none';
                     addEvent( td, 'click', function( e )
                         {
                             var color = this.title;
@@ -489,6 +484,7 @@
                 }
                 table.appendChild( tr );
             }
+            add_class( popup, 'palette' );
             popup.appendChild( table );
         };
 
