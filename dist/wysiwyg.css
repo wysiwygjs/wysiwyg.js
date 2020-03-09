@@ -85,7 +85,7 @@
     animation: transformer 0.2s ease-out 0s 1; }
   .wysiwyg-popup.hyperlink {
     width: 25rem;
-    max-width: 50vw; }
+    max-width: 90vw; }
     .wysiwyg-popup.hyperlink > input {
       display: block;
       box-sizing: border-box;
