@@ -4,7 +4,7 @@
 .wysiwyg {
   display: block;
   color: black;
-  background: none white;
+  background: none transparent;
   border: 1px solid #ddd;
   border-radius: 0.2rem;
   transition: border 0.2s;

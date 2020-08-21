@@ -13,7 +13,7 @@ $wysiwyg-padding-horiz:     .5rem !default;
 .wysiwyg {
     display: block;
     color: black;
-    background: none white;
+    background: none transparent;
     border: 1px solid $wysiwyg-border-color;
     border-radius: $wysiwyg-border-radius;
     transition: border $wysiwyg-duration;

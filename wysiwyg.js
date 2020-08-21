@@ -324,7 +324,7 @@
         {
             if( element.classList )
                 element.classList.remove( classname );
-        }
+        };
         var node_contenteditable = node_container.querySelector('[contenteditable=true]');
         if( ! node_contenteditable )
         {
@@ -401,7 +401,7 @@
                                 var charsToReplace = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' };
                                 return charsToReplace[tag] || tag;
                             });
-                        }
+                        };
                         commands.insertHTML( '<a href="' + htmlencode(url_scheme) + '">' + htmlencode(url) + '</a>' );
                     }
                 }
@@ -432,12 +432,12 @@
                 t = v * (1 - (1 - f) * s);
                 switch (i % 6)
                 {
-                    case 0: r = v, g = t, b = p; break;
-                    case 1: r = q, g = v, b = p; break;
-                    case 2: r = p, g = v, b = t; break;
-                    case 3: r = p, g = q, b = v; break;
-                    case 4: r = t, g = p, b = v; break;
-                    case 5: r = v, g = p, b = q; break;
+                    case 0: r = v; g = t; b = p; break;
+                    case 1: r = q; g = v; b = p; break;
+                    case 2: r = p; g = v; b = t; break;
+                    case 3: r = p; g = q; b = v; break;
+                    case 4: r = t; g = p; b = v; break;
+                    case 5: r = v; g = p; b = q; break;
                 }
                 var hr = Math.floor(r * 255).toString(16);
                 var hg = Math.floor(g * 255).toString(16);
@@ -570,14 +570,14 @@
                         ctx.restore();
                         var dataURL = canvas.toDataURL( 'image/jpeg', 0.99 );
                         callback( file.type, dataURL );
-                    }
+                    };
                 };
                 filereader.onerror = function( e )
                 {
                     callback();
                 };
                 filereader.readAsDataURL( file );
-            }
+            };
             if( ! window.DataView )
                 return normalize_dataurl();
 
@@ -656,7 +656,7 @@
                         });
                 })(i);
             }
-        };
+        }
 
         // open popup and apply position
         var popup_position = function( popup, left, top ) // left+top relative to container
@@ -667,7 +667,7 @@
             while( node )
             {
                 var node_style = getComputedStyle( node );
-                if( node_style['position'] != 'static' )
+                if( node_style.position != 'static' )
                     break;
                 left += node.offsetLeft;
                 top += node.offsetTop;
@@ -751,7 +751,8 @@
         };
 
         // Fill buttons (on toolbar or on selection)
-        var recent_selection_rect = null, recent_selection_link = null
+        var recent_selection_rect = null,
+            recent_selection_link = null;
         var fill_buttons = function( toolbar_container, selection_rect, buttons, hotkeys )
         {
             buttons.forEach( function(button)
@@ -1524,7 +1525,7 @@
                 execCommand( 'insertImage', dataurl );
             });
             return true;
-        };
+        }
         addEvent( node_contenteditable, 'paste', function( e )
         {
             if( paste_drop_file(e.clipboardData) )

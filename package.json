@@ -29,5 +29,8 @@
   },
   "scripts": {
     "build": "make build"
+  },
+  "dependencies": {
+    "terser": "^5.0.0"
   }
 }
