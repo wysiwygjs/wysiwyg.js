@@ -377,10 +377,10 @@
                     if( url )
                         modify_a_href.href = url;
                 });
-            addEvent( textbox, 'keypress', function( e )
+            addEvent( textbox, 'keydown', function( e )
             {
-                var key = e.which || e.keyCode;
-                if( key != 13 )
+                var key = ('key' in e) ? e.key : ((e.which || e.keyCode) == 13 ? 'Enter' : '');
+                if( key != 'Enter' )
                     return;
                 var url = textbox.value.trim();
                 if( modify_a_href )
@@ -517,7 +517,7 @@
                     filereader.readAsDataURL( file );
                     return;
                 }
-                
+
                 // Apply exif orientation
                 var normalize_dataurl = function( orientation )
                 {
@@ -829,7 +829,7 @@
                                     filecontents_multiple( evt.target.files, function( type, dataurl )
                                     {
                                         button.dataurl( commands, type, dataurl, element );
-                                    });                                    
+                                    });
                                 if( remove_input )
                                     input.parentNode.removeChild( input );
                                 cancelEvent( e );
@@ -917,15 +917,6 @@
             suggestion_sequence += 1;
             commands.closePopup();
         };
-        var suggester_keydown = function( key, character, shiftKey, altKey, ctrlKey, metaKey )
-        {
-            if( key == 13 && first_suggestion_html )
-            {
-                finish_suggestion( first_suggestion_html );
-                return false;   // swallow enter
-            }
-            return true;
-        };
         var ask_suggestions = function()
         {
             if( ! typed_suggestion )
@@ -969,36 +960,52 @@
                 finish_suggestion();
         };
         var debounced_suggestions = debounce( ask_suggestions, 100, true );
-        var suggester_keypress = function( key, character, shiftKey, altKey, ctrlKey, metaKey )
+        var suggester_keydown = function( key )
         {
-            // Special keys
             switch( key )
             {
-                case  8: // backspace
+                case 'Backspace':
                     if( typed_suggestion )
                         typed_suggestion = typed_suggestion.slice( 0, -1 );
-                    if( typed_suggestion )  // if still text -> continue, else abort
-                        break;
-                    finish_suggestion();
-                    return true;
-                case 13: // enter
-                case 27: // escape
-                case 33: // pageUp
-                case 34: // pageDown
-                case 35: // end
-                case 36: // home
-                case 37: // left
-                case 38: // up
-                case 39: // right
-                case 40: // down
-                    if( typed_suggestion )
+                    if( ! typed_suggestion )    // if still text -> continue, else abort
+                    {
                         finish_suggestion();
-                    return true;
-                default:
-                    if( ! typed_suggestion )
-                        typed_suggestion = '';
-                    typed_suggestion += character;
+                        return true;
+                    }
                     break;
+                case 'Enter':
+                    if( first_suggestion_html )
+                    {
+                        finish_suggestion( first_suggestion_html );
+                        return false;   // swallow enter
+                    }
+                case 'Escape':
+                case 'PageUp':
+                case 'PageDown':
+                case 'End':
+                case 'Home':
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                case 'ArrowRight':
+                case 'ArrowDown':
+                    if( typed_suggestion )
+                    {
+                        finish_suggestion();
+                        return true;
+                    }
+                    break;
+            }
+            // Throttle requests
+            debounced_suggestions();
+            return true;
+        };
+        var suggester_input = function( key )
+        {
+            if( key.length == 1 )
+            {
+                if( ! typed_suggestion )
+                    typed_suggestion = '';
+                typed_suggestion += key;
             }
             // Throttle requests
             debounced_suggestions();
@@ -1006,41 +1013,6 @@
         };
 
         // Create contenteditable
-        var onKeyDown = function( key, character, shiftKey, altKey, ctrlKey, metaKey )
-        {
-            // submit form on enter-key
-            if( interceptenter && key == 13 && ! shiftKey && ! altKey && ! ctrlKey && ! metaKey )
-            {
-                commands.sync();
-                if( interceptenter() )
-                {
-                    commands.closePopup();
-                    return false; // swallow enter
-                }
-            }
-            // Exec hotkey (onkeydown because e.g. CTRL+B would oben the bookmarks)
-            if( character && !shiftKey && !altKey && ctrlKey && !metaKey )
-            {
-                var hotkey = character.toLowerCase();
-                if( hotkeys[hotkey] )
-                {
-                    hotkeys[hotkey]();
-                    return false; // prevent default
-                }
-            }
-            // Handle suggester
-            if( suggester )
-                return suggester_keydown( key, character, shiftKey, altKey, ctrlKey, metaKey );
-        };
-        var onKeyPress = function( key, character, shiftKey, altKey, ctrlKey, metaKey )
-        {
-            // Handle suggester
-            if( suggester )
-                return suggester_keypress( key, character, shiftKey, altKey, ctrlKey, metaKey );
-        };
-        //var onKeyUp = function( key, character, shiftKey, altKey, ctrlKey, metaKey )
-        //{
-        //};
         var onSelection = function( collapsed, rect, nodes, rightclick )
         {
             recent_selection_rect = collapsed ? rect || recent_selection_rect : null;
@@ -1315,60 +1287,115 @@
         };
 
         // Key events
-        // http://sandbox.thewikies.com/html5-experiments/key-events.html
-        var keyHandler = function( e, phase )
+        function key_value( e )
         {
-            // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
-            // http://stackoverflow.com/questions/1444477/keycode-and-charcode
-            // http://stackoverflow.com/questions/4285627/javascript-keycode-vs-charcode-utter-confusion
-            // http://unixpapa.com/js/key.html
-            var key = e.which || e.keyCode,
-                character = String.fromCharCode(key || e.charCode),
+            if( 'key' in e )    // https://developer.mozilla.org/de/docs/Web/API/KeyboardEvent/key/Key_Values
+            {
+                var key = e.key;
+                switch( key )
+                {
+                    // Firefox did so until version 37, as did Internet Explorer 9, 10, and 11.
+                    case 'Spacebar': return ' ';
+                    // Internet Explorer, Edge (16 and earlier), and Firefox (36 and earlier) use legacy Arrows
+                    case 'Left': return 'ArrowLeft';
+                    case 'Up': return 'ArrowUp';
+                    case 'Right': return 'ArrowRight';
+                    case 'Down': return 'ArrowDown';
+                    // Internet Explorer 9 and 11 and Firefox 36 and earlier
+                    case 'Esc': return 'Escape';
+                }
+                return key;
+            }
+            switch( e.which || e.keyCode )
+            {
+                case  8: return 'Backspace';
+                case 13: return 'Enter';
+                case 27: return 'Escape';
+                case 33: return 'PageUp';
+                case 34: return 'PageDown';
+                case 35: return 'End';
+                case 36: return 'Home';
+                case 37: return 'ArrowLeft';
+                case 38: return 'ArrowUp';
+                case 39: return 'ArrowRight';
+                case 40: return 'ArrowDown';
+            }
+            return String.fromCharCode( e.which || e.keyCode || e.charCode );
+        }
+        addEvent( node_contenteditable, 'keydown', function( e )
+        {
+            var key = key_value( e ),
                 shiftKey = e.shiftKey || false,
                 altKey = e.altKey || false,
                 ctrlKey = e.ctrlKey || false,
                 metaKey = e.metaKey || false;
-            if( phase == 1 )
+
+            // submit form on enter-key
+            if( interceptenter && key == 'Enter' && !shiftKey && !altKey && !ctrlKey && !metaKey )
             {
-                // Callback
-                if( onKeyDown && onKeyDown(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
+                commands.sync();
+                if( interceptenter() )
+                {
+                    commands.closePopup();
                     cancelEvent( e ); // dismiss key
+                    return;
+                }
             }
-            else if( phase == 2 )
+            // Exec hotkey (onkeydown because e.g. CTRL+B would oben the bookmarks)
+            if( key.length == 1 && !shiftKey && !altKey && ctrlKey && !metaKey )
             {
-                // Callback
-                if( onKeyPress && onKeyPress(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
+                var hotkey = key.toLowerCase();
+                if( hotkeys[hotkey] )
+                {
+                    hotkeys[hotkey]();
                     cancelEvent( e ); // dismiss key
+                    return;
+                }
             }
-            //else if( phase == 3 )
-            //{
-            //    // Callback
-            //    if( onKeyUp && onKeyUp(key, character, shiftKey, altKey, ctrlKey, metaKey) === false )
-            //        cancelEvent( e ); // dismiss key
-            //}
+
+            // Handle suggester
+            if( suggester && ! suggester_keydown(key) )
+            {
+                cancelEvent( e ); // dismiss key
+                return;
+            }
 
             // Keys can change the selection
             if( popup_saved_selection )
                 popup_saved_selection = saveSelection( node_contenteditable );
-            if( phase == 2 || phase == 3 )
+        });
+        // Deprecated: replace with 'beforeinput' or 'input'
+        addEvent( node_contenteditable, 'keypress', function( e )
+        {
+            var key = key_value( e );
+
+            // Handle suggester
+            if( suggester && ! suggester_input(key) )
             {
-                if( debounced_handleSelection )
-                    debounced_handleSelection( null, null, false );
+                cancelEvent( e ); // dismiss key
+                return;
             }
+
+            // Keys can change the selection
+            if( popup_saved_selection )
+                popup_saved_selection = saveSelection( node_contenteditable );
+            if( debounced_handleSelection )
+                debounced_handleSelection( null, null, false );
+
             // Most keys can cause text-changes
-            if( phase == 2 && debounced_syncTextarea )
+            if( debounced_syncTextarea )
             {
                 switch( key )
                 {
-                    case 33: // pageUp
-                    case 34: // pageDown
-                    case 35: // end
-                    case 36: // home
-                    case 37: // left
-                    case 38: // up
-                    case 39: // right
-                    case 40: // down
-                        // cursors do not
+                    // cursors do not
+                    case 'PageUp':
+                    case 'PageDown':
+                    case 'End':
+                    case 'Home':
+                    case 'ArrowLeft':
+                    case 'ArrowUp':
+                    case 'ArrowRight':
+                    case 'ArrowDown':
                         break;
                     default:
                         // call change handler
@@ -1376,18 +1403,14 @@
                         break;
                 }
             }
-        };
-        addEvent( node_contenteditable, 'keydown', function( e )
-        {
-            keyHandler( e, 1 );
-        });
-        addEvent( node_contenteditable, 'keypress', function( e )
-        {
-            keyHandler( e, 2 );
         });
         addEvent( node_contenteditable, 'keyup', function( e )
         {
-            keyHandler( e, 3 );
+            // Keys can change the selection
+            if( popup_saved_selection )
+                popup_saved_selection = saveSelection( node_contenteditable );
+            if( debounced_handleSelection )
+                debounced_handleSelection( null, null, false );
         });
 
         // Mouse events

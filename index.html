@@ -224,11 +224,11 @@ ready(function() {
                 });
                 response( suggestions.length ? suggestions : null );  // null = close suggestions
             };
-        // simulate: immediate, fast and slow internet
+        // simulate: immediate, fast and flaky internet
         if( Math.random() < 0.5 )
             fill_suggestion();
         else
-            setTimeout( fill_suggestion, Math.random() > 0.9 ? 5000 : 100 );
+            setTimeout( fill_suggestion, Math.random() > 0.9 ? 1000 : 50 );
         return true;
     };
 
