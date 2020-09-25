@@ -498,19 +498,33 @@
                 return;
             }
 
-            // read file as data-url
-            var normalize_dataurl = function( orientation )
+            // Test if the browser supports automatic image orientation
+            var testimg = document.createElement('img');
+            testimg.onload = function()
             {
-                var filereader = new FileReader();
-                filereader.onload = function( e )
+                // Orientation done by browser
+                if( testimg.width == 2 && testimg.height == 3 )
                 {
-                    if( ! orientation || orientation == 1 || orientation > 8 )
-                        return callback( file.type, e.target.result );
-                    // Test if the browser supports automatic image orientation
-                    var testimg = document.createElement('img');
-                    testimg.onload = function()
+                    var filereader = new FileReader();
+                    filereader.onload = function( e )
                     {
-                        if( testimg.width === 2 && testimg.height === 3 )
+                        callback( file.type, e.target.result );
+                    };
+                    filereader.onerror = function( e )
+                    {
+                        callback();
+                    };
+                    filereader.readAsDataURL( file );
+                    return;
+                }
+                
+                // Apply exif orientation
+                var normalize_dataurl = function( orientation )
+                {
+                    var filereader = new FileReader();
+                    filereader.onload = function( e )
+                    {
+                        if( ! orientation || orientation == 1 || orientation > 8 )
                             return callback( file.type, e.target.result );
                         // normalize
                         var img = new Image();
@@ -548,71 +562,71 @@
                         };
                         img.src = e.target.result;
                     };
-                    testimg.src = 'data:image/jpeg;base64,/9j/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAYAAAA' +
-                                  'AAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA' +
-                                  'QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE' +
-                                  'BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAIAAwMBEQACEQEDEQH/x' +
-                                  'ABRAAEAAAAAAAAAAAAAAAAAAAAKEAEBAQADAQEAAAAAAAAAAAAGBQQDCAkCBwEBAAAAAAA' +
-                                  'AAAAAAAAAAAAAABEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AG8T9NfSMEVMhQ' +
-                                  'voP3fFiRZ+MTHDifa/95OFSZU5OzRzxkyejv8ciEfhSceSXGjS8eSdLnZc2HDm4M3BxcXw' +
-                                  'H/9k=';
+                    filereader.onerror = function( e )
+                    {
+                        callback();
+                    };
+                    filereader.readAsDataURL( file );
+                };
+                if( ! window.DataView )
+                    return normalize_dataurl();
+
+                // get orientation - https://stackoverflow.com/questions/7584794/accessing-jpeg-exif-rotation-data-in-javascript-on-the-client-side
+                var filereader = new FileReader();
+                filereader.onload = function( e )
+                {
+                    var contents = e.target.result;
+                    var view = new DataView( contents );
+                    // Not a JPEG at all?
+                    if( view.getUint16(0, false) != 0xFFD8 )
+                        return normalize_dataurl();
+                    var length = view.byteLength,
+                        offset = 2;
+                    while( offset < length )
+                    {
+                        // Missing EXIF?
+                        if( view.getUint16(offset+2, false) <= 8 )
+                            return normalize_dataurl();
+                        var marker = view.getUint16(offset, false);
+                        offset += 2;
+                        if( marker == 0xFFE1 )
+                        {
+                            if( view.getUint32(offset += 2, false) != 0x45786966 )
+                                return normalize_dataurl();
+                            var little = view.getUint16( offset += 6, false ) == 0x4949;
+                            offset += view.getUint32( offset + 4, little );
+                            var tags = view.getUint16( offset, little );
+                            offset += 2;
+                            for( var i=0; i < tags; ++i )
+                            {
+                                if( view.getUint16(offset + (i * 12), little) == 0x0112 )
+                                {
+                                    var orientation = view.getUint16( offset + (i * 12) + 8, little );
+                                    return normalize_dataurl( orientation );
+                                }
+                            }
+                        }
+                        else if( (marker & 0xFF00) != 0xFF00 )
+                            break;
+                        else
+                            offset += view.getUint16( offset, false );
+                    }
+                    return normalize_dataurl();
                 };
                 filereader.onerror = function( e )
                 {
                     callback();
                 };
-                filereader.readAsDataURL( file );
+                filereader.readAsArrayBuffer( file );
             };
-            if( ! window.DataView )
-                return normalize_dataurl();
-
-            // get orientation - https://stackoverflow.com/questions/7584794/accessing-jpeg-exif-rotation-data-in-javascript-on-the-client-side
-            var filereader = new FileReader();
-            filereader.onload = function( e )
-            {
-                var contents = e.target.result;
-                var view = new DataView( contents );
-                // Not a JPEG at all?
-                if( view.getUint16(0, false) != 0xFFD8 )
-                    return normalize_dataurl();
-                var length = view.byteLength,
-                    offset = 2;
-                while( offset < length )
-                {
-                    // Missing EXIF?
-                    if( view.getUint16(offset+2, false) <= 8 )
-                        return normalize_dataurl();
-                    var marker = view.getUint16(offset, false);
-                    offset += 2;
-                    if( marker == 0xFFE1 )
-                    {
-                        if( view.getUint32(offset += 2, false) != 0x45786966 )
-                            return normalize_dataurl();
-                        var little = view.getUint16( offset += 6, false ) == 0x4949;
-                        offset += view.getUint32( offset + 4, little );
-                        var tags = view.getUint16( offset, little );
-                        offset += 2;
-                        for( var i=0; i < tags; ++i )
-                        {
-                            if( view.getUint16(offset + (i * 12), little) == 0x0112 )
-                            {
-                                var orientation = view.getUint16( offset + (i * 12) + 8, little );
-                                return normalize_dataurl( orientation );
-                            }
-                        }
-                    }
-                    else if( (marker & 0xFF00) != 0xFF00 )
-                        break;
-                    else
-                        offset += view.getUint16( offset, false );
-                }
-                return normalize_dataurl();
-            };
-            filereader.onerror = function( e )
-            {
-                callback();
-            };
-            filereader.readAsArrayBuffer( file );
+            testimg.src = 'data:image/jpeg;base64,/9j/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAYAAAA' +
+                            'AAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA' +
+                            'QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE' +
+                            'BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAIAAwMBEQACEQEDEQH/x' +
+                            'ABRAAEAAAAAAAAAAAAAAAAAAAAKEAEBAQADAQEAAAAAAAAAAAAGBQQDCAkCBwEBAAAAAAA' +
+                            'AAAAAAAAAAAAAABEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AG8T9NfSMEVMhQ' +
+                            'voP3fFiRZ+MTHDifa/95OFSZU5OzRzxkyejv8ciEfhSceSXGjS8eSdLnZc2HDm4M3BxcXw' +
+                            'H/9k=';
         };
         function filecontents_multiple( files, callback )
         {
