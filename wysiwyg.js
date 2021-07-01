@@ -382,6 +382,7 @@
                 var key = ('key' in e) ? e.key : ((e.which || e.keyCode) == 13 ? 'Enter' : '');
                 if( key != 'Enter' )
                     return;
+                cancelEvent( e );
                 var url = textbox.value.trim();
                 if( modify_a_href )
                     ;
@@ -1526,11 +1527,15 @@
                 var items = datatransfer.items;
                 for( var i=0; i < items.length; ++i )
                 {
+                    // https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem
                     var item = items[i];
+                    if( item.kind != 'file' )
+                        continue;
                     if( ! item.type.match(/^image\//) )
                         continue;
                     var file = item.getAsFile();
                     insert_files.push( file );
+                    break;  // firefox ships e.g. png+webp
                 }
             }
             // From explorer/finder
